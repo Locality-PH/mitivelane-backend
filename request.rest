@@ -1,0 +1,54 @@
+POST http://localhost:5000/auth/register 
+Content-Type: application/json
+
+{
+"email": "Jim",
+"password": "123",
+"auth_id": "",
+"invitation_link": "1111-1111-1111"
+}
+
+###
+
+GET http://localhost:5000/auth/login
+Content-Type: application/json
+
+###
+POST http://localhost:5000/pre/barangay
+Content-Type: application/json
+
+{
+     "barangay_name": "BARAS"
+}
+
+###
+POST http://localhost:5000/pre/
+Content-Type: application/json
+
+{
+    "barangay_id": "61bbe4d837b3edf68eb894f6",
+    "email": "WEAS.GMAIL.COM"
+}
+
+###
+
+GET http://localhost:5000/pre/barangay/61bbe4d837b3edf68eb894f6
+Content-Type: application/json
+
+###
+
+POST http://localhost:5000/pre/create-barangay
+Content-Type: application/json
+
+{
+    "barangay_name": "BARAS",
+    "email": "kill@gmail.com",
+    "auth_id": "YKKOg9aXC2RxAB5CPbtN7HBVXW32",
+    "role": "Administrator"
+}
+
+
+###
+
+GET http://localhost:5000/app/users/yKUVy3Y9DmUQfgDNZzMu2BStJEr1
+Content-Type: application/json
