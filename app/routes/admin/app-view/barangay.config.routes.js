@@ -1,5 +1,5 @@
 module.exports = (app) => {
-  const appConfig = require("../../../controller/admin/app-view/barangay.config.controller.js");
+  const appConfig = require("../../../controller/admin/barangay.config.controller.js");
 
   var router = require("express").Router();
   // router.post("/add", accounts.add);

@@ -2,8 +2,29 @@ module.exports = (mongoose) => {
   var accountSchema = mongoose.Schema(
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
-      email: { type: String },
+      email: { type: String, unique: true },
       uuid: { type: String },
+      profileUrl: {
+        data: Buffer,
+        contentType: String,
+      },
+      first_name: { type: String },
+      last_name: { type: String },
+      middle_name: { type: String },
+      birthday: { type: Date },
+      gender: { type: String },
+      civil_status: { type: String },
+      province: { type: String },
+      municipality: { type: String },
+      telephone: { type: Number },
+      mobile: { type: Number },
+      address: { type: String },
+      first_time: { type: Boolean },
+      country: { type: String },
+      access_token: { type: String, required: true },
+      refresh_token: { type: String, required: true },
+      // expiration: { type: Date, required: true },
+
       members: [
         [
           {

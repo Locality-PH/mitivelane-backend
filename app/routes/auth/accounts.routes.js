@@ -5,7 +5,7 @@ module.exports = (app) => {
 
   // router.post("/add", accounts.add);
   router.post("/register", accounts.registerUser);
-  router.get("/login", accounts.loginUser);
+  router.get("/login/:auth_id", accounts.loginUser);
 
   app.use("/auth", router);
 };

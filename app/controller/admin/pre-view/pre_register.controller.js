@@ -5,6 +5,7 @@ const Barangay = db.barangay;
 const BarangayMember = db.barangayMember;
 const Account = db.account;
 
+//Test Create Barangay
 exports.registerBarangay = (req, res) => {
   var barangayId = new mongoose.Types.ObjectId();
   if (!req.body.barangay_name) {
@@ -79,14 +80,20 @@ exports.list = (req, res) => {
     .catch((err) => res.status(400).json("Error: " + err));
 };
 
+//Create Finalized Barangay
 exports.createBarangay = (req, res) => {
   var barangayId = new mongoose.Types.ObjectId();
   var barangayMemberId = new mongoose.Types.ObjectId();
 
   console.log(barangayId);
+  //Barangay Create Data
   const barangay = new Barangay({
     _id: barangayId,
     barangay_name: req.body.barangay_name,
+    country: req.body.country,
+    province: req.body.province,
+    municipality: req.body.municipality,
+    address: req.body.address,
   });
   barangay.save(barangay).then((_) => {
     const barangayMember = new BarangayMember({
@@ -96,22 +103,41 @@ exports.createBarangay = (req, res) => {
       auth_id: req.body.auth_id,
       role: "Administrator",
     });
-
+    // Barangay Member Create
     barangayMember
       .save(barangayMember)
       .then((_) => {
+        // Barangay   Update
         Barangay.findByIdAndUpdate(barangayId)
           .then((barangay) => {
             barangay.barangay_member.push(barangayMemberId),
               barangay
                 .save()
                 .then(() => {
+                  //Account Update
                   Account.findOneAndUpdate(
-                    { uuid: req.body.auth_id },
+                    {
+                      uuid: req.body.auth_id,
+                    },
                     {
                       $push: {
                         members: [barangayMemberId],
                         barangays: [barangayId],
+                      },
+                      $set: {
+                        first_name: req.body.first_name,
+                        last_name: req.body.last_name,
+                        middle_name: req.body.middle_name,
+                        birthday: req.body.birthday,
+                        gender: req.body.gender,
+                        civil_status: req.body.civil_status,
+                        country: req.body.personal_country,
+                        province: req.body.personal_province,
+                        municipality: req.body.personal_municipality,
+                        mobile: req.body.mobile_number,
+                        telephone: req.body.telephone_number,
+                        address: req.body.personal_address,
+                        first_time: req.body.first_time,
                       },
                     },
                     { new: true },
@@ -127,7 +153,7 @@ exports.createBarangay = (req, res) => {
                         },
                       ];
                       console.log(doc);
-                      res.json(currentActive);
+                      res.status(200).json(currentActive);
                     }
                   );
                 })
@@ -148,6 +174,6 @@ exports.getBarangayList = (req, res) => {
   console.log(req.params.barangay_id);
   Account.find({ uuid: req.params.auth_id })
     .populate({ path: "barangays", model: "barangays" })
-    .then((barangay) => res.json(barangay))
+    .then((barangay) => res.status(200).json(barangay))
     .catch((err) => res.status(400).json("Error: " + err));
 };

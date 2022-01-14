@@ -3,9 +3,12 @@ module.exports = (app) => {
 
   var router = require("express").Router();
   // router.post("/add", accounts.add);
+  //Test Create Barangay
   router.post("/barangay/", preRegister.registerBarangay);
   router.post("/", preRegister.registerBarangayMember);
   router.get("/barangay/:barangay_id", preRegister.list);
+
+  //Create Finalized Barangay
   router.post("/create-barangay", preRegister.createBarangay);
 
   app.use("/pre", router);

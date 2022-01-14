@@ -10,8 +10,19 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5000/auth/login
+GET http://localhost:5000/auth/login/2Tr8k5FdDYPuwgjwFuQWhGiWqEY2
 Content-Type: application/json
+
+
+###
+POST http://localhost:5000/auth/register
+Content-Type: application/json
+
+
+{"uuid": "OpbH0odClBSymVIIw2DWRrJ7PfJ3", "email": "von.aralar@gmail.com", "code": "null"}
+
+
+
 
 ###
 POST http://localhost:5000/pre/barangay
@@ -26,13 +37,13 @@ POST http://localhost:5000/pre/
 Content-Type: application/json
 
 {
-    "barangay_id": "61bbe4d837b3edf68eb894f6",
+    "barangay_id": "61c12b8af42b47bc886457d2",
     "email": "WEAS.GMAIL.COM"
 }
 
 ###
 
-GET http://localhost:5000/pre/barangay/61bbe4d837b3edf68eb894f6
+GET http://localhost:5000/pre/barangay/61c12b8af42b47bc886457d2
 Content-Type: application/json
 
 ###
@@ -43,12 +54,12 @@ Content-Type: application/json
 {
     "barangay_name": "BARAS",
     "email": "kill@gmail.com",
-    "auth_id": "YKKOg9aXC2RxAB5CPbtN7HBVXW32",
+    "auth_id": "2Tr8k5FdDYPuwgjwFuQWhGiWqEY2",
     "role": "Administrator"
 }
 
 
 ###
 
-GET http://localhost:5000/app/users/yKUVy3Y9DmUQfgDNZzMu2BStJEr1
+GET http://localhost:5000/app/users/OpbH0odClBSymVIIw2DWRrJ7PfJ3
 Content-Type: application/json

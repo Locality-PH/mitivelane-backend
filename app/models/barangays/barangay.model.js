@@ -2,7 +2,13 @@ module.exports = (mongoose) => {
   var barangaySchema = mongoose.Schema(
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
+      slug: { type: String },
       barangay_name: { type: String },
+      municipality: { type: String },
+      province: { type: String },
+      country: { type: String },
+      address: { type: String },
+
       barangay_member: [
         {
           type: mongoose.Schema.Types.ObjectId,
@@ -20,3 +26,10 @@ module.exports = (mongoose) => {
   const Tokens = mongoose.model("barangays", barangaySchema);
   return Tokens;
 };
+
+// barangay_name: values.barangay,
+// email: currentUser?.email,
+// auth_id: user_id,
+// province: values.province,
+// municipality: values.municipality,
+// address: values.address,
