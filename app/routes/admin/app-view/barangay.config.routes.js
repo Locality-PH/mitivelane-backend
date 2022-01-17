@@ -5,5 +5,5 @@ module.exports = (app) => {
   // router.post("/add", accounts.add);
   router.get("/users/:auth_id", appConfig.getBarangayList);
 
-  app.use("/app", router);
+  app.use("/api/app", router);
 };

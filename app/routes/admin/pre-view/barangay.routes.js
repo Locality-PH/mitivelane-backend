@@ -11,5 +11,5 @@ module.exports = (app) => {
   //Create Finalized Barangay
   router.post("/create-barangay", preRegister.createBarangay);
 
-  app.use("/pre", router);
+  app.use("/api/pre", router);
 };
