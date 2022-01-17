@@ -21,7 +21,7 @@ db.mongoose
   });
 //simple route
 app.get("/", (_, res) => {
-  res.json({ message: "Welcome to vonypet application." });
+  res.json({ message: "Welcome to MITIVELANE application." });
 });
 //routes
 // require("./app/routes/users.routes")(app);
