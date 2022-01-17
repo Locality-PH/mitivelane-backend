@@ -96,7 +96,7 @@ exports.loginUser = async (req, res) => {
   //     return res.status(400).json("Error: " + err);
   //   });
   Account.find({ uuid: req.params.auth_id })
-    .populate({ path: "barangays", model: "barangays" })
+    // .populate({ path: "barangays", model: "barangays" })
     .then((barangay) => {
       console.log(barangay[0].email);
       const users = {

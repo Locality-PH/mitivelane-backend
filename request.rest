@@ -10,7 +10,7 @@ Content-Type: application/json
 
 ###
 
-GET https://mitivelane.herokuapp.com/auth/login/2Tr8k5FdDYPuwgjwFuQWhGiWqEY2
+GET http://localhost:5000/api/auth/login/2Tr8k5FdDYPuwgjwFuQWhGiWqEY2
 Content-Type: application/json
 
 
