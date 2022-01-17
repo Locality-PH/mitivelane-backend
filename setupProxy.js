@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     "/api",
     createProxyMiddleware({
-      target: "https://xenodochial-gates-876873.netlify.app",
+      target: "https://mitivelane.herokuapp.com",
       changeOrigin: true,
     })
   );
