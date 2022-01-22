@@ -8,11 +8,6 @@ Content-Type: application/json
 "invitation_link": "1111-1111-1111"
 }
 
-###
-
-GET http://localhost:5000/api/auth/login/2Tr8k5FdDYPuwgjwFuQWhGiWqEY2
-Content-Type: application/json
-
 
 ###
 POST http://localhost:5000/auth/register
@@ -63,3 +58,35 @@ Content-Type: application/json
 
 GET http://localhost:5000/app/users/OpbH0odClBSymVIIw2DWRrJ7PfJ3
 Content-Type: application/json
+
+
+###
+
+POST http://localhost:4000/token 
+Content-Type: application/json
+
+{
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXJhbmdheXMiOltbIjYxYzJkZGY3YmIzMDQxYzg1MThlMWM3MSJdLFsiNjFkY2RjYTRkMjAzNjMxMjkzODlmNDFiIl0sWyI2MWRjZTU5ZTE4ZWMzNGE5MWNkOTI2ZTQiXSxbIjYxZTRkZTM2MGQxZTMwYThiNTk5OWE3OCJdXSwibWVtYmVycyI6W1siNjFjMmRkZjdiYjMwNDFjODUxOGUxYzcyIl0sWyI2MWRjZGNhNGQyMDM2MzEyOTM4OWY0MWMiXSxbIjYxZGNlNTllMThlYzM0YTkxY2Q5MjZlNSJdLFsiNjFlNGRlMzYwZDFlMzBhOGI1OTk5YTc5Il1dLCJpYXQiOjE2NDI0NjgyMzV9.WuPCEtIFU_AiAZHlKqIQ0JDl9Zytn1N86WrnoS10kEI"
+}
+###
+
+GET https://mitivelane.gq/api/auth/login/2Tr8k5FdDYPuwgjwFuQWhGiWqEY2
+Content-Type: application/json
+
+###
+GET http://localhost:5000/posts 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXcUVZMiIsImJhcmFuZ2F5cyI6W1siNjFjMmRkZjdiYjMwNDFjODUxOGUxYzcxIl0sWyI2MWRjZGNhNGQyMDM2MzEyOTM4OWY0MWIiXSxbIjYxZGNlNTllMThlYzM0YTkxY2Q5MjZlNCJdLFsiNjFlNGRlMzYwZDFlMzBhOGI1OTk5YTc4Il1dLCJtZW1iZXJzIjpbWyI2MWMyZGRmN2JiMzA0MWM4NTE4ZTFjNzIiXSxbIjYxZGNkY2E0ZDIwMzYzMTI5Mzg5ZjQxYyJdLFsiNjFkY2U1OWUxOGVjMzRhOTFjZDkyNmU1Il0sWyI2MWU0ZGUzNjBkMWUzMGE4YjU5OTlhNzkiXV0sImlhdCI6MTY0MjQ2OTg1NywiZXhwIjoxNjQyNDY5ODc3fQ.sUxwumPx3oD7fZIkMZsCpGNjkIj1ngc8pEogaG9oXXU
+###
+POST http://localhost:5000/api/refresh 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXcUVZMiJ9.NG6_YMFzToD81k1W5IJ6_Q-FrD6c7M2pQyCMJHfwwXE
+
+{
+"uuid": "2Tr8k5FdDYPuwgjwFuQWhGiWqEY2",
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXcUVZMiIsImJhcmFuZ2F5cyI6W1siNjFjMmRkZjdiYjMwNDFjODUxOGUxYzcxIl0sWyI2MWRjZGNhNGQyMDM2MzEyOTM4OWY0MWIiXSxbIjYxZGNlNTllMThlYzM0YTkxY2Q5MjZlNCJdLFsiNjFlNGRlMzYwZDFlMzBhOGI1OTk5YTc4Il1dLCJtZW1iZXJzIjpbWyI2MWMyZGRmN2JiMzA0MWM4NTE4ZTFjNzIiXSxbIjYxZGNkY2E0ZDIwMzYzMTI5Mzg5ZjQxYyJdLFsiNjFkY2U1OWUxOGVjMzRhOTFjZDkyNmU1Il0sWyI2MWU0ZGUzNjBkMWUzMGE4YjU5OTlhNzkiXV0sImlhdCI6MTY0MjQ3ODI1NiwiZXhwIjoxNjQyNDc4Mjc2fQ.rQc60V6IAlVeIsd7m06UUKQbcI_GJ94JxxhM-n9tVtI"
+}
+
+###
+GET http://localhost:5000/api/auth/login/2Tr8k5FdDYPuwgjwFuQWhGiWqEY2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXcUVZMiJ9.NG6_YMFzToD81k1W5IJ6_Q-FrD6c7M2pQyCMJHfwwXE

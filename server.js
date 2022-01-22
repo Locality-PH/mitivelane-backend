@@ -6,6 +6,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const db = require("./app/models");
+const jwt = require("jsonwebtoken");
+const helmet = require("helmet");
+
+app.use(helmet.hsts());
+
+// or all the headers helmet offers
 require("./app/auth");
 db.mongoose
   .connect(db.url, {
@@ -27,6 +33,25 @@ app.get("/", (_, res) => {
 // require("./app/routes/users.routes")(app);
 // require("./app/routes/exercises.routes")(app);
 require("./app/routes/")(app);
+
+//test Auth
+app.get("/api/posts", authenticateToken, (req, res) => {
+  // res.json(posts.filter((post) => post.username === req.user.name));
+  res.json(req.user);
+});
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    console.log(err);
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+// s
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

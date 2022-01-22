@@ -6,18 +6,24 @@ const jwt = require("jsonwebtoken");
 
 app.use(express.json());
 
-let refreshTokens = [];
+let refreshTokens = [
+  {
+    token:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYXJhbmdheXMiOltbIjYxYzJkZGY3YmIzMDQxYzg1MThlMWM3MSJdLFsiNjFkY2RjYTRkMjAzNjMxMjkzODlmNDFiIl0sWyI2MWRjZTU5ZTE4ZWMzNGE5MWNkOTI2ZTQiXSxbIjYxZTRkZTM2MGQxZTMwYThiNTk5OWE3OCJdXSwibWVtYmVycyI6W1siNjFjMmRkZjdiYjMwNDFjODUxOGUxYzcyIl0sWyI2MWRjZGNhNGQyMDM2MzEyOTM4OWY0MWMiXSxbIjYxZGNlNTllMThlYzM0YTkxY2Q5MjZlNSJdLFsiNjFlNGRlMzYwZDFlMzBhOGI1OTk5YTc5Il1dLCJpYXQiOjE2NDI0NjgyMzV9.WuPCEtIFU_AiAZHlKqIQ0JDl9Zytn1N86WrnoS10kEI",
+  },
+];
 
 app.post("/token", (req, res) => {
   const refreshToken = req.body.token;
   if (refreshToken == null) return res.sendStatus(401);
   //REPLACE THIS WITH THIS
-  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+  // if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
   // TOKEN.find()
   //   .then((exercises) => res.json(exercises))
   //   .catch((err) => res.status(400).json("Error: " + err));
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
+    console.log(user);
     const accessToken = generateAccessToken({ name: user.name });
     res.json({ accessToken: accessToken });
   });

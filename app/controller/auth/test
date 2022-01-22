@@ -154,6 +154,7 @@ exports.accessToken = async (req, res) => {
   const userAgent = req.get("user-agent");
   const refreshToken = req.body.token;
   const uuid = req.body.uuid;
+  let tmpToken;
   // console.log(req.user.auth_id, "test");
   if (refreshToken == null && uuid == null && userAgent == null)
     return res.sendStatus(401);
@@ -166,79 +167,142 @@ exports.accessToken = async (req, res) => {
       // console.log(result);
       if (currentUserId !== null) {
         Account.find({ uuid: uuid })
+          .select("sessions -_id")
           // .populate({ path: "barangays", model: "barangays" })
           .then((barangay) => {
-            console.log(barangay[0].access_token);
+            console.log(barangay);
+            // barangay[0].sessions.filter((user) =>
+            //   user.device.includes(userAgent).map((filterUser) => {
+            //     console.log(filterUser);
+            //   })
+            // );
 
-            // if (barangay[0].access_token == refreshToken) {
-            console.log("true");
+            barangay[0].sessions.map((user) => {
+              if (user.user_agent == userAgent) {
+                tmpToken = user.refresh_token;
+              }
+            });
+            console.log(tmpToken);
+            if (tmpToken) {
+              jwt.verify(
+                tmpToken,
+                process.env.REFRESH_TOKEN_SECRET,
+                (err, user) => {
+                  if (err) {
+                    console.log(err);
 
-            jwt.verify(
-              barangay[0].refresh_token,
-              process.env.REFRESH_TOKEN_SECRET,
-              (err, user) => {
-                if (err) {
-                  console.log(err);
+                    return res.sendStatus(403);
+                  }
+                  const accessToken = generateAccessToken({
+                    auth_id: user.auth_id,
+                  });
+                  res.json({ accessToken: accessToken });
 
-                  return res.sendStatus(403);
-                }
-                const accessToken = generateAccessToken({
-                  auth_id: user.auth_id,
-                });
-
-                // Account.findOneAndUpdate(
-                //   {
-                //     uuid: user.auth_id,
-                //   },
-                //   {
-                //     $set: {
-                //       access_token: accessToken,
-                //     },
-                //   },
-                //   { new: true },
-                //   (err, doc) => {
-                //     if (err) {
-                //       return res.status(400).json("Error: " + err);
-                //     }
-                //     res.json({ accessToken: accessToken });
-                //   }
-                // );
-                console.log(user.auth_id);
-                // Account.findOneAndUpdate(
-                //   {
-                //     uuid: user.auth_id,
-                //     "sessions.user_agent": userAgent,
-                //   },
-                //   {
-                //     $set: {
-                //       "sessions.$.access_token": accessToken,
-                //     },
-                //   },
-                //   { new: true, upsert: true },
-                //   (err, _) => {
-                //     if (err) {
-                //       return res.status(400).json("Error: " + err);
-                //     }
-                //     res.json({ accessToken: accessToken });
-                //   }
-                // );
-                Account.updateOne(
-                  { uuid: user.auth_id, "sessions.access_token": refreshToken },
-                  {
-                    $set: {
-                      "sessions.$.access_token": accessToken,
+                  Account.findOneAndUpdate(
+                    {
+                      uuid: req.params.auth_id,
                     },
-                  },
-                  { new: true, upsert: true },
-                  (err, _) => {
-                    if (err) {
-                      return res.status(400).json("Error: " + err);
+                    {
+                      $set: {
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                      },
+                    },
+                    { new: true },
+                    (err, doc) => {
+                      if (err) {
+                        return res.status(400).json("Error: " + err);
+                      }
+                      // const currentActive = [
+                      //   {
+                      //     barangay_id: barangayId,
+                      //     barangay_member_id: barangayMemberId,
+                      //     uuid: req.body.auth_id,
+                      //   },
+                      // ];
+                      // console.log(doc);
+                      // res.status(200).json(currentActive);
+                      return res.json(accessToken);
                     }
-                    res.json({ accessToken: accessToken });
+                  );
+                }
+              );
+            } else {
+              return res.sendStatus(401);
+            }
+            barangay.sessions.map((user) => {
+              console.log(user.user_agent, "test");
+              if (user.user_agent == userAgent) {
+                jwt.verify(
+                  barangay[0].refresh_token,
+                  process.env.REFRESH_TOKEN_SECRET,
+                  (err, user) => {
+                    if (err) {
+                      console.log(err);
+
+                      return res.sendStatus(403);
+                    }
+                    const accessToken = generateAccessToken({
+                      auth_id: user.auth_id,
+                    });
+
+                    Account.findOneAndUpdate(
+                      {
+                        uuid: user.auth_id,
+                        "sessions.user_agent": userAgent,
+                      },
+                      {
+                        $set: {
+                          "sessions.$.access_token": accessToken,
+                        },
+                      },
+                      { new: true },
+                      (err, _) => {
+                        if (err) {
+                          return res.status(400).json("Error: " + err);
+                        }
+                        res.json({ accessToken: accessToken });
+                      }
+                    );
                   }
                 );
               }
-            );
+            });
+            // if (barangay[0].access_token == refreshToken) {
+            //   console.log("true");
+
+            //   jwt.verify(
+            //     barangay[0].refresh_token,
+            //     process.env.REFRESH_TOKEN_SECRET,
+            //     (err, user) => {
+            //       if (err) {
+            //         console.log(err);
+
+            //         return res.sendStatus(403);
+            //       }
+            //       const accessToken = generateAccessToken({
+            //         auth_id: user.auth_id,
+            //       });
+
+            //       Account.findOneAndUpdate(
+            //         {
+            //           uuid: user.auth_id,
+            //         },
+            //         {
+            //           $set: {
+            //             access_token: accessToken,
+            //           },
+            //         },
+            //         { new: true },
+            //         (err, _) => {
+            //           if (err) {
+            //             return res.status(400).json("Error: " + err);
+            //           }
+            //           res.json({ accessToken: accessToken });
+            //         }
+            //       );
+            //     }
+            //   );
             // } else {
             //   return res.sendStatus(401);
             // }
@@ -247,7 +311,7 @@ exports.accessToken = async (req, res) => {
         // if user existed
         console.log("user exist");
       } else {
-        console.log("user not exist");
+        console.log("test");
       }
     }
   });
