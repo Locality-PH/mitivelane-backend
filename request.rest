@@ -70,8 +70,9 @@ Content-Type: application/json
 }
 ###
 
-GET https://mitivelane.gq/api/auth/login/2Tr8k5FdDYPuwgjwFuQWhGiWqEY2
+GET https://mitivelane.gq/api/posts
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXscUVZMiJ9.NG6_YMFzToD81k1W5IJ6_Q-FrD6c7M2pQyCMJHfwwXE
 
 ###
 GET http://localhost:5000/posts 
