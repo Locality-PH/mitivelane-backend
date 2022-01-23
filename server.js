@@ -46,7 +46,7 @@ function authenticateToken(req, res, next) {
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     console.log(err);
-    if (err) return res.json(token);
+    if (err) return res.json(process.env.ACCESS_TOKEN_SECRET);
     req.user = user;
     next();
   });
