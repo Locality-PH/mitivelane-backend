@@ -26,10 +26,11 @@ module.exports = (mongoose) => {
           user_agent: { type: String, required: true },
           access_token: { type: String, required: true },
           refresh_token: { type: String, required: true },
+          host: { type: String, required: true },
         },
       ],
-      access_token: { type: String, required: true },
-      refresh_token: { type: String, required: true },
+      // access_token: { type: String, required: true },
+      // refresh_token: { type: String, required: true },
       remember_me: { type: Boolean },
       // expiration: { type: Date, required: true },
 

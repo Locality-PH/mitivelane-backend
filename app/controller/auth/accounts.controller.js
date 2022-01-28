@@ -16,62 +16,188 @@ exports.registerUser = async (req, res) => {
 
   console.log(id);
 
-  await Account.exists({ uuid }, async (err, result) => {
+  await Account.exists({ email }, async (err, result) => {
     if (err) {
-      console.log(err);
+      console.log("first Error");
     } else {
       const currentUserId = result;
-      console.log(result);
+      console.log(currentUserId, "te");
       if (currentUserId !== null) {
         // if user existed
         console.log(req.body.code);
         console.log("user exist");
-        if (req.body.code != "null") {
-          // await BarangayMember.find({ email: email })
-          //   .then((user) => res.json(user))
-          //   .catch((err) => res.status(400).json("Error: " + err));
+        //if code exist
+        if (req.body.code) {
           return res.status(200).json("code");
         } else {
-          return await BarangayMember.find({ email: email })
-            .then((user) => {
-              const data = { user };
-              const accessToken = generateAccessTokenLogin(data);
-              console.log(accessToken);
-              res.json(accessToken);
+          //if code does not  already exist
+
+          Account.find({ uuid: req.body.uuid })
+            .select({ first_time: 3, members: 2, barangays: 1, _id: 0 })
+            .populate({
+              path: "barangays",
+              model: "barangays",
+              select: [
+                "_id",
+                "barangay_name",
+                "municipality",
+                "province",
+                "country",
+                "address",
+              ],
+            })
+            .populate({
+              path: "members",
+              model: "barangay_members",
+              select: ["_id", "role", "email", "barangay_id"],
+            })
+            .then((barangay) => {
+              console.log(barangay);
+
+              const users = {
+                auth_id: req.body.uuid,
+                barangays: barangay[0].barangays,
+                members: barangay[0].members,
+                first_time: barangay[0].first_time,
+              };
+              // } else {
+              //   users = {
+              //     auth_id: req.body.uuid,
+              //     barangays: [{ barangay_id: null }],
+              //     members: [{ barangay_member_id: null }],
+              //     first_time: true,
+              //   };
+              // }
+
+              console.log(barangay);
+              console.log(barangay[0].email);
+
+              const accessToken = generateAccessTokenLogin(users);
+              const refreshToken = jwt.sign(
+                users,
+                process.env.REFRESH_TOKEN_SECRET
+              );
+
+              Account.findOneAndUpdate(
+                {
+                  uuid: req.body.uuid,
+                },
+                {
+                  $push: {
+                    sessions: [
+                      {
+                        user_agent: req.get("user-agent"),
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                      },
+                    ],
+                  },
+                },
+                { new: true },
+                (err, doc) => {
+                  if (err) {
+                    return res.status(400).json("Error: " + err);
+                  }
+                  // const currentActive = [
+                  //   {
+                  //     barangay_id: barangayId,
+                  //     barangay_member_id: barangayMemberId,
+                  //     uuid: req.body.auth_id,
+                  //   },
+                  // ];
+                  // console.log(doc);
+                  // res.status(200).json(currentActive);
+                  return res.json(accessToken);
+                }
+              );
             })
             .catch((err) => res.status(400).json("Error: " + err));
+
+          // return await BarangayMember.find({ email: email })
+
+          //   .then((user) => {
+          //     const data = { user };
+          //     const accessToken = generateAccessTokenLogin(data);
+          //     console.log(accessToken);
+          //     res.json(accessToken);
+          //   })
+          //   .catch((err) => res.status(400).json("Error: " + err));
         }
       } else {
-        const data = {
-          _id: id,
-          uuid: req.body.uuid,
-          email: req.body.email,
-          first_time: true,
-        };
-        const accessToken = generateAccessTokenLogin(data);
-        const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
+        // const data = {
+        //   _id: id,
+        //   uuid: req.body.uuid,
+        //   email: req.body.email,
+        //   first_time: true,
+        // };
+        // const accessToken = generateAccessTokenLogin(data);
+        // const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
+        console.log("new account");
         const users = new Account({
           _id: id,
           uuid: req.body.uuid,
           email: req.body.email,
           first_time: true,
-          access_token: accessToken,
-          refresh_token: refreshToken,
+          // sessions: [
+          //   {
+          //     user_agent: req.get("user-agent"),
+          //     access_token: accessToken,
+          //     refresh_token: refreshToken,
+          //   },
+          // ],
         });
 
         await users
           .save(users)
           .then(async (_) => {
-            if (req.body.code == "null") {
+            if (req.body.code) {
               //insert code
+              res.json("new code");
             } else {
-              return await BarangayMember.find({ email: email })
-                .then((user) => {
-                  const data = { user };
-                  const accessTokenBarangayMember = generateAccessToken(data);
-                  res.json(accessTokenBarangayMember);
-                })
-                .catch((err) => res.status(400).json("Error: " + err));
+              console.log(req.body.uuid, "uid");
+              const users = {
+                auth_id: req.body.uuid,
+                barangays: [],
+                members: [],
+                first_time: true,
+              };
+              const accessToken = generateAccessTokenLogin(users);
+              const refreshToken = jwt.sign(
+                users,
+                process.env.REFRESH_TOKEN_SECRET
+              );
+
+              Account.findOneAndUpdate(
+                {
+                  uuid: req.body.uuid,
+                },
+                {
+                  $push: {
+                    sessions: [
+                      {
+                        user_agent: req.get("user-agent"),
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                      },
+                    ],
+                  },
+                },
+                { new: true },
+                (err, doc) => {
+                  if (err) {
+                    return res.status(400).json("Error: " + err);
+                  }
+                  return res.json(accessToken);
+                }
+              );
+
+              // return await BarangayMember.find({ email: email })
+              //   .then((user) => {
+              //     const data = { user };
+              //     const accessTokenBarangayMember = generateAccessToken(data);
+              //     res.json(accessTokenBarangayMember);
+              //   })
+              //   .catch((err) => res.status(400).json("Error: " + err));
             }
           })
           .catch((err) => {
@@ -95,58 +221,93 @@ exports.loginUser = async (req, res) => {
   //   .catch((err) => {
   //     return res.status(400).json("Error: " + err);
   //   });
-  console.log(req.get("user-agent", "ssad"));
-  Account.find({ uuid: req.params.auth_id })
-    // .populate({ path: "barangays", model: "barangays" })
-    .then((barangay) => {
-      console.log(barangay[0].email);
-      const users = {
-        auth_id: req.params.auth_id,
-        barangays: barangay[0].barangays,
-        members: barangay[0].members,
-      };
-      const accessToken = generateAccessTokenLogin(users);
-      const refreshToken = jwt.sign(users, process.env.REFRESH_TOKEN_SECRET);
-      // refreshTokens.push(refreshToken);
-      // res.json({});
-      // console.log(accessToken);
 
-      Account.findOneAndUpdate(
-        {
-          uuid: req.params.auth_id,
-        },
-        {
-          $push: {
-            sessions: [
-              {
-                user_agent: req.get("user-agent"),
-                access_token: accessToken,
-                refresh_token: refreshToken,
-              },
+  await Account.exists({ uuid: req.params.auth_id }, async (err, result) => {
+    if (err) {
+      console.log("first Error");
+    } else {
+      const currentUserId = result;
+      if (currentUserId !== null) {
+        Account.find({ uuid: req.params.auth_id })
+          // .populate({ path: "barangays", model: "barangays" })
+          .select({ first_time: 3, members: 2, barangays: 1, _id: 0 })
+          .populate({
+            path: "barangays",
+            model: "barangays",
+            select: [
+              "_id",
+              "barangay_name",
+              "municipality",
+              "province",
+              "country",
+              "address",
             ],
-            // access_token: accessToken,
-            // refresh_token: refreshToken,
-          },
-        },
-        { new: true },
-        (err, doc) => {
-          if (err) {
-            return res.status(400).json("Error: " + err);
-          }
-          // const currentActive = [
-          //   {
-          //     barangay_id: barangayId,
-          //     barangay_member_id: barangayMemberId,
-          //     uuid: req.body.auth_id,
-          //   },
-          // ];
-          // console.log(doc);
-          // res.status(200).json(currentActive);
-          return res.json(accessToken);
-        }
-      );
-    })
-    .catch((err) => res.status(400).json("Error: " + err));
+          })
+          .populate({
+            path: "members",
+            model: "barangay_members",
+            select: ["_id", "role", "email", "barangay_id"],
+          })
+
+          .then((barangay) => {
+            console.log(barangay);
+            console.log(barangay[0].email);
+            const users = {
+              auth_id: req.params.auth_id,
+              barangays: barangay[0].barangays,
+              members: barangay[0].members,
+              first_time: barangay[0].first_time,
+            };
+            const accessToken = generateAccessTokenLogin(users);
+            const refreshToken = jwt.sign(
+              users,
+              process.env.REFRESH_TOKEN_SECRET
+            );
+            // refreshTokens.push(refreshToken);
+            // res.json({});
+            // console.log(accessToken);
+
+            Account.findOneAndUpdate(
+              {
+                uuid: req.params.auth_id,
+              },
+              {
+                $push: {
+                  sessions: [
+                    {
+                      user_agent: req.get("user-agent"),
+                      access_token: accessToken,
+                      refresh_token: refreshToken,
+                    },
+                  ],
+                  // access_token: accessToken,
+                  // refresh_token: refreshToken,
+                },
+              },
+              { new: true },
+              (err, doc) => {
+                if (err) {
+                  return res.status(400).json("Error: " + err);
+                }
+                // const currentActive = [
+                //   {
+                //     barangay_id: barangayId,
+                //     barangay_member_id: barangayMemberId,
+                //     uuid: req.body.auth_id,
+                //   },
+                // ];
+                // console.log(doc);
+                // res.status(200).json(currentActive);
+                return res.json(accessToken);
+              }
+            );
+          })
+          .catch((err) => res.status(400).json("Error: " + err));
+      } else {
+        console.log("user does not exsit");
+      }
+    }
+  });
 };
 
 exports.accessToken = async (req, res) => {
@@ -253,9 +414,30 @@ exports.accessToken = async (req, res) => {
   });
 };
 
+exports.logOut = async (req, res) => {
+  if (req.session_token) return res.sendStatus(404);
+  const session_token = req.body.session_token;
+
+  return await Account.findOneAndUpdate(
+    { uuid: req.user.auth_id },
+    {
+      $pull: {
+        sessions: {
+          access_token: session_token,
+        },
+      },
+    },
+    { new: true, multi: true }
+  )
+    .then((account) => res.json("logout successful"))
+    .catch((err) => res.status(400).json("Error: " + err));
+};
+
 function generateAccessToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "30m" });
 }
 function generateAccessTokenLogin(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "20s" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "24h" });
 }
+// access_token: accessToken,
+// refresh_token: refreshToken,

@@ -6,7 +6,7 @@ module.exports = (mongoose) => {
       role: { type: String },
       barangay_id: { type: String },
       account: { type: mongoose.Schema.Types.ObjectId, ref: "accounts_infos" },
-      barangay: [{ type: mongoose.Schema.Types.ObjectId, ref: "barangays" }],
+      // barangay: [{ type: mongoose.Schema.Types.ObjectId, ref: "barangays" }],
     },
     { timestamps: true }
   );

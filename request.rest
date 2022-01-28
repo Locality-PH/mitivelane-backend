@@ -1,11 +1,10 @@
-POST http://localhost:5000/auth/register 
+POST http://localhost:5000/api/auth/register 
 Content-Type: application/json
 
 {
-"email": "Jim",
-"password": "123",
-"auth_id": "",
-"invitation_link": "1111-1111-1111"
+ "email": "batas@gmasil.com",
+"auth_id": "batas",
+"code": ""
 }
 
 
@@ -56,7 +55,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5000/app/users/OpbH0odClBSymVIIw2DWRrJ7PfJ3
+GET http://localhost:5000/api/app/users/q2ZKa5n1HzT5F7K1ZIYnCUeapJH2
 Content-Type: application/json
 
 
@@ -72,15 +71,20 @@ Content-Type: application/json
 
 GET https://mitivelane.gq/api/posts
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRkFtbXMxZlRiMFhRaGg3dm1WTmdXMnlzdW5qMiIsImlhdCI6MTY0MjkwMzYzNiwiZXhwIjoxNjQyOTAzNjk2fQ.pNlUVt3j42I2BCQnhUfnzwkOhSELejImJUY9wQhvb7M
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRkFtbXMxZlRiMFhRaGg3dm1WTmdXMnlzdW5qMiIsImlhdCI6MTY0MjkwNDI0NSwiZXhwIjoxNjQyOTA0MzA1fQ.St1w-Dr9_irJA4P4Jy4dd-4BJZhaLC769WuLoYTgvOs
+###
+
+GET https://mitivelane.herokuapp.com/api/posts
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRkFtbXMxZlRiMFhRaGg3dm1WTmdXMnlzdW5qMiIsImlhdCI6MTY0MjkwNDI0NSwiZXhwIjoxNjQyOTA0MzA1fQ.St1w-Dr9_irJA4P4Jy4dd-4BJZhaLC769WuLoYTgvOs
 
 ###
 GET http://localhost:5000/api/posts 
-authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRkFtbXMxZlRiMFhRaGg3dm1WTmdXMnlzdW5qMiIsImlhdCI6MTY0MjkwMzYzNiwiZXhwIjoxNjQyOTAzNjk2fQ.pNlUVt3j42I2BCQnhUfnzwkOhSELejImJUY9wQhvb7M
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRkFtbXMxZlRiMFhRaGg3dm1WTmdXMnlzdW5qMiIsImlhdCI6MTY0MjkwNDI0NSwiZXhwIjoxNjQyOTA0MzA1fQ.St1w-Dr9_irJA4P4Jy4dd-4BJZhaLC769WuLoYTgvOs
 ###
 POST http://localhost:5000/api/refresh 
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXcUVZMiJ9.NG6_YMFzToD81k1W5IJ6_Q-FrD6c7M2pQyCMJHfwwXE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRkFtbXMxZlRiMFhRaGg3dm1WTmdXMnlzdW5qMiIsImlhdCI6MTY0MjkwMzk1NiwiZXhwIjoxNjQyOTA0MDE2fQ.64bC2n_Q3vNQ_G5H_pr8o1pqbMrq6S6aVVrHjy47ndg
 
 {
 "uuid": "2Tr8k5FdDYPuwgjwFuQWhGiWqEY2",
@@ -88,6 +92,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyO
 }
 
 ###
-GET http://localhost:5000/api/auth/login/2Tr8k5FdDYPuwgjwFuQWhGiWqEY2
+GET http://localhost:5000/api/auth/login/EJ8K8yiT9AR6nqhGZGOzuq8k0tu2
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXcUVZMiJ9.NG6_YMFzToD81k1W5IJ6_Q-FrD6c7M2pQyCMJHfwwXE
