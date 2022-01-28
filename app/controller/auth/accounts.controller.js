@@ -6,305 +6,39 @@ const BarangayMember = db.barangayMember;
 const Account = db.account;
 
 exports.registerUser = async (req, res) => {
-  var id = new mongoose.Types.ObjectId();
-  const email = req.body.email;
-  const uuid = req.body.uuid;
   if (!req.body.email && req.body.uuid) {
     res.status(400).send({ message: "email or password can not be empty!" });
     return;
   }
-
-  console.log(id);
-
+  const email = req.body.email;
   await Account.exists({ email }, async (err, result) => {
     if (err) {
-      console.log("first Error");
+      console.log(err);
     } else {
       const currentUserId = result;
-      console.log(currentUserId, "te");
       if (currentUserId !== null) {
         // if user existed
         console.log(req.body.code);
         console.log("user exist");
         //if code exist
-        if (req.body.code) {
-          return res.status(200).json("code");
-        } else {
-          //if code does not  already exist
-
-          Account.find({ uuid: req.body.uuid })
-            .select({ first_time: 3, members: 2, barangays: 1, _id: 0 })
-            .populate({
-              path: "barangays",
-              model: "barangays",
-              select: [
-                "_id",
-                "barangay_name",
-                "municipality",
-                "province",
-                "country",
-                "address",
-              ],
-            })
-            .populate({
-              path: "members",
-              model: "barangay_members",
-              select: ["_id", "role", "email", "barangay_id"],
-            })
-            .then((barangay) => {
-              console.log(barangay);
-
-              const users = {
-                auth_id: req.body.uuid,
-                barangays: barangay[0].barangays,
-                members: barangay[0].members,
-                first_time: barangay[0].first_time,
-              };
-              // } else {
-              //   users = {
-              //     auth_id: req.body.uuid,
-              //     barangays: [{ barangay_id: null }],
-              //     members: [{ barangay_member_id: null }],
-              //     first_time: true,
-              //   };
-              // }
-
-              console.log(barangay);
-              console.log(barangay[0].email);
-
-              const accessToken = generateAccessTokenLogin(users);
-              const refreshToken = jwt.sign(
-                users,
-                process.env.REFRESH_TOKEN_SECRET
-              );
-
-              Account.findOneAndUpdate(
-                {
-                  uuid: req.body.uuid,
-                },
-                {
-                  $push: {
-                    sessions: [
-                      {
-                        user_agent: req.get("user-agent"),
-                        access_token: accessToken,
-                        refresh_token: refreshToken,
-                      },
-                    ],
-                  },
-                },
-                { new: true },
-                (err, doc) => {
-                  if (err) {
-                    return res.status(400).json("Error: " + err);
-                  }
-                  // const currentActive = [
-                  //   {
-                  //     barangay_id: barangayId,
-                  //     barangay_member_id: barangayMemberId,
-                  //     uuid: req.body.auth_id,
-                  //   },
-                  // ];
-                  // console.log(doc);
-                  // res.status(200).json(currentActive);
-                  return res.json(accessToken);
-                }
-              );
-            })
-            .catch((err) => res.status(400).json("Error: " + err));
-
-          // return await BarangayMember.find({ email: email })
-
-          //   .then((user) => {
-          //     const data = { user };
-          //     const accessToken = generateAccessTokenLogin(data);
-          //     console.log(accessToken);
-          //     res.json(accessToken);
-          //   })
-          //   .catch((err) => res.status(400).json("Error: " + err));
-        }
+        registerOldUser(req, res);
       } else {
-        // const data = {
-        //   _id: id,
-        //   uuid: req.body.uuid,
-        //   email: req.body.email,
-        //   first_time: true,
-        // };
-        // const accessToken = generateAccessTokenLogin(data);
-        // const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
-        console.log("new account");
-        const users = new Account({
-          _id: id,
-          uuid: req.body.uuid,
-          email: req.body.email,
-          first_time: true,
-          // sessions: [
-          //   {
-          //     user_agent: req.get("user-agent"),
-          //     access_token: accessToken,
-          //     refresh_token: refreshToken,
-          //   },
-          // ],
-        });
-
-        await users
-          .save(users)
-          .then(async (_) => {
-            if (req.body.code) {
-              //insert code
-              res.json("new code");
-            } else {
-              console.log(req.body.uuid, "uid");
-              const users = {
-                auth_id: req.body.uuid,
-                barangays: [],
-                members: [],
-                first_time: true,
-              };
-              const accessToken = generateAccessTokenLogin(users);
-              const refreshToken = jwt.sign(
-                users,
-                process.env.REFRESH_TOKEN_SECRET
-              );
-
-              Account.findOneAndUpdate(
-                {
-                  uuid: req.body.uuid,
-                },
-                {
-                  $push: {
-                    sessions: [
-                      {
-                        user_agent: req.get("user-agent"),
-                        access_token: accessToken,
-                        refresh_token: refreshToken,
-                      },
-                    ],
-                  },
-                },
-                { new: true },
-                (err, doc) => {
-                  if (err) {
-                    return res.status(400).json("Error: " + err);
-                  }
-                  return res.json(accessToken);
-                }
-              );
-
-              // return await BarangayMember.find({ email: email })
-              //   .then((user) => {
-              //     const data = { user };
-              //     const accessTokenBarangayMember = generateAccessToken(data);
-              //     res.json(accessTokenBarangayMember);
-              //   })
-              //   .catch((err) => res.status(400).json("Error: " + err));
-            }
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message:
-                err.message ||
-                "Some error occurred while creating the Account.",
-            });
-          });
+        registerNewUser(req, res);
       }
     }
   });
 };
 exports.loginUser = async (req, res) => {
-  // Account.find()
-  //   .then((users) => {
-  //     const accessToken = jwt.sign(users, process.env.ACCESS_TOKEN_SECRET);
-  //     console.log(users);
-  //     return res.json({ users, accessToken });
-  //   })
-  //   .catch((err) => {
-  //     return res.status(400).json("Error: " + err);
-  //   });
-
   await Account.exists({ uuid: req.params.auth_id }, async (err, result) => {
     if (err) {
       console.log("first Error");
     } else {
       const currentUserId = result;
       if (currentUserId !== null) {
-        Account.find({ uuid: req.params.auth_id })
-          // .populate({ path: "barangays", model: "barangays" })
-          .select({ first_time: 3, members: 2, barangays: 1, _id: 0 })
-          .populate({
-            path: "barangays",
-            model: "barangays",
-            select: [
-              "_id",
-              "barangay_name",
-              "municipality",
-              "province",
-              "country",
-              "address",
-            ],
-          })
-          .populate({
-            path: "members",
-            model: "barangay_members",
-            select: ["_id", "role", "email", "barangay_id"],
-          })
-
-          .then((barangay) => {
-            console.log(barangay);
-            console.log(barangay[0].email);
-            const users = {
-              auth_id: req.params.auth_id,
-              barangays: barangay[0].barangays,
-              members: barangay[0].members,
-              first_time: barangay[0].first_time,
-            };
-            const accessToken = generateAccessTokenLogin(users);
-            const refreshToken = jwt.sign(
-              users,
-              process.env.REFRESH_TOKEN_SECRET
-            );
-            // refreshTokens.push(refreshToken);
-            // res.json({});
-            // console.log(accessToken);
-
-            Account.findOneAndUpdate(
-              {
-                uuid: req.params.auth_id,
-              },
-              {
-                $push: {
-                  sessions: [
-                    {
-                      user_agent: req.get("user-agent"),
-                      access_token: accessToken,
-                      refresh_token: refreshToken,
-                    },
-                  ],
-                  // access_token: accessToken,
-                  // refresh_token: refreshToken,
-                },
-              },
-              { new: true },
-              (err, doc) => {
-                if (err) {
-                  return res.status(400).json("Error: " + err);
-                }
-                // const currentActive = [
-                //   {
-                //     barangay_id: barangayId,
-                //     barangay_member_id: barangayMemberId,
-                //     uuid: req.body.auth_id,
-                //   },
-                // ];
-                // console.log(doc);
-                // res.status(200).json(currentActive);
-                return res.json(accessToken);
-              }
-            );
-          })
-          .catch((err) => res.status(400).json("Error: " + err));
+        loginUser(req, res);
       } else {
         console.log("user does not exsit");
+        loginNewUser(req, res);
       }
     }
   });
@@ -439,5 +173,254 @@ function generateAccessToken(user) {
 function generateAccessTokenLogin(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "24h" });
 }
-// access_token: accessToken,
-// refresh_token: refreshToken,
+
+async function registerOldUser(req, res) {
+  if (req.body.code) {
+    return res.status(200).json("code");
+  } else {
+    //if code does not  already exist
+
+    Account.find({ uuid: req.body.uuid })
+      .select({ first_time: 3, members: 2, barangays: 1, _id: 0 })
+      .populate({
+        path: "barangays",
+        model: "barangays",
+        select: [
+          "_id",
+          "barangay_name",
+          "municipality",
+          "province",
+          "country",
+          "address",
+        ],
+      })
+      .populate({
+        path: "members",
+        model: "barangay_members",
+        select: ["_id", "role", "email", "barangay_id"],
+      })
+      .then((barangay) => {
+        console.log(barangay);
+
+        const users = {
+          auth_id: req.body.uuid,
+          barangays: barangay[0].barangays,
+          members: barangay[0].members,
+          first_time: barangay[0].first_time,
+        };
+
+        console.log(barangay);
+        console.log(barangay[0].email);
+
+        const accessToken = generateAccessTokenLogin(users);
+        const refreshToken = jwt.sign(users, process.env.REFRESH_TOKEN_SECRET);
+
+        Account.findOneAndUpdate(
+          {
+            uuid: req.body.uuid,
+          },
+          {
+            $push: {
+              sessions: [
+                {
+                  user_agent: req.get("user-agent"),
+                  access_token: accessToken,
+                  refresh_token: refreshToken,
+                },
+              ],
+            },
+          },
+          { new: true },
+          (err, _) => {
+            if (err) {
+              return res.status(400).json("Error: " + err);
+            }
+
+            return res.json(accessToken);
+          }
+        );
+      })
+      .catch((err) => res.status(400).json("Error: " + err));
+  }
+}
+async function registerNewUser(req, res) {
+  var id = new mongoose.Types.ObjectId();
+
+  console.log("new account");
+  const users = new Account({
+    _id: id,
+    uuid: req.body.uuid,
+    email: req.body.email,
+    first_time: true,
+  });
+
+  await users
+    .save(users)
+    .then(async (_) => {
+      if (req.body.code) {
+        //insert code
+        res.json("new code");
+      } else {
+        console.log(req.body.uuid, "uid");
+        const users = {
+          auth_id: req.body.uuid,
+          barangays: [],
+          members: [],
+          first_time: true,
+        };
+        const accessToken = generateAccessTokenLogin(users);
+        const refreshToken = jwt.sign(users, process.env.REFRESH_TOKEN_SECRET);
+
+        Account.findOneAndUpdate(
+          {
+            uuid: req.body.uuid,
+          },
+          {
+            $push: {
+              sessions: [
+                {
+                  user_agent: req.get("user-agent"),
+                  access_token: accessToken,
+                  refresh_token: refreshToken,
+                },
+              ],
+            },
+          },
+          { new: true },
+          (err, _) => {
+            if (err) {
+              return res.status(400).json("Error: " + err);
+            }
+            return res.json(accessToken);
+          }
+        );
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while creating the Account.",
+      });
+    });
+}
+async function loginUser(req, res) {
+  Account.find({ uuid: req.params.auth_id })
+    // .populate({ path: "barangays", model: "barangays" })
+    .select({ first_time: 3, members: 2, barangays: 1, _id: 0 })
+    .populate({
+      path: "barangays",
+      model: "barangays",
+      select: [
+        "_id",
+        "barangay_name",
+        "municipality",
+        "province",
+        "country",
+        "address",
+      ],
+    })
+    .populate({
+      path: "members",
+      model: "barangay_members",
+      select: ["_id", "role", "email", "barangay_id"],
+    })
+
+    .then((barangay) => {
+      console.log(barangay);
+      console.log(barangay[0].email);
+      const users = {
+        auth_id: req.params.auth_id,
+        barangays: barangay[0].barangays,
+        members: barangay[0].members,
+        first_time: barangay[0].first_time,
+      };
+      const accessToken = generateAccessTokenLogin(users);
+      const refreshToken = jwt.sign(users, process.env.REFRESH_TOKEN_SECRET);
+
+      Account.findOneAndUpdate(
+        {
+          uuid: req.params.auth_id,
+        },
+        {
+          $push: {
+            sessions: [
+              {
+                user_agent: req.get("user-agent"),
+                access_token: accessToken,
+                refresh_token: refreshToken,
+              },
+            ],
+          },
+        },
+        { new: true },
+        (err, _) => {
+          if (err) {
+            return res.status(400).json("Error: " + err);
+          }
+
+          return res.json(accessToken);
+        }
+      );
+    })
+    .catch((err) => res.status(400).json("Error: " + err));
+}
+async function loginNewUser(req, res) {
+  var id = new mongoose.Types.ObjectId();
+
+  console.log("new account");
+  const users = new Account({
+    _id: id,
+    uuid: req.params.auth_id,
+    email: req.user.email,
+    first_time: true,
+  });
+
+  await users
+    .save(users)
+    .then(async (_) => {
+      if (req.body.code) {
+        //insert code
+        res.json("new code");
+      } else {
+        console.log(req.params.auth_id, "uid");
+        const users = {
+          auth_id: req.params.auth_id,
+          barangays: [],
+          members: [],
+          first_time: true,
+        };
+        const accessToken = generateAccessTokenLogin(users);
+        const refreshToken = jwt.sign(users, process.env.REFRESH_TOKEN_SECRET);
+
+        Account.findOneAndUpdate(
+          {
+            uuid: req.params.auth_id,
+          },
+          {
+            $push: {
+              sessions: [
+                {
+                  user_agent: req.get("user-agent"),
+                  access_token: accessToken,
+                  refresh_token: refreshToken,
+                },
+              ],
+            },
+          },
+          { new: true },
+          (err, _) => {
+            if (err) {
+              return res.status(400).json("Error: " + err);
+            }
+            return res.json(accessToken);
+          }
+        );
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while creating the Account.",
+      });
+    });
+}

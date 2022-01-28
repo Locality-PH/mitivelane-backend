@@ -2,8 +2,8 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
- "email": "batas@gmasil.com",
-"auth_id": "batas",
+ "email": "bataasdasdas@gmasdaasil.com",
+"auth_id": "bataaasdsdaasds",
 "code": ""
 }
 
@@ -92,6 +92,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRkFtb
 }
 
 ###
-GET http://localhost:5000/api/auth/login/EJ8K8yiT9AR6nqhGZGOzuq8k0tu2
+POST http://localhost:5000/api/auth/login/EJ8K8yiT9AR6nqhGZGOzusq8k0tu2
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXcUVZMiJ9.NG6_YMFzToD81k1W5IJ6_Q-FrD6c7M2pQyCMJHfwwXE
