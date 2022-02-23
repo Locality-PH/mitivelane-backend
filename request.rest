@@ -19,7 +19,7 @@ Content-Type: application/json
 
 
 ###
-POST http://localhost:5000/pre/barangay
+POST http://localhost:5000/api/app/user/update
 Content-Type: application/json
 
 {
@@ -55,8 +55,10 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5000/api/app/users/q2ZKa5n1HzT5F7K1ZIYnCUeapJH2
+GET http://localhost:5000/api/app/users/ItlwktT60wPPgp4FhWAe8aDJUbl1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXcUVZMiJ9.NG6_YMFzToD81k1W5IJ6_Q-FrD6c7M2pQyCMJHfwwXE
+
 
 
 ###
@@ -92,6 +94,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRkFtb
 }
 
 ###
-POST http://localhost:5000/api/auth/login/EJ8K8yiT9AR6nqhGZGOzusq8k0tu2
+POST http://localhost:5000/api/auth/login/bataaasdsdaasds
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyOGs1RmREWVB1d2dqd0Z1UVdoR2lXcUVZMiJ9.NG6_YMFzToD81k1W5IJ6_Q-FrD6c7M2pQyCMJHfwwXE
+
+{"auth_id":"bataaasdsdaasds","email":"testsaduser@gmail.com","iat":1643351276,"exp":1643351336}

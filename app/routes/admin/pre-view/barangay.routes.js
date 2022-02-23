@@ -1,6 +1,7 @@
 module.exports = (app) => {
   const preRegister = require("../../../controller/admin/pre-view/pre_register.controller.js");
   const auth = require("../../../auth");
+  const appConfig = require("../../../controller/admin/barangay.config.controller.js");
 
   var router = require("express").Router();
   // router.post("/add", accounts.add);
@@ -8,6 +9,11 @@ module.exports = (app) => {
   router.post("/barangay/", preRegister.registerBarangay);
   router.post("/", preRegister.registerBarangayMember);
   router.get("/barangay/:barangay_id", preRegister.list);
+  router.get(
+    "/users/:auth_id",
+    auth.authenticationToken,
+    appConfig.getPreBarangayList
+  );
 
   //Create Finalized Barangay
   router.post(

@@ -1,11 +1,14 @@
 const token = require("../../auth");
 const db = require("../../models");
 var jwt = require("jsonwebtoken");
+
 var mongoose = require("mongoose");
 const BarangayMember = db.barangayMember;
 const Account = db.account;
 
 exports.registerUser = async (req, res) => {
+  let mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+  console.log(mimeType);
   if (!req.body.email && req.body.uuid) {
     res.status(400).send({ message: "email or password can not be empty!" });
     return;
@@ -245,6 +248,19 @@ async function registerOldUser(req, res) {
 }
 async function registerNewUser(req, res) {
   var id = new mongoose.Types.ObjectId();
+  let mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+  let join_last_name = "";
+  let join_first_name = "";
+  if (req.body.user != null) {
+    const splitUser = req.body.user;
+    let last_name = [];
+    const namelist = splitUser.split(" ");
+    join_first_name = namelist[0];
+    for (let i = 1; i <= namelist.length; i++) {
+      last_name.push(namelist[i]);
+    }
+    join_last_name = last_name.join(" ");
+  }
 
   console.log("new account");
   const users = new Account({
@@ -252,6 +268,13 @@ async function registerNewUser(req, res) {
     uuid: req.body.uuid,
     email: req.body.email,
     first_time: true,
+    full_name: req.body.user,
+    first_name: join_first_name,
+    last_name: join_last_name,
+    profileUrl: {
+      contentType: mimeType,
+      data: new Buffer.from(req.body.profile_url, "base64"),
+    },
   });
 
   await users
@@ -366,13 +389,33 @@ async function loginUser(req, res) {
 }
 async function loginNewUser(req, res) {
   var id = new mongoose.Types.ObjectId();
+  let mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+  let join_last_name = "";
+  let join_first_name = "";
+  if (req.body.user != null) {
+    const splitUser = req.body.user;
+    let last_name = [];
+    const namelist = splitUser.split(" ");
+    join_first_name = namelist[0];
+    for (let i = 1; i <= namelist.length; i++) {
+      last_name.push(namelist[i]);
+    }
+    join_last_name = last_name.join(" ");
+  }
 
   console.log("new account");
   const users = new Account({
     _id: id,
     uuid: req.params.auth_id,
-    email: req.user.email,
+    email: req.body.email,
     first_time: true,
+    full_name: req.body.user,
+    first_name: join_first_name,
+    last_name: join_last_name,
+    profileUrl: {
+      contentType: mimeType,
+      data: new Buffer.from(req.body.profile_url, "base64"),
+    },
   });
 
   await users
