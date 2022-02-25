@@ -18,3 +18,15 @@ exports.getBarangayList = (req, res) => {
     })
     .catch((err) => res.status(400).json("Error: " + err));
 };
+
+exports.testToken = (req, res) => {
+  console.log("body", req.body)
+  console.log("user", req.user)
+
+    if (req.body.fname === req.user.auth_id) {
+      res.json({body: req.body, user: req.user})
+    } else {
+      res.sendStatus(401)
+    }
+
+}
