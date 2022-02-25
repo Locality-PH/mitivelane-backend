@@ -1,14 +1,25 @@
 const token = require("../../auth");
 const db = require("../../models");
 var jwt = require("jsonwebtoken");
+var request = require("request").defaults({ encoding: null });
 
 var mongoose = require("mongoose");
-const BarangayMember = db.barangayMember;
+// const BarangayMember = db.barangayMember;
 const Account = db.account;
+let colortag = [
+  "#0085c3",
+  "#7ab800",
+  "#f2af00",
+  "#dc5034",
+  "#ce1126",
+  "#0085c3",
+  "#FF1493",
+  "#AA47BC",
+];
 
 exports.registerUser = async (req, res) => {
-  let mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-  console.log(mimeType);
+  // let mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+  // console.log(mimeType);
   if (!req.body.email && req.body.uuid) {
     res.status(400).send({ message: "email or password can not be empty!" });
     return;
@@ -17,6 +28,7 @@ exports.registerUser = async (req, res) => {
   await Account.exists({ email }, async (err, result) => {
     if (err) {
       console.log(err);
+      return res.status(400).json("Email or User not found");
     } else {
       const currentUserId = result;
       if (currentUserId !== null) {
@@ -35,6 +47,7 @@ exports.loginUser = async (req, res) => {
   await Account.exists({ uuid: req.params.auth_id }, async (err, result) => {
     if (err) {
       console.log("first Error");
+      return res.sendStatus(404);
     } else {
       const currentUserId = result;
       if (currentUserId !== null) {
@@ -48,7 +61,7 @@ exports.loginUser = async (req, res) => {
 };
 
 exports.accessToken = async (req, res) => {
-  console.log(req.get("user-agent"));
+  // console.log(req.get("user-agent"));
   const userAgent = req.get("user-agent");
   const refreshToken = req.body.token;
   const uuid = req.body.uuid;
@@ -66,10 +79,7 @@ exports.accessToken = async (req, res) => {
         Account.find({ uuid: uuid })
           // .populate({ path: "barangays", model: "barangays" })
           .then((barangay) => {
-            console.log(barangay[0].access_token);
-
             // if (barangay[0].access_token == refreshToken) {
-            console.log("true");
 
             jwt.verify(
               barangay[0].refresh_token,
@@ -146,6 +156,7 @@ exports.accessToken = async (req, res) => {
         console.log("user exist");
       } else {
         console.log("user not exist");
+        return res.status(400).json("user does not exist");
       }
     }
   });
@@ -184,7 +195,13 @@ async function registerOldUser(req, res) {
     //if code does not  already exist
 
     Account.find({ uuid: req.body.uuid })
-      .select({ first_time: 3, members: 2, barangays: 1, _id: 0 })
+      .select({
+        profileLogo: 4,
+        first_time: 3,
+        members: 2,
+        barangays: 1,
+        _id: 0,
+      })
       .populate({
         path: "barangays",
         model: "barangays",
@@ -203,17 +220,13 @@ async function registerOldUser(req, res) {
         select: ["_id", "role", "email", "barangay_id"],
       })
       .then((barangay) => {
-        console.log(barangay);
-
         const users = {
           auth_id: req.body.uuid,
+          profileLogo: barangay[0].profileLogo,
           barangays: barangay[0].barangays,
           members: barangay[0].members,
           first_time: barangay[0].first_time,
         };
-
-        console.log(barangay);
-        console.log(barangay[0].email);
 
         const accessToken = generateAccessTokenLogin(users);
         const refreshToken = jwt.sign(users, process.env.REFRESH_TOKEN_SECRET);
@@ -247,10 +260,12 @@ async function registerOldUser(req, res) {
   }
 }
 async function registerNewUser(req, res) {
+  const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
-  let mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
   let join_last_name = "";
   let join_first_name = "";
+  let mimeType;
+  let users = {};
   if (req.body.user != null) {
     const splitUser = req.body.user;
     let last_name = [];
@@ -261,75 +276,105 @@ async function registerNewUser(req, res) {
     }
     join_last_name = last_name.join(" ");
   }
+  request.get(req.body.profile_url, async function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      base64data =
+        "data:" +
+        response.headers["content-type"] +
+        ";base64," +
+        Buffer.from(body).toString("base64");
+      mimeType = base64data.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
 
-  console.log("new account");
-  const users = new Account({
-    _id: id,
-    uuid: req.body.uuid,
-    email: req.body.email,
-    first_time: true,
-    full_name: req.body.user,
-    first_name: join_first_name,
-    last_name: join_last_name,
-    profileUrl: {
-      contentType: mimeType,
-      data: new Buffer.from(req.body.profile_url, "base64"),
-    },
-  });
-
-  await users
-    .save(users)
-    .then(async (_) => {
-      if (req.body.code) {
-        //insert code
-        res.json("new code");
-      } else {
-        console.log(req.body.uuid, "uid");
-        const users = {
-          auth_id: req.body.uuid,
-          barangays: [],
-          members: [],
-          first_time: true,
-        };
-        const accessToken = generateAccessTokenLogin(users);
-        const refreshToken = jwt.sign(users, process.env.REFRESH_TOKEN_SECRET);
-
-        Account.findOneAndUpdate(
-          {
-            uuid: req.body.uuid,
-          },
-          {
-            $push: {
-              sessions: [
-                {
-                  user_agent: req.get("user-agent"),
-                  access_token: accessToken,
-                  refresh_token: refreshToken,
-                },
-              ],
-            },
-          },
-          { new: true },
-          (err, _) => {
-            if (err) {
-              return res.status(400).json("Error: " + err);
-            }
-            return res.json(accessToken);
-          }
-        );
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Account.",
+      users = new Account({
+        _id: id,
+        uuid: req.body.uuid,
+        email: req.body.email,
+        first_time: true,
+        full_name: req.body.user,
+        first_name: join_first_name,
+        last_name: join_last_name,
+        profileUrl: {
+          contentType: mimeType,
+          data: new Buffer.from(base64data, "base64"),
+        },
+        profileLogo: colortag[random],
       });
-    });
+    } else {
+      users = new Account({
+        _id: id,
+        uuid: req.body.uuid,
+        email: req.body.email,
+        first_time: true,
+        full_name: req.body.user,
+        first_name: join_first_name,
+        last_name: join_last_name,
+        profileLogo: colortag[random],
+      });
+    }
+
+    await users
+      .save(users)
+      .then(async (_) => {
+        if (req.body.code) {
+          //insert code
+          res.json("new code");
+        } else {
+          const users = {
+            profileLogo: colortag[random],
+            auth_id: req.body.uuid,
+            barangays: [],
+            members: [],
+            first_time: true,
+          };
+          const accessToken = generateAccessTokenLogin(users);
+          const refreshToken = jwt.sign(
+            users,
+            process.env.REFRESH_TOKEN_SECRET
+          );
+
+          Account.findOneAndUpdate(
+            {
+              uuid: req.body.uuid,
+            },
+            {
+              $push: {
+                sessions: [
+                  {
+                    user_agent: req.get("user-agent"),
+                    access_token: accessToken,
+                    refresh_token: refreshToken,
+                  },
+                ],
+              },
+            },
+            { new: true },
+            (err, _) => {
+              if (err) {
+                return res.status(400).json("Error: " + err);
+              }
+              return res.json(accessToken);
+            }
+          );
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while creating the Accounts.",
+        });
+      });
+  });
 }
 async function loginUser(req, res) {
   Account.find({ uuid: req.params.auth_id })
     // .populate({ path: "barangays", model: "barangays" })
-    .select({ first_time: 3, members: 2, barangays: 1, _id: 0 })
+    .select({
+      profileLogo: 4,
+      first_time: 3,
+      members: 2,
+      barangays: 1,
+      _id: 0,
+    })
     .populate({
       path: "barangays",
       model: "barangays",
@@ -349,9 +394,8 @@ async function loginUser(req, res) {
     })
 
     .then((barangay) => {
-      console.log(barangay);
-      console.log(barangay[0].email);
       const users = {
+        profileLogo: barangay[0].profileLogo,
         auth_id: req.params.auth_id,
         barangays: barangay[0].barangays,
         members: barangay[0].members,
@@ -388,10 +432,14 @@ async function loginUser(req, res) {
     .catch((err) => res.status(400).json("Error: " + err));
 }
 async function loginNewUser(req, res) {
+  // getBase64FromUrl(req.body.profile_url)
+  //   .then(async (dataUrl) => {
+  const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
-  let mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
   let join_last_name = "";
   let join_first_name = "";
+  let mimeType;
+  let users = {};
   if (req.body.user != null) {
     const splitUser = req.body.user;
     let last_name = [];
@@ -403,67 +451,111 @@ async function loginNewUser(req, res) {
     join_last_name = last_name.join(" ");
   }
 
-  console.log("new account");
-  const users = new Account({
-    _id: id,
-    uuid: req.params.auth_id,
-    email: req.body.email,
-    first_time: true,
-    full_name: req.body.user,
-    first_name: join_first_name,
-    last_name: join_last_name,
-    profileUrl: {
-      contentType: mimeType,
-      data: new Buffer.from(req.body.profile_url, "base64"),
-    },
+  request.get(req.body.profile_url, async function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      base64data =
+        "data:" +
+        response.headers["content-type"] +
+        ";base64," +
+        Buffer.from(body).toString("base64");
+      mimeType = base64data.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+      users = new Account({
+        _id: id,
+        uuid: req.params.auth_id,
+        email: req.body.email,
+        first_time: true,
+        full_name: req.body.user,
+        first_name: join_first_name,
+        last_name: join_last_name,
+        profileLogo: colortag[random],
+        profileUrl: {
+          contentType: mimeType,
+          data: new Buffer.from(base64data, "base64"),
+        },
+      });
+    } else {
+      users = new Account({
+        _id: id,
+        uuid: req.params.auth_id,
+        email: req.body.email,
+        first_time: true,
+        full_name: req.body.user,
+        first_name: join_first_name,
+        last_name: join_last_name,
+        profileLogo: colortag[random],
+      });
+    }
+    await users
+      .save(users)
+      .then(async (_) => {
+        if (req.body.code) {
+          //insert code
+          res.json("new code");
+        } else {
+          const users = {
+            profileLogo: colortag[random],
+            auth_id: req.params.auth_id,
+            barangays: [],
+            members: [],
+            first_time: true,
+          };
+          const accessToken = generateAccessTokenLogin(users);
+          const refreshToken = jwt.sign(
+            users,
+            process.env.REFRESH_TOKEN_SECRET
+          );
+
+          Account.findOneAndUpdate(
+            {
+              uuid: req.params.auth_id,
+            },
+            {
+              $push: {
+                sessions: [
+                  {
+                    user_agent: req.get("user-agent"),
+                    access_token: accessToken,
+                    refresh_token: refreshToken,
+                  },
+                ],
+              },
+            },
+            { new: true },
+            (err, _) => {
+              if (err) {
+                return res.status(400).json("Error: " + err);
+              }
+              return res.json(accessToken);
+            }
+          );
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while creating the Account.",
+        });
+      });
   });
 
-  await users
-    .save(users)
-    .then(async (_) => {
-      if (req.body.code) {
-        //insert code
-        res.json("new code");
-      } else {
-        console.log(req.params.auth_id, "uid");
-        const users = {
-          auth_id: req.params.auth_id,
-          barangays: [],
-          members: [],
-          first_time: true,
-        };
-        const accessToken = generateAccessTokenLogin(users);
-        const refreshToken = jwt.sign(users, process.env.REFRESH_TOKEN_SECRET);
-
-        Account.findOneAndUpdate(
-          {
-            uuid: req.params.auth_id,
-          },
-          {
-            $push: {
-              sessions: [
-                {
-                  user_agent: req.get("user-agent"),
-                  access_token: accessToken,
-                  refresh_token: refreshToken,
-                },
-              ],
-            },
-          },
-          { new: true },
-          (err, _) => {
-            if (err) {
-              return res.status(400).json("Error: " + err);
-            }
-            return res.json(accessToken);
-          }
-        );
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Account.",
-      });
-    });
+  // })
+  // .catch((err) => {
+  //   res.status(500).send({
+  //     message:
+  //       err.message || "Some error occurred while creating the Account.",
+  //   });
+  // });
 }
+
+const getBase64FromUrl = async (url) => {
+  const data = await fetch(url);
+  const blob = await data.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = () => {
+      const base64data = reader.result;
+      resolve(base64data);
+    };
+  });
+};

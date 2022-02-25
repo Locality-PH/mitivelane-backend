@@ -8,6 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
+global.fetch = require("node-fetch");
 
 app.use(helmet.hsts());
 

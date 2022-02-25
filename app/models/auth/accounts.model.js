@@ -20,7 +20,12 @@ module.exports = (mongoose) => {
       mobile: { type: Number },
       address: { type: String },
       first_time: { type: Boolean },
+      permission: { type: Boolean },
+
       country: { type: String },
+      remember_me: { type: Boolean },
+      full_name: { type: String },
+      profileLogo: { type: String },
       sessions: [
         {
           user_agent: { type: String, required: true },
@@ -33,12 +38,6 @@ module.exports = (mongoose) => {
       ],
       // access_token: { type: String, required: true },
       // refresh_token: { type: String, required: true },
-      remember_me: { type: Boolean },
-      profileUrl: {
-        data: Buffer,
-        contentType: String,
-      },
-      full_name: { type: String },
       // expiration: { type: Date, required: true },
 
       members: [
