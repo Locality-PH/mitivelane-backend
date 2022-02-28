@@ -4,5 +4,6 @@ module.exports = (app) => {
   require("./admin/app-view/barangay.config.routes")(app);
   require("./admin/app-view/account-setting/account-details.routes")(app);
 
+  require("./admin/app-view/blotter/blotter.routes")(app);
   //   require("./app/routes/exercises.routes")(app);
 };
