@@ -14,6 +14,7 @@ db.account = require("./auth/accounts.model.js")(mongoose);
 //barangay
 db.barangayMember = require("./barangays/barangay_members.model.js")(mongoose);
 db.barangay = require("./barangays/barangay.model.js")(mongoose);
+db.resident = require("./resident/residents.models")(mongoose);
 
 //blotter
 db.blotter = require("./blotter/blotter.model")(mongoose);

@@ -9,6 +9,5 @@ module.exports = (app) => {
     auth.authenticationToken,
     appConfig.getBarangayList
   );
-  router.post("/test", auth.authenticationToken, appConfig.testToken);
   app.use("/api/app", router);
 };

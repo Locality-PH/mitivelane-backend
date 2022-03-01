@@ -1,6 +1,8 @@
 const token = require("../../auth");
 const db = require("../../models");
 var jwt = require("jsonwebtoken");
+var geoip = require("geoip-lite");
+
 var request = require("request").defaults({ encoding: null });
 
 var mongoose = require("mongoose");
@@ -187,8 +189,11 @@ function generateAccessToken(user) {
 function generateAccessTokenLogin(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "24h" });
 }
-
+// edit this four tomorrow to make a dynamic profile
 async function registerOldUser(req, res) {
+  const geolocation = await fetch("https://geolocation-db.com/json/")
+    .then((response) => response.json())
+    .then((data) => data);
   if (req.body.code) {
     return res.status(200).json("code");
   } else {
@@ -196,6 +201,7 @@ async function registerOldUser(req, res) {
 
     Account.find({ uuid: req.body.uuid })
       .select({
+        profileUrl: 5,
         profileLogo: 4,
         first_time: 3,
         members: 2,
@@ -242,6 +248,11 @@ async function registerOldUser(req, res) {
                   user_agent: req.get("user-agent"),
                   access_token: accessToken,
                   refresh_token: refreshToken,
+                  host: geolocation.IPv4,
+                  country: geolocation.country_name,
+                  city: geolocation.city,
+                  os: req.user.platform,
+                  browser: req.user.browser,
                 },
               ],
             },
@@ -252,7 +263,10 @@ async function registerOldUser(req, res) {
               return res.status(400).json("Error: " + err);
             }
 
-            return res.json(accessToken);
+            return res.json({
+              accessToken,
+              profileUrl: barangay[0].profileUrl.data,
+            });
           }
         );
       })
@@ -260,6 +274,15 @@ async function registerOldUser(req, res) {
   }
 }
 async function registerNewUser(req, res) {
+  const date = new Date()
+    .toISOString()
+    .replace(/T/, " ") // replace T with a space
+    .replace(/\..+/, "");
+  console.log(date);
+  let base64data = null;
+  const geolocation = await fetch("https://geolocation-db.com/json/")
+    .then((response) => response.json())
+    .then((data) => data);
   const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
   let join_last_name = "";
@@ -278,11 +301,12 @@ async function registerNewUser(req, res) {
   }
   request.get(req.body.profile_url, async function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      base64data =
+      let base64data =
         "data:" +
         response.headers["content-type"] +
         ";base64," +
         Buffer.from(body).toString("base64");
+      // console.log(base64data);
       mimeType = base64data.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
 
       users = new Account({
@@ -295,7 +319,7 @@ async function registerNewUser(req, res) {
         last_name: join_last_name,
         profileUrl: {
           contentType: mimeType,
-          data: new Buffer.from(base64data, "base64"),
+          data: base64data,
         },
         profileLogo: colortag[random],
       });
@@ -343,6 +367,12 @@ async function registerNewUser(req, res) {
                     user_agent: req.get("user-agent"),
                     access_token: accessToken,
                     refresh_token: refreshToken,
+                    host: geolocation.IPv4,
+                    country: geolocation.country_name,
+                    city: geolocation.city,
+                    os: req.user.platform,
+                    browser: req.user.browser,
+                    date: new Date(date),
                   },
                 ],
               },
@@ -352,7 +382,11 @@ async function registerNewUser(req, res) {
               if (err) {
                 return res.status(400).json("Error: " + err);
               }
-              return res.json(accessToken);
+              if (base64data) {
+                return res.json({ accessToken, profileUrl: base64data });
+              } else {
+                return res.json({ accessToken, profileUrl: "" });
+              }
             }
           );
         }
@@ -366,9 +400,17 @@ async function registerNewUser(req, res) {
   });
 }
 async function loginUser(req, res) {
-  Account.find({ uuid: req.params.auth_id })
+  const date = new Date()
+    .toISOString()
+    .replace(/T/, " ") // replace T with a space
+    .replace(/\..+/, "");
+  const geolocation = await fetch("https://geolocation-db.com/json/")
+    .then((response) => response.json())
+    .then((data) => data);
+  await Account.find({ uuid: req.params.auth_id })
     // .populate({ path: "barangays", model: "barangays" })
     .select({
+      profileUrl: 5,
       profileLogo: 4,
       first_time: 3,
       members: 2,
@@ -415,6 +457,12 @@ async function loginUser(req, res) {
                 user_agent: req.get("user-agent"),
                 access_token: accessToken,
                 refresh_token: refreshToken,
+                host: geolocation.IPv4,
+                country: geolocation.country_name,
+                city: geolocation.city,
+                os: req.user.platform,
+                browser: req.user.browser,
+                date: new Date(date),
               },
             ],
           },
@@ -425,15 +473,25 @@ async function loginUser(req, res) {
             return res.status(400).json("Error: " + err);
           }
 
-          return res.json(accessToken);
+          return res.json({
+            accessToken,
+            profileUrl: barangay[0].profileUrl.data,
+          });
         }
       );
     })
     .catch((err) => res.status(400).json("Error: " + err));
 }
 async function loginNewUser(req, res) {
-  // getBase64FromUrl(req.body.profile_url)
-  //   .then(async (dataUrl) => {
+  let base64data = null;
+  const date = new Date()
+    .toISOString()
+    .replace(/T/, " ") // replace T with a space
+    .replace(/\..+/, "");
+  console.log(date);
+  const geolocation = await fetch("https://geolocation-db.com/json/")
+    .then((response) => response.json())
+    .then((data) => data);
   const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
   let join_last_name = "";
@@ -470,7 +528,7 @@ async function loginNewUser(req, res) {
         profileLogo: colortag[random],
         profileUrl: {
           contentType: mimeType,
-          data: new Buffer.from(base64data, "base64"),
+          data: base64data,
         },
       });
     } else {
@@ -516,6 +574,12 @@ async function loginNewUser(req, res) {
                     user_agent: req.get("user-agent"),
                     access_token: accessToken,
                     refresh_token: refreshToken,
+                    host: geolocation.IPv4,
+                    country: geolocation.country_name,
+                    city: geolocation.city,
+                    os: req.user.platform,
+                    browser: req.user.browser,
+                    date: new Date(date),
                   },
                 ],
               },
@@ -525,7 +589,11 @@ async function loginNewUser(req, res) {
               if (err) {
                 return res.status(400).json("Error: " + err);
               }
-              return res.json(accessToken);
+              if (base64data) {
+                return res.json({ accessToken, profileUrl: base64data });
+              } else {
+                return res.json({ accessToken, profileUrl: "" });
+              }
             }
           );
         }

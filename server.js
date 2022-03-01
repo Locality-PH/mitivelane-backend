@@ -9,11 +9,18 @@ const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
 global.fetch = require("node-fetch");
-
-app.use(helmet.hsts());
-
 // or all the headers helmet offers
+app.use(helmet.hsts());
+var serviceAccount = require("./service-key.json");
+const admin = require("firebase-admin");
 require("./app/auth");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL:
+    "https://barangay-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
+  storageBucket: "randomDB-f12d3.appspot.com",
+});
 db.mongoose
   .connect(db.url, {
     useNewUrlParser: true,
