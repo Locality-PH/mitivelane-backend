@@ -25,7 +25,13 @@ Content-Type: application/json
 {
      "barangay_name": "BARAS"
 }
+###
+POST http://localhost:5000/api/app/user/sessions
+Content-Type: application/json
 
+{
+     "auth_id": "7OVdeA5J3adcStIoPbq63nqUxuj2"
+}
 ###
 POST http://localhost:5000/pre/
 Content-Type: application/json
