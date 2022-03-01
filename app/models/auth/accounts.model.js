@@ -5,7 +5,7 @@ module.exports = (mongoose) => {
       email: { type: String, unique: true },
       uuid: { type: String },
       profileUrl: {
-        data: Buffer,
+        data: String,
         contentType: String,
       },
       first_name: { type: String },
@@ -34,6 +34,9 @@ module.exports = (mongoose) => {
           host: { type: String },
           country: { type: String },
           city: { type: String },
+          os: { type: String },
+          browser: { type: String },
+          date: { type: Date },
         },
       ],
       // access_token: { type: String, required: true },

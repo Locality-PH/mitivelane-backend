@@ -5,5 +5,7 @@ module.exports = (app) => {
   var router = require("express").Router();
   // router.post("/add", accounts.add);
   router.post("/user/update", accountDetails.updateAccount);
+  router.post("/user/sessions", accountDetails.getSession);
+
   app.use("/api/app", router);
 };
