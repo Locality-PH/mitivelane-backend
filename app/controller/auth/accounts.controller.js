@@ -191,9 +191,7 @@ function generateAccessTokenLogin(user) {
 }
 // edit this four tomorrow to make a dynamic profile
 async function registerOldUser(req, res) {
-  const geolocation = await fetch("https://geolocation-db.com/json/")
-    .then((response) => response.json())
-    .then((data) => data);
+  const geolocation = req.body.geo_data;
   if (req.body.code) {
     return res.status(200).json("code");
   } else {
@@ -280,9 +278,8 @@ async function registerNewUser(req, res) {
     .replace(/\..+/, "");
   console.log(date);
   let base64data = null;
-  const geolocation = await fetch("https://geolocation-db.com/json/")
-    .then((response) => response.json())
-    .then((data) => data);
+  const geolocation = req.body.geo_data;
+
   const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
   let join_last_name = "";
@@ -404,9 +401,8 @@ async function loginUser(req, res) {
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
-  const geolocation = await fetch("https://geolocation-db.com/json/")
-    .then((response) => response.json())
-    .then((data) => data);
+  const geolocation = req.body.geo_data;
+
   await Account.find({ uuid: req.params.auth_id })
     // .populate({ path: "barangays", model: "barangays" })
     .select({
@@ -489,9 +485,8 @@ async function loginNewUser(req, res) {
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
   console.log(date);
-  const geolocation = await fetch("https://geolocation-db.com/json/")
-    .then((response) => response.json())
-    .then((data) => data);
+  const geolocation = req.body.geo_data;
+
   const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
   let join_last_name = "";
