@@ -13,12 +13,15 @@ exports.createBlotter = async (req, res) => {
             _id: _id,
             barangay_id: values.barangay_id,
             blotter_id: blotterCount + 1,
+            uuid: values.uuid,
             settlement_status: values.settlement_status,
             subject: values.subject,
             incident_type: values.incident_type,
             place_incident: values.place_incident,
             time_of_incident: values.time_of_incident,
-            date_of_incident: values.date_of_incident
+            date_of_incident: values.date_of_incident,
+            time_schedule: values.time_schedule,
+            date_schedule: values.date_schedule
         })
         await blotterData.save()
 
@@ -40,7 +43,41 @@ exports.getBlotters = async (req, res) => {
 
 };
 
+exports.getBlotterInitialValue = async (req, res) => {
+    const _id = req.params._id
+
+    try {
+        const blotter = await Blotter.findOne({_id: _id})
+        return res.json(blotter)
+        
+    } catch (error) {
+        return res.json({})
+    }
+
+}
+
 exports.editBlotter = async (req, res) => {
+    const values = req.body
+    const _id = req.params._id
+
+    try {
+        await Blotter.updateOne({_id: _id }, 
+        {
+            settlement_status: values.settlement_status,
+            subject: values.subject,
+            incident_type: values.incident_type,
+            place_incident: values.place_incident,
+            time_of_incident: values.time_of_incident,
+            date_of_incident: values.date_of_incident,
+            time_schedule: values.time_schedule,
+            date_schedule: values.date_schedule
+        })
+
+        return res.json("Success")
+        
+    } catch (error) {
+        
+    }
 
 }
 
