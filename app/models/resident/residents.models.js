@@ -2,7 +2,7 @@ module.exports = (mongoose) => {
   var residentSchema = mongoose.Schema(
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
-      // "barangay_id": {1002},
+      barangay_id: { type: mongoose.Schema.Types.ObjectId, ref: "barangays" },
       lastname: { type: String },
       firstname: { type: String },
       middlename: { type: String },
