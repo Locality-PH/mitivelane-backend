@@ -67,7 +67,10 @@ exports.getSession = (req, res) => {
       session = [].concat.apply([], session);
 
       //console.log(data);
-      res.json({ full_name: barangay[0].full_name, session: session });
+      res.json({
+        full_name: barangay[0].full_name,
+        session: session.reverse(),
+      });
     })
     .catch((err) => res.status(400).json("Error: " + err));
 };
