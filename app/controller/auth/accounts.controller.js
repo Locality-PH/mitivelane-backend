@@ -1,7 +1,6 @@
 const token = require("../../auth");
 const db = require("../../models");
 var jwt = require("jsonwebtoken");
-var geoip = require("geoip-lite");
 
 var request = require("request").defaults({ encoding: null });
 

@@ -8,6 +8,10 @@ module.exports = (mongoose) => {
                 ref: "barangays",
             },
             blotter_id: { type: String },
+            uuid:
+            {
+                type: String
+            },
             settlement_status: { type: String },
             reporters: [{
                 type: mongoose.Schema.Types.ObjectId,
@@ -29,7 +33,9 @@ module.exports = (mongoose) => {
             incident_type: { type: String },
             place_incident: { type: String },
             time_of_incident: { type: Date },
-            date_of_incident: { type: Date }
+            date_of_incident: { type: Date },
+            time_schedule: { type: Date },
+            date_schedule: { type: Date }
         },
         { timestamps: true }
     );
