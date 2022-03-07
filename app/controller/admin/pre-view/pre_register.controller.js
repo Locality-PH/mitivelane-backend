@@ -126,6 +126,8 @@ exports.createBarangay = (req, res) => {
                       },
                       $set: {
                         first_name: req.body.first_name,
+                        full_name:
+                          req.body.first_name + " " + req.body.last_name,
                         last_name: req.body.last_name,
                         middle_name: req.body.middle_name,
                         birthday: req.body.birthday,

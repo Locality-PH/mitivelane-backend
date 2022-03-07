@@ -4,6 +4,8 @@ var mongoose = require("mongoose");
 const Account = db.account;
 
 exports.updateAccount = (req, res) => {
+  mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+
   // Account.findOneAndUpdate(
   //   {
   //     uuid: req.body.auth_id,
@@ -46,6 +48,18 @@ exports.updateAccount = (req, res) => {
   //   }
   // );
   res.json(req.body);
+};
+exports.getDetails = (req, res) => {
+  Account.find({ uuid: req.body.auth_id })
+    .select({ full_name: 1, _id: 0 })
+    .then((barangay) => {
+      return res.json({
+        full_name: barangay[0].full_name,
+      });
+    })
+    .catch((err) => {
+      return res.status(400).json("Error: " + err);
+    });
 };
 exports.getSession = (req, res) => {
   let session = [];

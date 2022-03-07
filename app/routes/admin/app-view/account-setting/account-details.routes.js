@@ -6,6 +6,8 @@ module.exports = (app) => {
   // router.post("/add", accounts.add);
   router.post("/user/update", accountDetails.updateAccount);
   router.post("/user/sessions", accountDetails.getSession);
+  router.post("/user/details", accountDetails.getDetails);
+
   router.post(
     "/user/sessions/delete",
     auth.authenticationToken,
