@@ -421,7 +421,7 @@ async function loginUser(req, res) {
   const geolocation = await fetch(urlGeo)
     .then((response) => response.json())
     .then((data) => data);
-  console.log(geolocation);
+  console.log(urlGeo);
   await Account.find({ uuid: req.params.auth_id })
     // .populate({ path: "barangays", model: "barangays" })
     .select({
