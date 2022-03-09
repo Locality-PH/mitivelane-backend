@@ -191,7 +191,10 @@ function generateAccessTokenLogin(user) {
 // edit this four tomorrow to make a dynamic profile
 async function registerOldUser(req, res) {
   const geolocation = await fetch(
-    "https://geolocation-db.com/json/" + req.user.ipv4
+    "https://geolocation-db.com/json/" +
+      REACT_APP_REFRESH_GEO_ID +
+      "/" +
+      req.user.ipv4
   )
     .then((response) => response.json())
     .then((data) => data);
@@ -282,7 +285,10 @@ async function registerNewUser(req, res) {
   console.log(date);
   let base64data = null;
   const geolocation = await fetch(
-    "https://geolocation-db.com/json/" + req.user.ipv4
+    "https://geolocation-db.com/json/" +
+      REACT_APP_REFRESH_GEO_ID +
+      "/" +
+      req.user.ipv4
   )
     .then((response) => response.json())
     .then((data) => data);
@@ -408,7 +414,10 @@ async function loginUser(req, res) {
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
   const geolocation = await fetch(
-    "https://geolocation-db.com/json/" + req.user.ipv4
+    "https://geolocation-db.com/json/" +
+      REACT_APP_REFRESH_GEO_ID +
+      "/" +
+      req.user.ipv4
   )
     .then((response) => response.json())
     .then((data) => data);
@@ -495,7 +504,10 @@ async function loginNewUser(req, res) {
     .replace(/\..+/, "");
   console.log(date);
   const geolocation = await fetch(
-    "https://geolocation-db.com/json/" + req.user.ipv4
+    "https://geolocation-db.com/json/" +
+      REACT_APP_REFRESH_GEO_ID +
+      "/" +
+      req.user.ipv4
   )
     .then((response) => response.json())
     .then((data) => data);
