@@ -190,14 +190,8 @@ function generateAccessTokenLogin(user) {
 }
 // edit this four tomorrow to make a dynamic profile
 async function registerOldUser(req, res) {
-  const urlGeo =
-    "https://geolocation-db.com/json/" +
-    process.env.GEOLOCATION_ID +
-    "/" +
-    req.user.ipv4;
-  const geolocation = await fetch(urlGeo)
-    .then((response) => response.json())
-    .then((data) => data);
+  const geolocation = req.user.session_location;
+
   if (req.body.code) {
     return res.status(200).json("code");
   } else {
@@ -282,16 +276,9 @@ async function registerNewUser(req, res) {
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
-  console.log(date);
   let base64data = null;
-  const urlGeo =
-    "https://geolocation-db.com/json/" +
-    process.env.GEOLOCATION_ID +
-    "/" +
-    req.user.ipv4;
-  const geolocation = await fetch(urlGeo)
-    .then((response) => response.json())
-    .then((data) => data);
+  const geolocation = req.user.session_location;
+
   const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
   let join_last_name = "";
@@ -413,15 +400,8 @@ async function loginUser(req, res) {
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
-  const urlGeo =
-    "https://geolocation-db.com/json/" +
-    process.env.GEOLOCATION_ID +
-    "/" +
-    req.user.ipv4;
-  const geolocation = await fetch(urlGeo)
-    .then((response) => response.json())
-    .then((data) => data);
-  console.log(urlGeo);
+  const geolocation = req.user.session_location;
+
   await Account.find({ uuid: req.params.auth_id })
     // .populate({ path: "barangays", model: "barangays" })
     .select({
@@ -503,14 +483,8 @@ async function loginNewUser(req, res) {
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
-  const urlGeo =
-    "https://geolocation-db.com/json/" +
-    process.env.GEOLOCATION_ID +
-    "/" +
-    req.user.ipv4;
-  const geolocation = await fetch(urlGeo)
-    .then((response) => response.json())
-    .then((data) => data);
+  const geolocation = req.user.session_location;
+
   const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
   let join_last_name = "";
