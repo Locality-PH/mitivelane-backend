@@ -192,10 +192,12 @@ function generateAccessTokenLogin(user) {
 async function registerOldUser(req, res) {
   const geolocation = await fetch(
     "https://geolocation-db.com/json/" +
-      REACT_APP_REFRESH_GEO_ID +
+      process.env.GEOLOCATION_ID +
       "/" +
       req.user.ipv4
-  )
+  );
+  console
+    .log(req.user.ipv4)
     .then((response) => response.json())
     .then((data) => data);
   if (req.body.code) {
@@ -286,7 +288,7 @@ async function registerNewUser(req, res) {
   let base64data = null;
   const geolocation = await fetch(
     "https://geolocation-db.com/json/" +
-      REACT_APP_REFRESH_GEO_ID +
+      process.env.GEOLOCATION_ID +
       "/" +
       req.user.ipv4
   )
@@ -415,7 +417,7 @@ async function loginUser(req, res) {
     .replace(/\..+/, "");
   const geolocation = await fetch(
     "https://geolocation-db.com/json/" +
-      REACT_APP_REFRESH_GEO_ID +
+      process.env.GEOLOCATION_ID +
       "/" +
       req.user.ipv4
   )
@@ -505,7 +507,7 @@ async function loginNewUser(req, res) {
   console.log(date);
   const geolocation = await fetch(
     "https://geolocation-db.com/json/" +
-      REACT_APP_REFRESH_GEO_ID +
+      process.env.GEOLOCATION_ID +
       "/" +
       req.user.ipv4
   )
