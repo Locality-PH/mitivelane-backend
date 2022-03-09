@@ -190,14 +190,12 @@ function generateAccessTokenLogin(user) {
 }
 // edit this four tomorrow to make a dynamic profile
 async function registerOldUser(req, res) {
-  const geolocation = await fetch(
+  const urlGeo =
     "https://geolocation-db.com/json/" +
-      process.env.GEOLOCATION_ID +
-      "/" +
-      req.user.ipv4
-  );
-  console
-    .log(req.user.ipv4)
+    process.env.GEOLOCATION_ID +
+    "/" +
+    req.user.ipv4;
+  const geolocation = await fetch(urlGeo)
     .then((response) => response.json())
     .then((data) => data);
   if (req.body.code) {
@@ -286,12 +284,12 @@ async function registerNewUser(req, res) {
     .replace(/\..+/, "");
   console.log(date);
   let base64data = null;
-  const geolocation = await fetch(
+  const urlGeo =
     "https://geolocation-db.com/json/" +
-      process.env.GEOLOCATION_ID +
-      "/" +
-      req.user.ipv4
-  )
+    process.env.GEOLOCATION_ID +
+    "/" +
+    req.user.ipv4;
+  const geolocation = await fetch(urlGeo)
     .then((response) => response.json())
     .then((data) => data);
   const random = Math.floor(Math.random() * colortag.length);
@@ -415,14 +413,15 @@ async function loginUser(req, res) {
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
-  const geolocation = await fetch(
+  const urlGeo =
     "https://geolocation-db.com/json/" +
-      process.env.GEOLOCATION_ID +
-      "/" +
-      req.user.ipv4
-  )
+    process.env.GEOLOCATION_ID +
+    "/" +
+    req.user.ipv4;
+  const geolocation = await fetch(urlGeo)
     .then((response) => response.json())
     .then((data) => data);
+  console.log(geolocation);
   await Account.find({ uuid: req.params.auth_id })
     // .populate({ path: "barangays", model: "barangays" })
     .select({
@@ -504,13 +503,12 @@ async function loginNewUser(req, res) {
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
-  console.log(date);
-  const geolocation = await fetch(
+  const urlGeo =
     "https://geolocation-db.com/json/" +
-      process.env.GEOLOCATION_ID +
-      "/" +
-      req.user.ipv4
-  )
+    process.env.GEOLOCATION_ID +
+    "/" +
+    req.user.ipv4;
+  const geolocation = await fetch(urlGeo)
     .then((response) => response.json())
     .then((data) => data);
   const random = Math.floor(Math.random() * colortag.length);
