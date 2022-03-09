@@ -53,7 +53,7 @@ exports.getBlotterInitialValue = async (req, res) => {
     const _id = req.params._id
 
     try {
-        const blotter = await Blotter.findOne({ _id: _id }).populate("reporters")
+        const blotter = await Blotter.findOne({ _id: _id })
         return res.json(blotter)
 
     } catch (error) {
@@ -70,6 +70,12 @@ exports.editBlotter = async (req, res) => {
         await Blotter.updateOne({ _id: _id },
             {
                 settlement_status: values.settlement_status,
+
+                reporters: values.reporters,
+                victims: values.victims,
+                suspects: values.suspects,
+                respondents: values.respondents,
+
                 subject: values.subject,
                 incident_type: values.incident_type,
                 place_incident: values.place_incident,
