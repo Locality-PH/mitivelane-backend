@@ -2,8 +2,8 @@ module.exports = (mongoose) => {
   var accountSchema = mongoose.Schema(
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
-      email: { type: String, unique: true },
-      uuid: { type: String },
+      email: { type: String },
+      uuid: { type: String, unique: true },
       profileUrl: {
         data: String,
         contentType: String,

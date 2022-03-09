@@ -4,7 +4,11 @@ module.exports = (app) => {
 
   var router = require("express").Router();
   // router.post("/add", accounts.add);
-  router.post("/user/update", accountDetails.updateAccount);
+  router.post(
+    "/user/update",
+    auth.authenticationToken,
+    accountDetails.updateAccount
+  );
   router.post("/user/sessions", accountDetails.getSession);
   router.post("/user/details", accountDetails.getDetails);
 

@@ -19,9 +19,11 @@ exports.getBarangayList = (req, res) => {
     })
     .then((barangay) => {
       //console.log(barangay);
-      res.json(barangay);
+      return res.json(barangay);
     })
-    .catch((err) => res.status(400).json("Error: " + err));
+    .catch((err) => {
+      return res.status(400).json("Error: " + err);
+    });
 };
 exports.getPreBarangayList = (req, res) => {
   Account.find({ uuid: req.params.auth_id })

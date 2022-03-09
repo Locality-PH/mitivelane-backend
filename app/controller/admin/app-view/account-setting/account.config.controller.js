@@ -4,51 +4,39 @@ var mongoose = require("mongoose");
 const Account = db.account;
 
 exports.updateAccount = (req, res) => {
-  mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-
-  // Account.findOneAndUpdate(
-  //   {
-  //     uuid: req.body.auth_id,
-  //   },
-  //   {
-  //     $push: {
-  //       members: [barangayMemberId],
-  //       barangays: [barangayId],
-  //     },
-  //     $set: {
-  //       first_name: req.body.first_name,
-  //       last_name: req.body.last_name,
-  //       middle_name: req.body.middle_name,
-  //       birthday: req.body.birthday,
-  //       gender: req.body.gender,
-  //       civil_status: req.body.civil_status,
-  //       country: req.body.personal_country,
-  //       province: req.body.personal_province,
-  //       municipality: req.body.personal_municipality,
-  //       mobile: req.body.mobile_number,
-  //       telephone: req.body.telephone_number,
-  //       address: req.body.personal_address,
-  //       first_time: req.body.first_time,
-  //     },
-  //   },
-  //   { new: true },
-  //   (err, doc) => {
-  //     if (err) {
-  //       res.status(400).json("Error: " + err);
-  //     }
-  //     const currentActive = [
-  //       {
-  //         barangay_id: barangayId,
-  //         barangay_member_id: barangayMemberId,
-  //         uuid: req.body.auth_id,
-  //       },
-  //     ];
-  //     console.log(doc);
-  //     res.status(200).json(currentActive);
-  //   }
-  // );
-  res.json(req.body);
+  let mimeType;
+  let data = {};
+  if (req.body.profile_url == null || req.body.profile == "") {
+    mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+    data = {
+      full_name: req.body.full_name,
+      profileUrl: {
+        contentType: mimeType,
+        data: req.body.profile_url,
+      },
+    };
+  } else {
+    data = {
+      full_name: req.body.full_name,
+    };
+  }
+  Account.findOneAndUpdate(
+    {
+      uuid: req.user.auth_id,
+    },
+    {
+      $set: data,
+    },
+    { new: true },
+    (err, _) => {
+      if (err) {
+        return res.status(400).json("Error: " + err);
+      }
+      return res.json(req.body);
+    }
+  );
 };
+
 exports.getDetails = (req, res) => {
   Account.find({ uuid: req.body.auth_id })
     .select({ full_name: 1, _id: 0 })
