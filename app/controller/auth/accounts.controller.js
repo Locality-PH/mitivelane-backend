@@ -1,6 +1,7 @@
 const token = require("../../auth");
 const db = require("../../models");
 var jwt = require("jsonwebtoken");
+const geoip = require("fast-geoip");
 
 var request = require("request").defaults({ encoding: null });
 
@@ -190,7 +191,7 @@ function generateAccessTokenLogin(user) {
 }
 // edit this four tomorrow to make a dynamic profile
 async function registerOldUser(req, res) {
-  const geolocation = req.user.session_location;
+  const geolocation = (await geoip.lookup(req.user.ipv4)) || "";
 
   if (req.body.code) {
     return res.status(200).json("code");
@@ -246,8 +247,8 @@ async function registerOldUser(req, res) {
                   user_agent: req.get("user-agent"),
                   access_token: accessToken,
                   refresh_token: refreshToken,
-                  host: geolocation.IPv4,
-                  country: geolocation.country_name,
+                  host: req.user.ipv4,
+                  country: geolocation.country,
                   city: geolocation.city,
                   os: req.user.platform,
                   browser: req.user.browser,
@@ -277,8 +278,7 @@ async function registerNewUser(req, res) {
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
   let base64data = null;
-  const geolocation = req.user.session_location;
-
+  const geolocation = (await geoip.lookup(req.user.ipv4)) || "";
   const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
   let join_last_name = "";
@@ -363,8 +363,8 @@ async function registerNewUser(req, res) {
                     user_agent: req.get("user-agent"),
                     access_token: accessToken,
                     refresh_token: refreshToken,
-                    host: geolocation.IPv4,
-                    country: geolocation.country_name,
+                    host: req.user.ipv4,
+                    country: geolocation.country,
                     city: geolocation.city,
                     os: req.user.platform,
                     browser: req.user.browser,
@@ -400,7 +400,7 @@ async function loginUser(req, res) {
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
-  const geolocation = req.user.session_location;
+  const geolocation = (await geoip.lookup(req.user.ipv4)) || "";
 
   await Account.find({ uuid: req.params.auth_id })
     // .populate({ path: "barangays", model: "barangays" })
@@ -452,8 +452,8 @@ async function loginUser(req, res) {
                 user_agent: req.get("user-agent"),
                 access_token: accessToken,
                 refresh_token: refreshToken,
-                host: geolocation.IPv4,
-                country: geolocation.country_name,
+                host: req.user.ipv4,
+                country: geolocation.country,
                 city: geolocation.city,
                 os: req.user.platform,
                 browser: req.user.browser,
@@ -483,7 +483,7 @@ async function loginNewUser(req, res) {
     .toISOString()
     .replace(/T/, " ") // replace T with a space
     .replace(/\..+/, "");
-  const geolocation = req.user.session_location;
+  const geolocation = (await geoip.lookup(req.user.ipv4)) || "";
 
   const random = Math.floor(Math.random() * colortag.length);
   var id = new mongoose.Types.ObjectId();
@@ -567,8 +567,8 @@ async function loginNewUser(req, res) {
                     user_agent: req.get("user-agent"),
                     access_token: accessToken,
                     refresh_token: refreshToken,
-                    host: geolocation.IPv4,
-                    country: geolocation.country_name,
+                    host: req.user.ipv4,
+                    country: geolocation.country,
                     city: geolocation.city,
                     os: req.user.platform,
                     browser: req.user.browser,
