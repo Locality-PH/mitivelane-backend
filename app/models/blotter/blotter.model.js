@@ -30,6 +30,7 @@ module.exports = (mongoose) => {
                 ref: "residents"
             }],
             subject: { type: String },
+            narrative: {type: Object},
             incident_type: { type: String },
             place_incident: { type: String },
             time_of_incident: { type: Date },

@@ -22,6 +22,7 @@ exports.createBlotter = async (req, res) => {
             respondents: values.respondents,
 
             subject: values.subject,
+            narrative: values.narrative,
             incident_type: values.incident_type,
             place_incident: values.place_incident,
             time_of_incident: values.time_of_incident,
@@ -77,6 +78,7 @@ exports.editBlotter = async (req, res) => {
                 respondents: values.respondents,
 
                 subject: values.subject,
+                narrative: values.narrative,
                 incident_type: values.incident_type,
                 place_incident: values.place_incident,
                 time_of_incident: values.time_of_incident,
@@ -88,6 +90,7 @@ exports.editBlotter = async (req, res) => {
         return res.json("Success")
 
     } catch (error) {
+        return res.json("Error")
 
     }
 
