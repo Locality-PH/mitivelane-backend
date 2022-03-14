@@ -3,7 +3,7 @@ module.exports = (app) => {
     const auth = require("../../../../auth");
     var router = require("express").Router();
 
-    router.get("/get-blotters/:barangay_id", auth.authenticationToken, settlement.getBlotters);
+    // router.get("/get-blotters/:barangay_id", auth.authenticationToken, settlement.getBlotters);
 
     app.use("/api/settlement", router);
 };
