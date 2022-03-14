@@ -43,6 +43,9 @@ exports.getBlotters = async (req, res) => {
 
     try {
         const blotter = await Blotter.find({ barangay_id: barangayId }).populate("reporters")
+            .populate("victims")
+            .populate("suspects")
+            .populate("respondents")
         return res.json(blotter)
     } catch (error) {
         return res.json([])
