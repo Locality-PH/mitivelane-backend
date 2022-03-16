@@ -9,8 +9,16 @@ module.exports = (app) => {
     auth.authenticationToken,
     accountDetails.updateAccount
   );
-  router.post("/user/sessions", accountDetails.getSession);
-  router.post("/user/details", accountDetails.getDetails);
+  router.post(
+    "/user/sessions",
+    auth.authenticationToken,
+    accountDetails.getSession
+  );
+  router.post(
+    "/user/details",
+    auth.authenticationToken,
+    accountDetails.getDetails
+  );
 
   router.post(
     "/user/sessions/delete",
