@@ -144,3 +144,19 @@ exports.recordCases = async (req, res) => {
     }
 
 }
+
+exports.getLatestBlotters = async (req, res) => {
+	const barangayId = req.params.barangay_id
+	const limit = 5
+
+    try {
+        const blotter = await Blotter.find({ barangay_id: barangayId }).sort({createdAt: -1}).limit(limit).populate("reporters")
+
+        return res.json(blotter)
+
+    } catch (error) {
+        return res.json([])
+
+    }
+	
+}

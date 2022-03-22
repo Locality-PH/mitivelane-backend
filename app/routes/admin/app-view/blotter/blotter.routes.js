@@ -13,6 +13,8 @@ module.exports = (app) => {
     router.post("/delete-blotter", auth.authenticationToken, blotter.deleteBlotter);
 
     router.get("/record-cases/:barangay_id", auth.authenticationToken, blotter.recordCases);
+	
+	router.get("/get-latest-blotters/:barangay_id", auth.authenticationToken, blotter.getLatestBlotters);
 
     app.use("/api/blotter", router);
 };
