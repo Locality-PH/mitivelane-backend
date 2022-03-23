@@ -15,9 +15,25 @@ exports.getResidents = async (req, res) => {
 };
 
 exports.addResident = async (req, res) => {
+    let colortag = [
+        "#0085c3",
+        "#7ab800",
+        "#f2af00",
+        "#dc5034",
+        "#ce1126",
+        "#0085c3",
+        "#FF1493",
+        "#AA47BC",
+      ];
+      const randomNum = Math.floor(Math.random() * colortag.length);
+      const avatarColor = colortag[randomNum]
+
     const newResidentData = req.body.values
     newResidentData._id = new mongoose.Types.ObjectId();
     newResidentData.barangay_id = mongoose.Types.ObjectId(req.body.barangay_id);
+    newResidentData.avatarColor = avatarColor;
+
+    console.log(newResidentData)
 
     try {
         const newResident = new Resident(newResidentData)

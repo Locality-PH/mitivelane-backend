@@ -30,7 +30,8 @@ module.exports = (mongoose) => {
       father: { type: String },
       mother: { type: String },
       address_1: { type: String },
-      address_2: { type: String }
+      address_2: { type: String },
+      avatarColor: { type: String }
     },
     { timestamps: true }
   );
