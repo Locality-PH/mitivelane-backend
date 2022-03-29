@@ -38,33 +38,80 @@ exports.createBlotter = async (req, res) => {
     }
 };
 
+
+// Need to Recode, Find Better solution for adding new key to all object in array...
 exports.getBlotters = async (req, res) => {
     const barangayId = req.params.barangay_id
+	var finalValue = []
 
     try {
         const blotter = await Blotter.find({ barangay_id: barangayId }).populate("reporters")
             .populate("victims")
             .populate("suspects")
             .populate("respondents")
-        return res.json(blotter)
+		
+		if(blotter.length == 0)
+			return res.json(finalValue)
+		
+		blotter.map((value, i) => {
+				finalValue.push(
+				{
+					_id: value._id,
+					barangay_id: value.barangay_id,
+					blotter_id: value.blotter_id,
+					createdAt: value.createdAt,
+					
+					reporter_name: (value.reporters.length != 0)? 
+					`${value.reporters[0].firstname} ${value.reporters[0].lastname}`:
+					"No Resident",
+					avatarColor: (value.reporters.length != 0)? 
+					value.reporters[0].avatarColor:
+					"#04d182",
+					
+					reporters: value.reporters,
+					victims: value.victims,
+					suspects: value.suspects,
+					respondents: value.respondents,
+					
+					reporters_id: value.reporters.map(value => value._id),
+					victims_id: value.victims.map(value => value._id),
+					suspects_id: value.suspects.map(value => value._id),
+					respondents_id: value.respondents.map(value => value._id),
+					
+					settlement_status: value.settlement_status,
+					subject: value.subject,
+					narrative: value.narrative,
+					incident_type: value.incident_type,
+					place_incident: value.place_incident,
+					time_of_incident: value.time_of_incident,
+					date_of_incident: value.date_of_incident,
+					time_schedule: value.time_schedule,
+					date_schedule: value.date_schedule
+				})
+				
+				if(blotter.length == i + 1){
+					return res.json(finalValue)
+				}
+			})
+			
     } catch (error) {
         return res.json([])
     }
 
 };
 
-exports.getBlotterInitialValue = async (req, res) => {
-    const _id = req.params._id
+// exports.getBlotterInitialValue = async (req, res) => {
+    // const _id = req.params._id
 
-    try {
-        const blotter = await Blotter.findOne({ _id: _id })
-        return res.json(blotter)
+    // try {
+        // const blotter = await Blotter.findOne({ _id: _id })
+        // return res.json(blotter)
 
-    } catch (error) {
-        return res.json({})
-    }
+    // } catch (error) {
+        // return res.json({})
+    // }
 
-}
+// }
 
 exports.editBlotter = async (req, res) => {
     const values = req.body
