@@ -6,7 +6,8 @@ const Account = db.account;
 exports.updateAccount = (req, res) => {
   let mimeType;
   let data = {};
-  if (req.body.profile_url == null || req.body.profile == "") {
+  if (!(req.body.profile_url == "")) {
+    console.log("true");
     mimeType = req.body.profile_url.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
     data = {
       full_name: req.body.full_name,
