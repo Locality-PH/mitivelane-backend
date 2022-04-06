@@ -19,4 +19,7 @@ db.resident = require("./resident/residents.models")(mongoose);
 //blotter
 db.blotter = require("./blotter/blotter.model")(mongoose);
 
+//household
+db.household = require("./barangays/household/household.model")(mongoose);
+db.householdMember = require("./barangays/household/household_member.model")(mongoose);
 module.exports = db;
