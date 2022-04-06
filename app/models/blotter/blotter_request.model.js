@@ -1,5 +1,5 @@
 module.exports = (mongoose) => {
-    var blotterSchema = mongoose.Schema(
+    var blotterRequestSchema = mongoose.Schema(
         {
             _id: { type: mongoose.Schema.Types.ObjectId },
             barangay_id:
@@ -13,6 +13,7 @@ module.exports = (mongoose) => {
                 type: String
             },
             settlement_status: { type: String },
+            status: { type: String },
             reporters: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "residents"
@@ -41,6 +42,6 @@ module.exports = (mongoose) => {
         { timestamps: true }
     );
    
-    const Tokens = mongoose.model("blotters", blotterSchema);
+    const Tokens = mongoose.model("blotter_requests", blotterRequestSchema);
     return Tokens;
 };

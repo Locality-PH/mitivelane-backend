@@ -18,5 +18,6 @@ db.resident = require("./resident/residents.models")(mongoose);
 
 //blotter
 db.blotter = require("./blotter/blotter.model")(mongoose);
+db.blotter_request = require("./blotter/blotter_request.model")(mongoose);
 
 module.exports = db;
