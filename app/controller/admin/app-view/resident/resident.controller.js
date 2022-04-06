@@ -47,11 +47,11 @@ exports.addResident = async (req, res) => {
 
 exports.deleteResident = async (req, res) => {
     const barangay_id = req.body.barangay_id
-    const resident_id = mongoose.Types.ObjectId(req.body.resident_id);
+    const resident_id = req.body.resident_id;
 
     try {
         // await Resident.findOneAndDelete({_id: resident_id})
-        const request = await Resident.findOneAndDelete({_id: resident_id})
+        const request = await Resident.deleteMany({_id: resident_id})
         console.log("request", request)
         res.json("deleted")
     } catch (error) {

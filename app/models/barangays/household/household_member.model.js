@@ -2,7 +2,8 @@ module.exports = (mongoose) => {
     var householdMembersSchema = mongoose.Schema(
       {
         _id: { type: mongoose.Schema.Types.ObjectId },
-        name: {type: String},
+        first_name: {type: String},
+        last_name: {type: String},
         birthday: {type: Date},
         age: {type: String},
         blood_type: {type: String},

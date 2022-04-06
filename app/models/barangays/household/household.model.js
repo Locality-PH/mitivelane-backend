@@ -3,6 +3,7 @@ module.exports = (mongoose) => {
       {
         _id: { type: mongoose.Schema.Types.ObjectId },
         name: {type: String},
+        house_number: {type: String},
         purok: {type: String},
         house_status: {type: String},
         family_planning: {type: String},
@@ -11,8 +12,8 @@ module.exports = (mongoose) => {
         toilet_type: {type: String},
         waste_management: {type: String},
         barangay:{ type: mongoose.Schema.Types.ObjectId },
-        household_member: [{
-            type: Schema.Types.ObjectId, 
+        household_members: [{
+            type: mongoose.Schema.Types.ObjectId, 
             ref: 'household_members'
         }]
       },
