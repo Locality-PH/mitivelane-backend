@@ -5,10 +5,9 @@ module.exports = (app) => {
 
     router.post("/add", auth.authenticationToken, householdController.addHousehold);
     router.post("/getAll", auth.authenticationToken, householdController.getHouseholds);
+    router.post("/get", auth.authenticationToken, householdController.getHousehold);
     router.post("/delete", auth.authenticationToken, householdController.deleteHousehold);
-    // router.post("/add", auth.authenticationToken, residentController.addResident);
-    // router.post("/delete", auth.authenticationToken, residentController.deleteResident);
-    // router.post("/update", auth.authenticationToken, residentController.updateResident);
+    router.post("/update", auth.authenticationToken, householdController.updateHousehold);
     app.use("/api/household", router);
   };
   
