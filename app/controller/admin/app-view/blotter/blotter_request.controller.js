@@ -22,17 +22,155 @@ exports.requestBlotter = async (req, res) => {
 
 }
 
-exports.getBlotterRequest = async (req, res) => {
-	const barangayId = req.params.barangay_id
+exports.approveBlotterRequest = async (req, res) => {
+	 const _ids = req.body._ids
+	 const data = req.body.data
 
     try {
-		const blotterRequest = await BlotterRequest.find({ barangay_id: barangayId }).populate("reporters")
-        return res.json(blotterRequest)
+        await BlotterRequest.updateMany({ _id: { $in: _ids } }, {status: "Approved"})
+		await Blotter.insertMany(data)
+        return res.json("Success")
+
+    } catch (error) {
+        return res.json("Error")
+    }
+	
+}
+
+exports.rejectBlotterRequest = async (req, res) => {
+	 const _ids = req.body._ids
+
+    try {
+        await BlotterRequest.updateMany({ _id: { $in: _ids } }, {status: "Rejected"})
+        return res.json("Success")
+
+    } catch (error) {
+        return res.json("Error")
+    }
+	
+}
+
+exports.getPendingBlotterRequest = async (req, res) => {
+	const barangayId = req.params.barangay_id
+	var finalValue = []
+	
+	try {
+		const blotterRequest = await BlotterRequest.find({ barangay_id: barangayId , status: "Pending"}).populate("reporters")
+            .populate("victims")
+            .populate("suspects")
+            .populate("respondents")
+		
+		if(blotterRequest.length == 0)
+			return res.json(finalValue)
+		
+		blotterRequest.map((value, i) => {
+				finalValue.push(
+				{
+					_id: value._id,
+					barangay_id: value.barangay_id,
+					blotter_id: value.blotter_id,
+					createdAt: value.createdAt,
+					
+					reporter_name: (value.reporters.length != 0)? 
+					`${value.reporters[0].firstname} ${value.reporters[0].lastname}`:
+					"No Resident",
+					avatarColor: (value.reporters.length != 0)? 
+					value.reporters[0].avatarColor:
+					"#04d182",
+					
+					reporters: value.reporters,
+					victims: value.victims,
+					suspects: value.suspects,
+					respondents: value.respondents,
+					
+					reporters_id: value.reporters.map(value => value._id),
+					victims_id: value.victims.map(value => value._id),
+					suspects_id: value.suspects.map(value => value._id),
+					respondents_id: value.respondents.map(value => value._id),
+					
+					settlement_status: value.settlement_status,
+					status: value.status,
+					subject: value.subject,
+					narrative: value.narrative,
+					incident_type: value.incident_type,
+					place_incident: value.place_incident,
+					time_of_incident: value.time_of_incident,
+					date_of_incident: value.date_of_incident,
+					time_schedule: value.time_schedule,
+					date_schedule: value.date_schedule
+				})
+				
+				if(blotterRequest.length == i + 1){
+					return res.json(finalValue)
+				}
+			})
 
     } catch (error) {
         return res.json([])
 
     }
+	
+}
+
+exports.getBlotterRequest = async (req, res) => {
+	const barangayId = req.params.barangay_id
+	var finalValue = []
+
+    try {
+        const blotterRequest = await BlotterRequest.find({ barangay_id: barangayId, status: ["Approved", "Rejected"]}).populate("reporters")
+            .populate("victims")
+            .populate("suspects")
+            .populate("respondents")
+		
+		if(blotterRequest.length == 0)
+			return res.json(finalValue)
+		
+		blotterRequest.map((value, i) => {
+				finalValue.push(
+				{
+					_id: value._id,
+					barangay_id: value.barangay_id,
+					blotter_id: value.blotter_id,
+					createdAt: value.createdAt,
+					
+					reporter_name: (value.reporters.length != 0)? 
+					`${value.reporters[0].firstname} ${value.reporters[0].lastname}`:
+					"No Resident",
+					avatarColor: (value.reporters.length != 0)? 
+					value.reporters[0].avatarColor:
+					"#04d182",
+					
+					reporters: value.reporters,
+					victims: value.victims,
+					suspects: value.suspects,
+					respondents: value.respondents,
+					
+					reporters_id: value.reporters.map(value => value._id),
+					victims_id: value.victims.map(value => value._id),
+					suspects_id: value.suspects.map(value => value._id),
+					respondents_id: value.respondents.map(value => value._id),
+					
+					settlement_status: value.settlement_status,
+					status: value.status,
+					subject: value.subject,
+					narrative: value.narrative,
+					incident_type: value.incident_type,
+					place_incident: value.place_incident,
+					time_of_incident: value.time_of_incident,
+					date_of_incident: value.date_of_incident,
+					time_schedule: value.time_schedule,
+					date_schedule: value.date_schedule
+				})
+				
+				if(blotterRequest.length == i + 1){
+					return res.json(finalValue)
+				}
+			})
+			
+    } catch (error) {
+        return res.json([])
+    }
+
 
 }
 
@@ -45,6 +183,34 @@ exports.deleteBlotterRequest = async (req, res) => {
 
     } catch (error) {
         return res.json("Error")
+    }
+
+}
+
+exports.recordStatus = async (req, res) => {
+    const barangayId = req.params.barangay_id
+
+    try {
+        const approvedCount = await BlotterRequest.find({
+            barangay_id: barangayId,
+            status: "Approved"
+        }).count()
+
+        const rejectedCount = await BlotterRequest.find({
+            barangay_id: barangayId,
+            status: "Rejected"
+        }).count()
+
+        const pendingCount = await BlotterRequest.find({
+            barangay_id: barangayId,
+            status: "Pending"
+        }).count()
+
+        return res.json([approvedCount, rejectedCount, pendingCount])
+
+    } catch (error) {
+        return res.json([0, 0, 0])
+
     }
 
 }
