@@ -129,8 +129,5 @@ exports.deleteHousehold = async (req, res) => {
         res.json("error occured!!!")
     }
 };
-// exports.addHouseholdMember = async (req, res) => {
-
-// }
 
 
