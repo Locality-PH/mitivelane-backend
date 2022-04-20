@@ -11,6 +11,9 @@ db.url = dbConfig.url;
 db.token = require("./auth/tokens.model.js")(mongoose);
 //account
 db.account = require("./auth/accounts.model.js")(mongoose);
+//chat
+db.message = require("./chat/message.model")(mongoose);
+db.conversation = require("./chat/conversation.model")(mongoose);
 //barangay
 db.barangayMember = require("./barangays/barangay_members.model.js")(mongoose);
 db.barangay = require("./barangays/barangay.model.js")(mongoose);
