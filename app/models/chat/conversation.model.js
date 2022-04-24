@@ -3,8 +3,13 @@ module.exports = (mongoose) => {
         {
             _id: { type: mongoose.Schema.Types.ObjectId },
             participants: [{
-                type: String,
+                type: mongoose.Schema.Types.ObjectId,
+				ref: "accounts_infos"
             }],
+			messages: [{
+                type: mongoose.Schema.Types.ObjectId,
+				ref: "messages"
+            }]
         },
         { timestamps: true }
     );

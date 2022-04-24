@@ -3,11 +3,6 @@ module.exports = (mongoose) => {
         {
             _id: { type: mongoose.Schema.Types.ObjectId },
 			sender_uuid: { type: String },
-            converstation_id:
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "conversations",
-            },
 			content: { type: String },
 			unread: { type: Boolean }
            
