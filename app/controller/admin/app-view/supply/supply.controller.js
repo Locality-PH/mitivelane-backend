@@ -6,14 +6,12 @@ const SupplyReceive = db.SupplyReceive
 const SupplyInventory = db.SupplyInventory
 
 exports.getSupplies = async (req, res) => {
-    var barangay_id = req.body.barangay_id
-    barangay_id = mongoose.Types.ObjectId(barangay_id);
-
     try {
+        var barangay_id = req.body.barangay_id
+        barangay_id = mongoose.Types.ObjectId(barangay_id);
         const supplies = await SupplyGiven.find({ barangay_id })
         console.log(supplies)
-        res.json({SupplyGiven: supplies})
-        res.send(200) 
+        res.status(200).send({ SupplyGiven: supplies })
         console.log("connected")
     } catch (error) {
         console.log(error)
@@ -21,31 +19,29 @@ exports.getSupplies = async (req, res) => {
     }
 };
 
-exports.addSupplyGiven  = async (req, res) => {
-
-    console.log(req.body);
-
-    newSupplyData =  req.body.newSupplyGiven
-    newSupplyData._id = new mongoose.Types.ObjectId();
-    newSupplyData.barangay_id = mongoose.Types.ObjectId(req.body.barangay_id);
+exports.addSupplyGiven = async (req, res) => {
 
     try {
+        console.log(req.body);
+        newSupplyData = req.body.newSupplyGiven
+        newSupplyData._id = new mongoose.Types.ObjectId();
+        newSupplyData.barangay_id = mongoose.Types.ObjectId(req.body.barangay_id);
         const newSupply = new SupplyGiven(newSupplyData)
         await newSupply.save()
-        res.send(200) 
+        console.log("success");
+        res.json(newSupply)
     } catch (error) {
         console.log(error)
         res.status(500).send({ error: "error" });
     }
 };
 
-exports.updateSupplyGiven  = async (req, res) => {
-    const newSupplyGiven = req.body.newSupplyGiven
-    console.log("update", newSupplyGiven);
-
+exports.updateSupplyGiven = async (req, res) => {
     try {
-        await SupplyGiven.updateOne({_id: newSupplyGiven.supply_given_id}, newSupplyGiven)
-        res.send(200)  
+        const newSupplyGiven = req.body.newSupplyGiven
+        console.log("update", newSupplyGiven);
+        await SupplyGiven.updateOne({ _id: newSupplyGiven.supply_given_id }, newSupplyGiven)
+        res.sendStatus(200)
     } catch (error) {
         console.log(error)
         res.status(500).send({ error: "error" });
@@ -53,12 +49,11 @@ exports.updateSupplyGiven  = async (req, res) => {
 };
 
 exports.deleteSupplyGiven = async (req, res) => {
-    const supplyGivenIDs = req.body.supplyGivenIDs
-    console.log("delete",supplyGivenIDs)
-
     try {
-        await SupplyGiven.deleteMany({_id: supplyGivenIDs})
-        res.send(200)  
+        const supplyGivenIDs = req.body.supplyGivenIDs
+        console.log("delete", supplyGivenIDs)
+        await SupplyGiven.deleteMany({ _id: supplyGivenIDs })
+        res.sendStatus(200)
     } catch (error) {
         console.log(error)
         res.status(500).send({ error: "error" });
