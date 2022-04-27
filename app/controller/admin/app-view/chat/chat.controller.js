@@ -68,7 +68,7 @@ exports.getConversations = async (req, res) => {
 		
 		const conversation = await Conversation.find({participants: {$in: [account_id]}})
 			.populate("participants")
-			.populate("messages")
+			.populate("messages").sort({updatedAt: -1})
 			
 		conversation.map((conversation, conversationIndex) => {
 			var participants = conversation.participants.filter(item => item.uuid != userUuid)
@@ -76,8 +76,9 @@ exports.getConversations = async (req, res) => {
 			
 			finalValue.push({
 				_id: conversation._id,
-				uuid: participants[0].uuid,
+				receiver_uuid: participants[0].uuid,
 				name: `${participants[0].first_name} ${participants[0].last_name}`,
+				my_avatar: account.profileUrl.data,
 				avatar: participants[0].profileUrl.data,
 				messages: [],
 				unread: count,
@@ -87,12 +88,14 @@ exports.getConversations = async (req, res) => {
 			conversation.messages.map((messages, messagesIndex) => {
 				if(messages.sender_uuid == userUuid){
 					finalValue[conversationIndex].messages.push({
+						sender_uuid: messages.sender_uuid,
 						content: messages.content,
 						from: "me",
 						msgType: "text"
 					})
 				}else{
 					finalValue[conversationIndex].messages.push({
+						  sender_uuid: messages.sender_uuid,
 						content: messages.content,
 						from: "opposite",
 						msgType: "text",
