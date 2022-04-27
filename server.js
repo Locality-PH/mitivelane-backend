@@ -6,14 +6,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const http = require('http');
+const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000"]
-
-  }
+    origin: ["http://localhost:3000", "https://mitivelane-test.online"],
+  },
 });
 
 const db = require("./app/models");
@@ -54,7 +53,7 @@ app.get("/", (_, res) => {
 require("./app/routes/")(app);
 
 //socket
-require("./app/socket/")(io)
+require("./app/socket/")(io);
 
 //test Auth
 app.get("/api/posts", authenticateToken, (req, res) => {
