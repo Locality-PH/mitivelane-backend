@@ -29,4 +29,9 @@ db.householdMember = require("./barangays/household/household_member.model")(mon
 
 //purok
 db.purok = require("./barangays/purok/purok.model")(mongoose);
+
+//purok
+db.SupplyGiven = require("./barangays/supply/supply_given.model")(mongoose);
+db.SupplyReceive = require("./barangays/supply/supply_receive.model")(mongoose);
+db.SupplyInventory = require("./barangays/supply/supply_inventory.model")(mongoose);
 module.exports = db;

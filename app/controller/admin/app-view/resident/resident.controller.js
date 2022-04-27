@@ -11,6 +11,7 @@ exports.getResidents = async (req, res) => {
         res.json(resident)
     } catch (error) {
         console.log(error)
+        res.status(500).send({ error: error });
     }
 };
 
@@ -42,6 +43,7 @@ exports.addResident = async (req, res) => {
         res.json("success")
     } catch (error) {
         console.log(error)
+        res.status(500).send({ error: error });
     }
 };
 
@@ -56,6 +58,7 @@ exports.deleteResident = async (req, res) => {
         res.json("deleted")
     } catch (error) {
         console.log(error)
+        res.status(500).send({ error: error });
     }
 };
 
@@ -69,5 +72,6 @@ exports.updateResident = async (req, res) => {
         res.json("updated")
     } catch (error) {
         console.log(error)
+        res.status(500).send({ error: error });
     }
 };
