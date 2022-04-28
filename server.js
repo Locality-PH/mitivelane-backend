@@ -28,8 +28,13 @@ const { Server } = require("socket.io");
 //     res.end();
 //   },
 // });
-const io = require("socket.io")(server, { cors: { origin: "*" } });
-
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000", "https://mitivelane-test.online:*"],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
