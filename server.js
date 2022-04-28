@@ -45,7 +45,7 @@ const io = socketIO(server);
 //   },
 // });
 
-io.sockets.on("connection", (socket) => {
+io.on("connection", (socket) => {
   console.log("Client connected");
   socket.on("disconnect", () => console.log("Client disconnected"));
   
@@ -53,8 +53,13 @@ io.sockets.on("connection", (socket) => {
 		// const user = getUser(receiverAuthToken)
 		
 		try{
-			console.log(message)
-			io.sockets.emit("chat:receive-message", conversationId, message)
+			console.log(message.content)
+			io.clients((error, clients) => {
+				  if (error) throw error;
+				  console.log(clients); 
+			});
+			
+			io.emit("chat:receive-message", conversationId, message)
 		}catch(error){
 			// Do nothing for now
 			
