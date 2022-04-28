@@ -16,21 +16,8 @@ const { Server } = require("socket.io");
 // });
 // server-side
 const io = new Server(server, {
-  origins: [
-    "https://mitivelane-test.online",
-    "http://localhost:3000",
-    "mitivelane-test.online",
-    "http://mitivelane-test.online",
-  ],
-
-  handlePreflightRequest: (req, res) => {
-    res.writeHead(200, {
-      "Access-Control-Allow-Origin": "https://mitivelane-test.online",
-      "Access-Control-Allow-Methods": "GET,POST",
-      "Access-Control-Allow-Credentials": true,
-    });
-    res.end();
-  },
+  origins: ["https://mitivelane-test.online:*", "http://localhost:*"],
+  credentials: true,
 });
 
 const db = require("./app/models");
