@@ -19,6 +19,14 @@ const io = new Server(server, {
   origins: ["https://mitivelane-test.online:*", "http://localhost:*"],
   credentials: true,
   methods: ["GET", "POST"],
+  handlePreflightRequest: (req, res) => {
+    res.writeHead(200, {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,POST",
+      "Access-Control-Allow-Credentials": true,
+    });
+    res.end();
+  },
 });
 
 const db = require("./app/models");
