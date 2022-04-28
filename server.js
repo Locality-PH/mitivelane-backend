@@ -8,7 +8,10 @@ app.use(express.urlencoded({ extended: true }));
 
 const http = require("http");
 const server = http.createServer(app);
-const { Server } = require("socket.io");
+const io = require("socket.io")(server);
+io.on("connection", () => {
+  /* … */
+});
 // const io = new Server(server, {
 //   cors: {
 //     origins: ["http://localhost:3000", "https://mitivelane-test.online"],
@@ -27,26 +30,21 @@ const { Server } = require("socket.io");
 //     });
 //     res.end();
 //   },
+// });const io = require('socket.io')(server);
+
+// const io = new Server(server, {
+//   cors: {
+//     origin: [
+//       "http://localhost:3000",
+//       "https://mitivelane-test.online:*",
+//       "mitivelane-test.online:*",
+//     ],
+//     methods: ["GET", "POST"],
+//     credentials: true,
+
+//     transports: ["websocket", "polling"],
+//   },
 // });
-const io = new Server(server, {
-  cors: {
-    origin: [
-      "http://localhost:3000",
-      "https://mitivelane-test.online:*",
-      "mitivelane-test.online:*",
-    ],
-    methods: ["GET", "POST"],
-    credentials: true,
-    handlePreflightRequest: (req, res) => {
-      res.writeHead(200, {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,POST",
-        "Access-Control-Allow-Credentials": true,
-      });
-      res.end();
-    },
-  },
-});
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
