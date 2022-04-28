@@ -28,13 +28,8 @@ const { Server } = require("socket.io");
 //     res.end();
 //   },
 // });
-const io = new Server(server, {
-  cors: {
-    origin: ["*"],
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
+const io = require("socket.io")(server, { cors: { origin: "*" } });
+
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
