@@ -9,9 +9,27 @@ app.use(express.urlencoded({ extended: true }));
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+// const io = new Server(server, {
+//   cors: {
+//     origins: ["http://localhost:3000", "https://mitivelane-test.online"],
+//   },
+// });
+// server-side
 const io = new Server(server, {
-  cors: {
-    origin: ["http://localhost:3000", "https://mitivelane-test.online"],
+  origins: [
+    "https://mitivelane-test.online",
+    "http://localhost:3000",
+    "mitivelane-test.online",
+    "http://mitivelane-test.online",
+  ],
+
+  handlePreflightRequest: (req, res) => {
+    res.writeHead(200, {
+      "Access-Control-Allow-Origin": "https://mitivelane-test.online",
+      "Access-Control-Allow-Methods": "GET,POST",
+      "Access-Control-Allow-Credentials": true,
+    });
+    res.end();
   },
 });
 
