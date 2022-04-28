@@ -15,20 +15,26 @@ const { Server } = require("socket.io");
 //   },
 // });
 // server-side
+// const io = new Server(server, {
+//   origins: ["https://mitivelane-test.online:*", "http://localhost:*"],
+//   credentials: true,
+//   methods: ["GET", "POST"],
+//   handlePreflightRequest: (req, res) => {
+//     res.writeHead(200, {
+//       "Access-Control-Allow-Origin": "*",
+//       "Access-Control-Allow-Methods": "GET,POST",
+//       "Access-Control-Allow-Credentials": true,
+//     });
+//     res.end();
+//   },
+// });
 const io = new Server(server, {
-  origins: ["https://mitivelane-test.online:*", "http://localhost:*"],
-  credentials: true,
-  methods: ["GET", "POST"],
-  handlePreflightRequest: (req, res) => {
-    res.writeHead(200, {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET,POST",
-      "Access-Control-Allow-Credentials": true,
-    });
-    res.end();
+  cors: {
+    origin: ["*"],
+    methods: ["GET", "POST"],
+    credentials: true,
   },
 });
-
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
