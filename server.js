@@ -45,23 +45,23 @@ const io = socketIO(server);
 //   },
 // });
 
-io.on("connection", (socket) => {
-  console.log("Client connected");
-  socket.on("disconnect", () => console.log("Client disconnected"));
+// io.on("connection", (socket) => {
+  // console.log("Client connected");
+  // socket.on("disconnect", () => console.log("Client disconnected"));
   
-  const sendMessage = (conversationId, receiverAuthToken, message) => {
-		// const user = getUser(receiverAuthToken)
+  // const sendMessage = (conversationId, receiverAuthToken, message) => {
+		// // const user = getUser(receiverAuthToken)
 		
-		try{
-			io.emit("chat:receive-message", conversationId, message)
-		}catch(error){
-			// Do nothing for now
+		// try{
+			// io.emit("chat:receive-message", conversationId, message)
+		// }catch(error){
+			// // Do nothing for now
 			
-		}
-	}
+		// }
+	// }
   
-  socket.on("chat:send-message", sendMessage)
-});
+  // socket.on("chat:send-message", sendMessage)
+// });
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
@@ -100,7 +100,7 @@ app.get("/", (_, res) => {
 require("./app/routes/")(app);
 
 //socket
-// require("./app/socket/")(io);
+require("./app/socket/")(io);
 
 //test Auth
 app.get("/api/posts", authenticateToken, (req, res) => {
