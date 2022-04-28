@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
 		// const user = getUser(receiverAuthToken)
 		
 		try{
-			io.emit("chat:receive-message", conversationId, message)
+			socket.broadcast.emit("chat:receive-message", conversationId, message)
 		}catch(error){
 			// Do nothing for now
 			
