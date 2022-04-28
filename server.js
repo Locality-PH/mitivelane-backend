@@ -18,6 +18,7 @@ const { Server } = require("socket.io");
 const io = new Server(server, {
   origins: ["https://mitivelane-test.online:*", "http://localhost:*"],
   credentials: true,
+  methods: ["GET", "POST"],
 });
 
 const db = require("./app/models");
