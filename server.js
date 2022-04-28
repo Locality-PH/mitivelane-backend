@@ -8,13 +8,61 @@ app.use(express.urlencoded({ extended: true }));
 
 const http = require("http");
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server, {
-  cors: {
-    origin: ["http://localhost:3000", "https://mitivelane-test.online"],
-  },
-});
+const socketIO = require("socket.io");
+const io = socketIO(server);
+// const io = new Server(server, {
+//   cors: {
+//     origins: ["http://localhost:3000", "https://mitivelane-test.online"],
+//   },
+// });
+// server-side
+// const io = new Server(server, {
+//   origins: ["https://mitivelane-test.online:*", "http://localhost:*"],
+//   credentials: true,
+//   methods: ["GET", "POST"],
+//   handlePreflightRequest: (req, res) => {
+//     res.writeHead(200, {
+//       "Access-Control-Allow-Origin": "*",
+//       "Access-Control-Allow-Methods": "GET,POST",
+//       "Access-Control-Allow-Credentials": true,
+//     });
+//     res.end();
+//   },
+// });
+// const io = new Server(server, {
+//   cors: {
+//     origin: ["http://localhost:3000", "https://mitivelane-test.online:*"],
+//     methods: ["GET", "POST"],
+//     credentials: true,
+//     handlePreflightRequest: (req, res) => {
+//       res.writeHead(200, {
+//         "Access-Control-Allow-Origin": "*",
+//         "Access-Control-Allow-Methods": "GET,POST",
+//         "Access-Control-Allow-Credentials": true,
+//       });
+//       res.end();
+//     },
+//   },
+// });
 
+io.on("connection", (socket) => {
+  console.log("Client connected");
+  socket.on("disconnect", () => console.log("Client disconnected"));
+  
+  const sendMessage = (conversationId, receiverAuthToken, message) => {
+		// const user = getUser(receiverAuthToken)
+		
+		try{
+			console.log(message)
+			io.emit("chat:receive-message", conversationId, message)
+		}catch(error){
+			// Do nothing for now
+			
+		}
+	}
+  
+  socket.on("chat:send-message", sendMessage)
+});
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
@@ -53,7 +101,7 @@ app.get("/", (_, res) => {
 require("./app/routes/")(app);
 
 //socket
-require("./app/socket/")(io);
+// require("./app/socket/")(io);
 
 //test Auth
 app.get("/api/posts", authenticateToken, (req, res) => {
