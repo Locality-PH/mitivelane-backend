@@ -33,9 +33,13 @@ const io = new Server(server, {
     origin: ["http://localhost:3000", "https://mitivelane-test.online:*"],
     methods: ["GET", "POST"],
     credentials: true,
-    allowRequest: (req, callback) => {
-      const noOriginHeader = req.headers.origin === undefined;
-      callback(null, noOriginHeader);
+    handlePreflightRequest: (req, res) => {
+      res.writeHead(200, {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST",
+        "Access-Control-Allow-Credentials": true,
+      });
+      res.end();
     },
   },
 });
