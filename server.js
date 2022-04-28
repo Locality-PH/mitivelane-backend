@@ -30,7 +30,11 @@ const { Server } = require("socket.io");
 // });
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://mitivelane-test.online:*"],
+    origin: [
+      "http://localhost:3000",
+      "https://mitivelane-test.online:*",
+      "mitivelane-test.online:*",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
     handlePreflightRequest: (req, res) => {
