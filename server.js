@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
 		// const user = getUser(receiverAuthToken)
 		
 		try{
-			socket.broadcast.emit("chat:receive-message", conversationId, message)
+			io.emit("chat:receive-message", conversationId, message)
 		}catch(error){
 			// Do nothing for now
 			
@@ -100,7 +100,7 @@ app.get("/", (_, res) => {
 require("./app/routes/")(app);
 
 //socket
-require("./app/socket/")(io);
+// require("./app/socket/")(io);
 
 //test Auth
 app.get("/api/posts", authenticateToken, (req, res) => {
