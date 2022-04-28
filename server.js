@@ -45,7 +45,7 @@ const io = socketIO(server);
 //   },
 // });
 
-io.on("connection", (socket) => {
+io.sockets.on("connection", (socket) => {
   console.log("Client connected");
   socket.on("disconnect", () => console.log("Client disconnected"));
   
@@ -54,7 +54,7 @@ io.on("connection", (socket) => {
 		
 		try{
 			console.log(message)
-			io.emit("chat:receive-message", conversationId, message)
+			io.sockets.emit("chat:receive-message", conversationId, message)
 		}catch(error){
 			// Do nothing for now
 			
