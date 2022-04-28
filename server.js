@@ -33,6 +33,10 @@ const io = new Server(server, {
     origin: ["http://localhost:3000", "https://mitivelane-test.online:*"],
     methods: ["GET", "POST"],
     credentials: true,
+    allowRequest: (req, callback) => {
+      const noOriginHeader = req.headers.origin === undefined;
+      callback(null, noOriginHeader);
+    },
   },
 });
 const db = require("./app/models");
