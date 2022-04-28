@@ -45,6 +45,23 @@ const io = socketIO(server);
 //   },
 // });
 
+io.on("connection", (socket) => {
+  console.log("Client connected");
+  socket.on("disconnect", () => console.log("Client disconnected"));
+  
+  const sendMessage = (conversationId, receiverAuthToken, message) => {
+		// const user = getUser(receiverAuthToken)
+		
+		try{
+			io.emit("chat:receive-message", conversationId, message)
+		}catch(error){
+			// Do nothing for now
+			
+		}
+	}
+  
+  socket.on("chat:send-message", sendMessage)
+});
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
