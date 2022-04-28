@@ -32,7 +32,7 @@ module.exports = (io) => {
 		})
 		
 		// Chat 
-		chat(socket, getUser)
+		chat(io, getUser)
 
 	}
 

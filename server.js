@@ -45,11 +45,6 @@ const io = socketIO(server);
 //   },
 // });
 
-io.on("connection", (socket) => {
-  console.log("Client connected");
-	io.emit("chat:receive-message", "ds", "ds")
-  socket.on("disconnect", () => console.log("Client disconnected"));
-});
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
