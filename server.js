@@ -45,6 +45,8 @@ const io = socketIO(server);
 //   },
 // });
 
+io.set("transports", ["websocket", "polling", "flashsocket"])
+
 io.on("connection", (socket) => {
   console.log("Client connected");
   socket.on("disconnect", () => console.log("Client disconnected"));
