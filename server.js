@@ -56,7 +56,7 @@ from: "opposite",
 msgType: "text",
 time: "",
 unread: false,
-  }))
+  }), 5000)
   
   const sendMessage = (conversationId, receiverAuthToken, message) => {
 		// const user = getUser(receiverAuthToken)
