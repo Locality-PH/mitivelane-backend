@@ -126,3 +126,10 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
+setInterval(() => io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {avatar: "data:application/octet-stream;base64,iVBORw0KGgoA
+content: "hep"
+from: "opposite"
+msgType: "text"
+time: ""
+unread: false}), 5000)
