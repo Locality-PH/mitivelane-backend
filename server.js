@@ -9,15 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 const http = require("http");
 const server = http.createServer(app);
 const socketIO = require("socket.io");
-const io = socketIO(server, {
-	withCredentials: true,
-  credentials: true,
-	cors:{
-		origins: ["http://localhost:3000", "https://mitivelane-test.online"]
-	},
-	transports: ["websocket", "polling", "flashsocket"],
-	methods: ["GET", "POST"]
-});
+const io = socketIO(server);
 // const io = new Server(server, {
 //   cors: {
 //     origins: ["http://localhost:3000", "https://mitivelane-test.online"],
@@ -57,7 +49,7 @@ io.on("connection", (socket) => {
   console.log("Client connected");
   socket.on("disconnect", () => console.log("Client disconnected"));
   
-  const sendMessage = (conversationId, receiverAuthToken, message) => {
+  socket.on("chat:send-message", (conversationId, receiverAuthToken, message) => {
 		// const user = getUser(receiverAuthToken)
 		
 		try{
@@ -67,9 +59,7 @@ io.on("connection", (socket) => {
 			// Do nothing for now
 			
 		}
-	}
-  
-  socket.on("chat:send-message", sendMessage)
+	})
 });
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
@@ -136,5 +126,3 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
-
-setInterval(() => io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {content: "message", from: "me"}), 3000)
