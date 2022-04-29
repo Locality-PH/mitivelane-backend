@@ -51,10 +51,10 @@ io.on("connection", (socket) => {
   
   socket.on("chat:send-message", (conversationId, receiverAuthToken, message) => {
 		// const user = getUser(receiverAuthToken)
+					sendMessage(conversationId, message) 
 		
 		try{
 			console.log("Message ", message.content)
-			setInterval(() => io.emit("chat:receive-message", conversationId, message), 1000)
 		}catch(error){
 			// Do nothing for now
 			
@@ -137,3 +137,7 @@ server.listen(PORT, () => {
 	// unread: false
 // }
 // ), 1000)
+
+const sendMessage = (conversationId, message) => {
+	return setInterval(() => io.emit("chat:receive-message", conversationId, message), 3000)
+}
