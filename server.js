@@ -50,14 +50,14 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async() => {
 	  console.log("disconnect")
 	  
-	   // setInterval(() => socket.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
-	  // avatar: "",
-	  // content: "disconnect to",
-// from: "opposite",
-// msgType: "text",
-// time: "",
-// unread: false,
-  // }), 1000)
+	   setInterval(() => socket.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
+	  avatar: "",
+	  content: "disconnect to",
+from: "opposite",
+msgType: "text",
+time: "",
+unread: false,
+  }), 1000)
 	  
 	  await io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
 	  avatar: "",
@@ -78,12 +78,19 @@ time: "",
 unread: false,
   }), 10000)
   
-  const sendMessage = (conversationId, receiverAuthToken, message) => {
+  const sendMessage = async(conversationId, receiverAuthToken, message) => {
 		// const user = getUser(receiverAuthToken)
 		
 		try{
 			console.log("Message ", message.content)
-			io.emit("chat:receive-message", conversationId, message)
+			await io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
+	  avatar: "",
+	  content: "disconnect",
+from: "opposite",
+msgType: "text",
+time: "",
+unread: false,
+  })}
 		}catch(error){
 			// Do nothing for now
 			
