@@ -50,14 +50,14 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
 	  console.log("disconnect")
 	  
-	   setInterval(() => socket.broadcast.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
+	   setInterval(() => socket.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
 	  avatar: "",
 	  content: "disconnect to",
 from: "opposite",
 msgType: "text",
 time: "",
 unread: false,
-  }), 3000)
+  }), 1000)
 	  
 	  io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
 	  avatar: "",
