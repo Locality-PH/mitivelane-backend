@@ -9,7 +9,11 @@ app.use(express.urlencoded({ extended: true }));
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
+const io = new Server(server, {
+	cors: {
+		origin: "https://mitivelane-test.online"
+	}
+});
 
 // this is test for chat, 
 io.on("connection", (socket) => {
