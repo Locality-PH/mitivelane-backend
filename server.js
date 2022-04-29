@@ -11,7 +11,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
 	cors: {
-		origin: "https://mitivelane-test.online"
+		origin: "https://mitivelane-test.online",
 		methods: ["GET", "POST"],
         credentials: true,
         transports: ["websocket", "polling"],
