@@ -1,4 +1,5 @@
 var users = []
+var countGlobal = 0
 
 const addUser = (userAuthToken, socketId) => {
 	!users.some((user) => user.userAuthToken === userAuthToken) &&
@@ -31,8 +32,23 @@ module.exports = (io) => {
 			console.log("User disconnect ", socket.id)
 		})
 		
+		setInterval(() => {
+			  countGlobal+=1
+			  
+			  io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
+				 countGlobal,
+			  avatar: "",
+			  content: "Infinite to",
+				from: "opposite",
+				msgType: "text",
+				time: "",
+				unread: false
+		  })
+		  
+		  }, 10000)
+		
 		// Chat 
-		chat(io, getUser)
+		chat(socket, getUser)
 
 	}
 

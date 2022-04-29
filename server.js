@@ -8,82 +8,13 @@ app.use(express.urlencoded({ extended: true }));
 
 const http = require("http");
 const server = http.createServer(app);
-const socketIO = require("socket.io");
-const io = socketIO(server, {
-	cors: {
-		 origins: ["http://localhost:3000", "https://mitivelane-test.online"]
-		
-	}
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000", "https://mitivelane-test.online"],
+  },
 });
-// const io = new Server(server, {
-//   cors: {
-//     origins: ["http://localhost:3000", "https://mitivelane-test.online"],
-//   },
-// });
-// server-side
-// const io = new Server(server, {
-//   origins: ["https://mitivelane-test.online:*", "http://localhost:*"],
-//   credentials: true,
-//   methods: ["GET", "POST"],
-//   handlePreflightRequest: (req, res) => {
-//     res.writeHead(200, {
-//       "Access-Control-Allow-Origin": "*",
-//       "Access-Control-Allow-Methods": "GET,POST",
-//       "Access-Control-Allow-Credentials": true,
-//     });
-//     res.end();
-//   },
-// });
-// const io = new Server(server, {
-//   cors: {
-//     origin: ["http://localhost:3000", "https://mitivelane-test.online:*"],
-//     methods: ["GET", "POST"],
-//     credentials: true,
-//     handlePreflightRequest: (req, res) => {
-//       res.writeHead(200, {
-//         "Access-Control-Allow-Origin": "*",
-//         "Access-Control-Allow-Methods": "GET,POST",
-//         "Access-Control-Allow-Credentials": true,
-//       });
-//       res.end();
-//     },
-//   },
-// });
 
-var countGlobal = 0
-io.on("connection", (socket) => {
-  console.log("Client connected");
-  socket.on("disconnect", () => console.log("disconnect") );
-  
-  setInterval(() => {
-	  countGlobal+=1
-	  
-	  io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
-		  countGlobal,
-	  avatar: "",
-	  content: "Infinite to",
-from: "opposite",
-msgType: "text",
-time: "",
-unread: false
-  })
-  
-  }, 10000)
-  
-  const sendMessage = (conversationId, receiverAuthToken, message) => {
-		// const user = getUser(receiverAuthToken)
-		
-		try{
-			console.log("Message ", message.content)
-			io.emit("chat:receive-message", conversationId, message)
-		}catch(error){
-			// Do nothing for now
-			
-		}
-	}
-  
-  socket.on("chat:send-message", sendMessage)
-});
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
@@ -122,7 +53,7 @@ app.get("/", (_, res) => {
 require("./app/routes/")(app);
 
 //socket
-// require("./app/socket/")(io);
+require("./app/socket/")(io);
 
 //test Auth
 app.get("/api/posts", authenticateToken, (req, res) => {
