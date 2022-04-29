@@ -47,14 +47,27 @@ const io = socketIO(server);
 
 io.on("connection", (socket) => {
   console.log("Client connected");
-  socket.on("disconnect", () => {io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
+  socket.on("disconnect", () => {
+	  console.log("disconnect")
+	  
+	   setInterval(() => io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
+	  avatar: "",
+	  content: "Infinite to",
+from: "opposite",
+msgType: "text",
+time: "",
+unread: false,
+  }), 1000)
+	  
+	  io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
 	  avatar: "",
 	  content: "disconnect",
 from: "opposite",
 msgType: "text",
 time: "",
 unread: false,
-  })});
+  })}
+  );
   
   setInterval(() => io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
 	  avatar: "",
@@ -63,7 +76,7 @@ from: "opposite",
 msgType: "text",
 time: "",
 unread: false,
-  }), 5000)
+  }), 10000)
   
   const sendMessage = (conversationId, receiverAuthToken, message) => {
 		// const user = getUser(receiverAuthToken)
