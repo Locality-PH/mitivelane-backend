@@ -11,23 +11,17 @@ const server = http.createServer(app);
 const socketIO = require("socket.io");
 const io = socketIO(server, {
 	cors:{
-		origin: [
-		"http://localhost:3000", 
-		"https://mitivelane-test.online", 
-		"http://mitivelane-test.online", 
-		
-		"https://mitivelane.herokuapp.com",
-		"http://mitivelane.herokuapp.com"],
+		origin: ["*"],
 		  handlePreflightRequest: (req, res) => {
-    res.writeHead(200, {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET,POST",
-	  "Access-Control-Allow-Headers": "my-custom-header",
-      "Access-Control-Allow-Credentials": true,
-    });
-    res.end();
-	}
-}});
+			res.writeHead(200, {
+			  "Access-Control-Allow-Origin": "*",
+			  "Access-Control-Allow-Methods": "GET,POST",
+			  "Access-Control-Allow-Headers": "my-custom-header",
+			  "Access-Control-Allow-Credentials": true,
+			});
+			res.end();
+	}}
+});
 // const io = new Server(server, {
 //   cors: {
 //     origins: ["http://localhost:3000", "https://mitivelane-test.online"],
