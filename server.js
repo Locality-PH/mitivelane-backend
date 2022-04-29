@@ -17,12 +17,17 @@ const io = socketIO(server, {
 		"http://mitivelane-test.online", 
 		
 		"https://mitivelane.herokuapp.com",
-		"http://mitivelane.herokuapp.com"]
-	},
-	method: ["GET", "POST"],
-	credentials: true,
-	withCredentials: true,
-});
+		"http://mitivelane.herokuapp.com"],
+		  handlePreflightRequest: (req, res) => {
+    res.writeHead(200, {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,POST",
+	  "Access-Control-Allow-Headers": "my-custom-header",
+      "Access-Control-Allow-Credentials": true,
+    });
+    res.end();
+	}
+}});
 // const io = new Server(server, {
 //   cors: {
 //     origins: ["http://localhost:3000", "https://mitivelane-test.online"],
