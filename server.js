@@ -47,19 +47,19 @@ const io = socketIO(server);
 
 io.on("connection", (socket) => {
   console.log("Client connected");
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async() => {
 	  console.log("disconnect")
 	  
-	   setInterval(() => socket.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
-	  avatar: "",
-	  content: "disconnect to",
-from: "opposite",
-msgType: "text",
-time: "",
-unread: false,
-  }), 1000)
+	   // setInterval(() => socket.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
+	  // avatar: "",
+	  // content: "disconnect to",
+// from: "opposite",
+// msgType: "text",
+// time: "",
+// unread: false,
+  // }), 1000)
 	  
-	  io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
+	  await io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
 	  avatar: "",
 	  content: "disconnect",
 from: "opposite",
