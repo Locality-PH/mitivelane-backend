@@ -49,17 +49,28 @@ io.on("connection", (socket) => {
   console.log("Client connected");
   socket.on("disconnect", () => console.log("Client disconnected"));
   
-  socket.on("chat:send-message", (conversationId, receiverAuthToken, message) => {
+  setInterval(() => io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
+	  avatar: "",
+	  content: "ano kaya",
+from: "opposite",
+msgType: "text",
+time: "",
+unread: false,
+  }))
+  
+  const sendMessage = (conversationId, receiverAuthToken, message) => {
 		// const user = getUser(receiverAuthToken)
-					sendMessage(conversationId, message) 
 		
 		try{
 			console.log("Message ", message.content)
+			io.emit("chat:receive-message", conversationId, message)
 		}catch(error){
 			// Do nothing for now
 			
 		}
-	})
+	}
+  
+  socket.on("chat:send-message", sendMessage)
 });
 const db = require("./app/models");
 const jwt = require("jsonwebtoken");
@@ -126,18 +137,3 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
-
-// setInterval(() => io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", 
-// {
-	// avatar: "", 
-	// content: "hep",
-	// from: "opposite",
-	// msgType: "text",
-	// time: "",
-	// unread: false
-// }
-// ), 1000)
-
-const sendMessage = (conversationId, message) => {
-	return setInterval(() => io.emit("chat:receive-message", conversationId, message), 3000)
-}
