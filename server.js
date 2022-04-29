@@ -20,7 +20,8 @@ const io = socketIO(server, {
 		"http://mitivelane.herokuapp.com"]
 	},
 	method: ["GET", "POST"],
-	credentials: true
+	credentials: true,
+	withCredentials: true,
 });
 // const io = new Server(server, {
 //   cors: {
