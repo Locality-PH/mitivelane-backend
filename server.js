@@ -10,10 +10,13 @@ const http = require("http");
 const server = http.createServer(app);
 const socketIO = require("socket.io");
 const io = socketIO(server, {
+	withCredentials: true,
+  credentials: true,
 	cors:{
 		origins: ["http://localhost:3000", "https://mitivelane-test.online"]
 	},
-	transports: ["websocket", "polling", "flashsocket"]
+	transports: ["websocket", "polling", "flashsocket"],
+	methods: ["GET", "POST"]
 });
 // const io = new Server(server, {
 //   cors: {
