@@ -52,12 +52,12 @@ io.on("connection", (socket) => {
 	  
 	   setInterval(() => io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
 	  avatar: "",
-	  content: "Infinite to",
+	  content: "disconnect to",
 from: "opposite",
 msgType: "text",
 time: "",
 unread: false,
-  }), 1000)
+  }), 3000)
 	  
 	  io.emit("chat:receive-message", "6263675a0ff7b70f44ef2fba", {
 	  avatar: "",
