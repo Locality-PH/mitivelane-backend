@@ -9,7 +9,12 @@ app.use(express.urlencoded({ extended: true }));
 const http = require("http");
 const server = http.createServer(app);
 const socketIO = require("socket.io");
-const io = socketIO(server);
+const io = socketIO(server, {
+	cors:{
+		origins: ["http://localhost:3000", "https://mitivelane-test.online"]
+	},
+	transports: ["websocket", "polling", "flashsocket"]
+});
 // const io = new Server(server, {
 //   cors: {
 //     origins: ["http://localhost:3000", "https://mitivelane-test.online"],
