@@ -11,13 +11,14 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
 	cors: {
-		origin: "*"
+		origin: "*",
+		transports: ["websocket", "polling", "flashsocket"]
         }
 });
 
 // this is test for chat, 
 io.on("connection", (socket) => {
-  console.log("Client connected");
+  console.log("Client connected ", socket.id);
   
   socket.on("disconnect", () => console.log("Client disconnected"));
   
