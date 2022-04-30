@@ -18,26 +18,26 @@ const getUser = (userAuthToken) => {
 }
 
 module.exports = (io) => {
-	const chat = require("./chat/chat.socket")
-
-	console.log("Client connected with socket ", socket.id);
+	io.on("connection", (socket) => {
+  console.log("Client connected ", socket.id);
   
-	socket.on("disconnect", () => console.log("Client disconnected"));
-
-	socket.on("socket:add-user", authToken => {
+  socket.on("disconnect", () => console.log("Client disconnected"));
+  
+  socket.on("socket:add-user", authToken => {
 	  io.emit("socket:new-user", authToken)
-	})
+  })
 
-	const sendMessage = (conversationId, receiverAuthToken, message) => {
-	// const user = getUser(receiverAuthToken)
+  const sendMessage = (conversationId, receiverAuthToken, message) => {
+    // const user = getUser(receiverAuthToken)
 
-	try {
-	  io.emit("chat:receive-message", conversationId, message)
-	} catch (error) {
-	  // Do nothing for now
+    try {
+      io.emit("chat:receive-message", conversationId, message)
+    } catch (error) {
+      // Do nothing for now
 
-	}
-	}
+    }
+  }
 
-	socket.on("chat:send-message", sendMessage)
+  socket.on("chat:send-message", sendMessage)
+});
 }
