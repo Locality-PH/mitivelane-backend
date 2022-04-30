@@ -8,6 +8,9 @@ app.use(express.urlencoded({ extended: true }));
 
 const http = require("http");
 const server = http.createServer(app);
+
+if (process.env.NODE_ENV == "development") {
+}
 const socketIO = require("socket.io");
 const io = socketIO(server);
 // const io = new Server(server, {
