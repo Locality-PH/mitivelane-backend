@@ -25,7 +25,9 @@ db.blotter_request = require("./blotter/blotter_request.model")(mongoose);
 
 //household
 db.household = require("./barangays/household/household.model")(mongoose);
-db.householdMember = require("./barangays/household/household_member.model")(mongoose);
+db.householdMember = require("./barangays/household/household_member.model")(
+  mongoose
+);
 
 //purok
 db.purok = require("./barangays/purok/purok.model")(mongoose);
@@ -33,5 +35,11 @@ db.purok = require("./barangays/purok/purok.model")(mongoose);
 //purok
 db.SupplyGiven = require("./barangays/supply/supply_given.model")(mongoose);
 db.SupplyReceive = require("./barangays/supply/supply_receive.model")(mongoose);
-db.SupplyInventory = require("./barangays/supply/supply_inventory.model")(mongoose);
+db.SupplyInventory = require("./barangays/supply/supply_inventory.model")(
+  mongoose
+);
+
+//certificates
+db.certificates = require("./certificates/cert.model.js")(mongoose);
+
 module.exports = db;

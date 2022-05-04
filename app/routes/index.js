@@ -11,5 +11,7 @@ module.exports = (app) => {
   require("./admin/app-view/blotter/settlement.routes")(app);
   require("./admin/app-view/chat/chat.routes")(app);
   require("./admin/app-view/supply/supply.routes")(app);
+  require("./admin/app-view/certificates/certificates.routes")(app);
+
   //   require("./app/routes/exercises.routes")(app);
 };

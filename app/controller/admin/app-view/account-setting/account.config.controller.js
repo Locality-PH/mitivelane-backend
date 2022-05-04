@@ -3,7 +3,7 @@ var mongoose = require("mongoose");
 
 const Account = db.account;
 
-exports.updateAccount = (req, res) => {
+exports.updateAccount = async (req, res) => {
   let mimeType;
   let data = {};
   if (!(req.body.profile_url == "")) {
@@ -21,7 +21,7 @@ exports.updateAccount = (req, res) => {
       full_name: req.body.full_name,
     };
   }
-  Account.findOneAndUpdate(
+  await Account.findOneAndUpdate(
     {
       uuid: req.user.auth_id,
     },
@@ -31,15 +31,15 @@ exports.updateAccount = (req, res) => {
     { new: true },
     (err, _) => {
       if (err) {
-        return res.status(400).json("Error: " + err);
+        return res.json("Error: " + err);
       }
       return res.json(req.body);
     }
   );
 };
 
-exports.getDetails = (req, res) => {
-  Account.find({ uuid: req.body.auth_id })
+exports.getDetails = async (req, res) => {
+  await Account.find({ uuid: req.body.auth_id })
     .select({ full_name: 1, _id: 0 })
     .then((barangay) => {
       return res.json({
@@ -47,14 +47,22 @@ exports.getDetails = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(400).json("Error: " + err);
+      return res.json("Error: " + err);
     });
 };
-exports.getSession = (req, res) => {
+exports.getSession = async (req, res) => {
   let session = [];
-  Account.find({ uuid: req.body.auth_id })
-    .select({ full_name: 2, sessions: 1, _id: 0 })
+  await Account.find({ uuid: req.body.auth_id })
+    .select({
+      full_name: 2,
+      //  sessions: { $slice: [0, req.body.limit] },
+      sessions: 1,
+      _id: 0,
+    })
+    .limit(1)
+
     .then((barangay) => {
+      console.log(barangay);
       barangay[0].sessions.map((item) => {
         session.push({
           host: item.host,
@@ -69,13 +77,14 @@ exports.getSession = (req, res) => {
       });
       session = [].concat.apply([], session);
 
-      //console.log(data);
-      res.json({
+      return res.json({
         full_name: barangay[0].full_name,
         session: session.reverse(),
       });
     })
-    .catch((err) => res.status(400).json("Error: " + err));
+    .catch((err) => {
+      return res.json("Error: " + err);
+    });
 };
 exports.removeSession = async (req, res) => {
   if (req.session_token) return res.sendStatus(404);
@@ -92,6 +101,10 @@ exports.removeSession = async (req, res) => {
     },
     { new: true, multi: true }
   )
-    .then((account) => res.json("Deleted successful"))
-    .catch((err) => res.status(400).json("Error: " + err));
+    .then((_) => {
+      return res.json("Deleted successful");
+    })
+    .catch((err) => {
+      return res.json("Error: " + err);
+    });
 };
