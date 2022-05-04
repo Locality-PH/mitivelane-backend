@@ -8,7 +8,7 @@ module.exports = (mongoose) => {
       province: { type: String },
       country: { type: String },
       address: { type: String },
-
+      barangay_supply: { type: Number, default: 0 },
       barangay_member: [
         {
           type: mongoose.Schema.Types.ObjectId,

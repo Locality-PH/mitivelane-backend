@@ -3,8 +3,9 @@ module.exports = (mongoose) => {
       {
         _id: { type: mongoose.Schema.Types.ObjectId },
         household_name: { type: String },
-        amount: { type: String },
+        amount: { type: Number },
         date: { type: Date},
+        current_supply: { type: Number },
         barangay_id: { type: mongoose.Schema.Types.ObjectId, ref: "barangays" },
       },
       { timestamps: true }
