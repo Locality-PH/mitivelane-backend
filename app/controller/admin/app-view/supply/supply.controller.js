@@ -6,17 +6,48 @@ const SupplyReceived = db.SupplyReceive;
 const SupplyInventory = db.SupplyInventory;
 const Barangay = db.barangay;
 
-exports.getSupplies = async (req, res) => {
+exports.getGivenSupplies = async (req, res) => {
     try {
         var barangay_id = req.body.barangay_id
         var pageSize = req.body.pageSize
         barangay_id = mongoose.Types.ObjectId(barangay_id);
-        const suppliesGiven = await SupplyGiven.find({ barangay_id }).limit(pageSize)
-        const suppliesGivenCount = await SupplyGiven.countDocuments({ barangay_id })
-        const suppliesReceived = await SupplyReceived.find({ barangay_id }).limit(pageSize)
-        const suppliesReceivedCount = await SupplyReceived.countDocuments({ barangay_id })
-        res.status(200).send({ SupplyGiven: suppliesGiven, SupplyReceived: suppliesReceived, suppliesGivenCount, suppliesReceivedCount})
-        console.log("connected")
+        var suppliesGiven, suppliesGivenCount
+
+        await SupplyGiven.find({ barangay_id }).limit(pageSize)
+        .then(async (data) => {
+            suppliesGiven = data
+            await SupplyGiven.countDocuments({ barangay_id })
+            .then((data) => {
+                suppliesGivenCount = data
+                res.status(200).send({ SupplyGiven: suppliesGiven, suppliesGivenCount})
+                console.log("connected")
+            })
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ error: "error" });
+    }
+};
+
+exports.getReceivedSupplies = async (req, res) => {
+    try {
+        var barangay_id = req.body.barangay_id
+        var pageSize = req.body.pageSize
+        barangay_id = mongoose.Types.ObjectId(barangay_id);
+        var suppliesReceived, suppliesReceivedCount
+
+        await SupplyReceived.find({ barangay_id }).limit(pageSize)
+        .then(async (data) => {
+            suppliesReceived = data
+            await SupplyReceived.countDocuments({ barangay_id })
+            .then((data) => {
+                suppliesReceivedCount = data
+                res.status(200).send({ SupplyReceived: suppliesReceived, suppliesReceivedCount})
+                console.log("connected")
+            })
+        })
+
     } catch (error) {
         console.log(error)
         res.status(500).send({ error: "error" });
@@ -25,8 +56,6 @@ exports.getSupplies = async (req, res) => {
 
 exports.getGivenSupplyPage = async (req, res) => {
     try {
-        console.log(req.params)
-        console.log(req.params.page * 3)
         var page = parseInt(req.params.page) - 1
         var pageSize = parseInt(req.params.pageSize)
         var barangay_id = req.params.barangay_id
@@ -41,13 +70,14 @@ exports.getGivenSupplyPage = async (req, res) => {
 
 exports.getReceivedSupplyPage = async (req, res) => {
     try {
-        console.log(req.params)
-        console.log(req.params.page * 3)
+        console.log("receive supply page")
+        console.log(res.body)
         var page = parseInt(req.params.page) - 1
         var pageSize = parseInt(req.params.pageSize)
         var barangay_id = req.params.barangay_id
         barangay_id = mongoose.Types.ObjectId(barangay_id);
         const query = await SupplyReceived.find({ barangay_id }).skip(page * pageSize).limit(pageSize)
+        console.log(query)
         res.status(200).send(query)
     } catch (error) {
         console.log(error)
