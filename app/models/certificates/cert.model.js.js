@@ -9,7 +9,18 @@ module.exports = (mongoose) => {
       country: { type: String },
       municipality: { type: String },
       barangay: { type: String },
+      clearance: { type: String },
       office: { type: String },
+      cert_type: { type: String },
+      template_type: { type: String },
+      narrative: { type: Object },
+      signatures: [
+        {
+          id: { type: String },
+          formName: { type: String },
+          image: { type: String },
+        },
+      ],
     },
     { timestamps: true }
   );

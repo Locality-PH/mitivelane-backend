@@ -4,7 +4,18 @@ var mongoose = require("mongoose");
 
 exports.createCertificate = async (req, res) => {
   var id = new mongoose.Types.ObjectId();
-  let data = { _id: id, barangay_id: [req.user.auth_barangay] };
+  let data = {
+    _id: id,
+    barangay_id: [req.user.auth_barangay],
+    cert_type: "cert",
+    template_type: "simple_border",
+    content: [
+      {
+        entityMap: {},
+        blocks: [],
+      },
+    ],
+  };
   const cert = new Certificate(data);
 
   await cert
@@ -30,6 +41,24 @@ exports.getCertificate = async (req, res) => {
   //   const data = req.param;
   //   await Certificate.find(data.id);
   //   return res.json("get");
+
+  try {
+    await Certificate.find({
+      _id: req.params.id,
+      barangay_id: req.user.auth_barangay,
+    })
+      .limit(1)
+      .then((data) => {
+        console.log(data);
+        return res.json(data);
+      })
+      .catch((err) => {
+        res.statusCode = 401;
+        return res.json("Error: " + err);
+      });
+  } catch (e) {
+    res.json(e);
+  }
 };
 
 exports.getCertificateAll = async (req, res) => {
@@ -52,6 +81,63 @@ exports.getCertificateAll = async (req, res) => {
     res.json(e);
   }
 
+  //   const data = req.param;
+  //   await Certificate.find(data.id);
+  //   return res.json("get");
+};
+
+exports.updateCertificate = async (req, res) => {
+  if (!req.user) {
+    return res.status(404).send({ Error: "something went wrong" });
+  }
+
+  // let data = {};
+  // data = {
+  //   barangay_id: req.user.auth_barangay,
+  //   full_name: req.body.country,
+  //   signatures: req.body.signatures,
+  //   country: req.body.country,
+  //   municipality: req.body.municipality,
+  //   barangay: req.body.barangay,
+  //   office: req.body.office,
+  //   cert_type: req.body.cert_type,
+  //   template_type: req.body.template_type,
+  //   content: req.body.content,
+  // };
+
+  return await Certificate.findOneAndUpdate(
+    {
+      _id: req.body.certificate_id,
+    },
+    {
+      $set: {
+        barangay_id: req.user.auth_barangay,
+        full_name: req.body.country,
+        signatures: req.body.signatures,
+        country: req.body.country,
+        municipality: req.body.municipality,
+        barangay: req.body.barangay,
+        office: req.body.office,
+        cert_type: req.body.cert_type,
+        template_type: req.body.template_type,
+        content: req.body.content,
+        clearance: req.body.clearance,
+      },
+    }
+    // { new: true },
+    // (err, _) => {
+    //   if (err) {
+    //     return res.json("Error: " + err);
+    //   }
+    //   return res.json(req.body);
+    // }
+  )
+    .then(() => {
+      return res.json(req.body);
+    })
+    .catch((err) => {
+      return res.json(err);
+    });
   //   const data = req.param;
   //   await Certificate.find(data.id);
   //   return res.json("get");

@@ -60,7 +60,6 @@ exports.getSession = async (req, res) => {
       _id: 0,
     })
     .limit(1)
-
     .then((barangay) => {
       console.log(barangay);
       barangay[0].sessions.map((item) => {

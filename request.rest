@@ -117,6 +117,31 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiMlRyO
 {"auth_id":"bataaasdsdaasds","email":"testsaduser@gmail.com","iat":1643351276,"exp":1643351336}
 
 ###
-GET http://localhost:5000/api/cert-display?result=5&start=1
+GET http://localhost:5000/api/cert-display?result=1&start=1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRDVCcjNSZXdrU1pDRUNzWUVVcHNYS3VJcmlBMyIsImF1dGhfYmFyYW5nYXkiOiI2MjI4NzkxOGZhM2VkMWMzOTcxMTQ1M2EiLCJpYXQiOjE2NTE0ODY5NzEsImV4cCI6MTY1MTU4Njk3MX0.m-YQne-OC36C0KBWauze-76p_0H4UAoJsDg0zmUpLEc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRDVCcjNSZXdrU1pDRUNzWUVVcHNYS3VJcmlBMyIsImF1dGhfYmFyYW5nYXkiOiI2MjI4NzkxOGZhM2VkMWMzOTcxMTQ1M2EiLCJpYXQiOjE2NTE2MjQ2NTYsImV4cCI6MTY1MTcyNDY1Nn0.Fg-W3Klmq608lfjFrbQ36_hxWJrFCIDy5qEbs9tY93k
+###
+GET http://localhost:5000/api/cert-display/6273230a1a022f1ba929832e3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRDVCcjNSZXdrU1pDRUNzWUVVcHNYS3VJcmlBMyIsImF1dGhfYmFyYW5nYXkiOiI2MjI4NzkxOGZhM2VkMWMzOTcxMTQ1M2EiLCJpYXQiOjE2NTE3MTM5NjMsImV4cCI6MTY1MTgxMzk2M30.kF_8iI2MJQBY5MLXzjE4gdNh6YneYRpjnS8nl2KTZxk
+
+###
+POST http://localhost:5000/api/cert-display/6279c5873d92b83ff170bdd4
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRDVCcjNSZXdrU1pDRUNzWUVVcHNYS3VJcmlBMyIsImF1dGhfYmFyYW5nYXkiOiI2MjI4NzkxOGZhM2VkMWMzOTcxMTQ1M2EiLCJpYXQiOjE2NTIxNDkyNjIsImV4cCI6MTY1MjI0OTI2Mn0.y7gzlEpqY8bvV9EjfGL63ktDqwiJFDOu08y5dY3KD20
+
+{"barangay": "qwew",
+"barangay_id": "62287918fa3ed1c39711453a",
+"certificate_id": "6279c5873d92b83ff170bdd4",
+"clearance": "asdsad",
+"municipality": "qweasdsadadqw",
+"country": "we",
+"certificate_id": "6279c5873d92b83ff170bdd4"}
+
+
+
+
+###
+POST http://localhost:5000/api/cert-display/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRDVCcjNSZXdrU1pDRUNzWUVVcHNYS3VJcmlBMyIsImF1dGhfYmFyYW5nYXkiOiI2MjI4NzkxOGZhM2VkMWMzOTcxMTQ1M2EiLCJpYXQiOjE2NTE4MTcwMzQsImV4cCI6MTY1MTkxNzAzNH0.N4IIciOchFppUOLdZcEkQOYVs5tytW0kRAcfh4_ZUzQ

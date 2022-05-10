@@ -9,7 +9,9 @@ module.exports = (app) => {
     certificate.createCertificate
   );
 
-  router.get("/:id/", certificate.getCertificate);
+  router.get("/:id", auth.authenticationToken, certificate.getCertificate);
+  router.post("/:id", auth.authenticationToken, certificate.updateCertificate);
+
   router.get("/", auth.authenticationToken, certificate.getCertificateAll);
 
   app.use("/api/cert-display", router);
