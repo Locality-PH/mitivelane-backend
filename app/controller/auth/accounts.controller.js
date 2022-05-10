@@ -96,42 +96,8 @@ exports.accessToken = async (req, res) => {
                   auth_id: user.auth_id,
                 });
 
-                // Account.findOneAndUpdate(
-                //   {
-                //     uuid: user.auth_id,
-                //   },
-                //   {
-                //     $set: {
-                //       access_token: accessToken,
-                //     },
-                //   },
-                //   { new: true },
-                //   (err, doc) => {
-                //     if (err) {
-                //       return res.status(400).json("Error: " + err);
-                //     }
-                //     res.json({ accessToken: accessToken });
-                //   }
-                // );
                 console.log(user.auth_id);
-                // Account.findOneAndUpdate(
-                //   {
-                //     uuid: user.auth_id,
-                //     "sessions.user_agent": userAgent,
-                //   },
-                //   {
-                //     $set: {
-                //       "sessions.$.access_token": accessToken,
-                //     },
-                //   },
-                //   { new: true, upsert: true },
-                //   (err, _) => {
-                //     if (err) {
-                //       return res.status(400).json("Error: " + err);
-                //     }
-                //     res.json({ accessToken: accessToken });
-                //   }
-                // );
+
                 Account.updateOne(
                   { uuid: user.auth_id, "sessions.access_token": refreshToken },
                   {

@@ -4,10 +4,17 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.post(
-    "/getAll",
+    "/given/getAll",
     auth.authenticationToken,
-    supplyController.getSupplies
+    supplyController.getGivenSupplies
   );
+
+  router.post(
+    "/receive/getAll",
+    auth.authenticationToken,
+    supplyController.getReceivedSupplies
+  );
+
   router.post(
     "/get/current",
     auth.authenticationToken,
@@ -38,6 +45,13 @@ module.exports = (app) => {
     auth.authenticationToken,
     supplyController.getGivenSupplyPage
   );
+
+  router.get(
+    "/receive/getPage/:barangay_id/:page/:pageSize",
+    auth.authenticationToken,
+    supplyController.getReceivedSupplyPage
+  );
+
   router.post(
     "/receive/add",
     auth.authenticationToken,
