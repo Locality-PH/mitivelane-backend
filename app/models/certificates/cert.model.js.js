@@ -13,7 +13,7 @@ module.exports = (mongoose) => {
       office: { type: String },
       cert_type: { type: String },
       template_type: { type: String },
-      narrative: { type: Object },
+      content: { type: Object },
       signatures: [
         {
           id: { type: String },
