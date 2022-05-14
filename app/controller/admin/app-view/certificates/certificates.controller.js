@@ -113,6 +113,9 @@ exports.updateCertificate = async (req, res) => {
       $set: {
         barangay_id: req.user.auth_barangay,
         full_name: req.body.country,
+        firstLogo: req.body.firstLogo,
+        secondLogo: req.body.secondLogo,
+
         signatures: req.body.signatures,
         country: req.body.country,
         municipality: req.body.municipality,

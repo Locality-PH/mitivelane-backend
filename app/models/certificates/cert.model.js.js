@@ -7,9 +7,13 @@ module.exports = (mongoose) => {
         ref: "barangays",
       },
       country: { type: String },
+      firstLogo: { type: String },
+      secondLogo: { type: String },
+
       municipality: { type: String },
       barangay: { type: String },
       clearance: { type: String },
+
       office: { type: String },
       cert_type: { type: String },
       template_type: { type: String },
