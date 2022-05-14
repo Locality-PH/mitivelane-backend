@@ -2,7 +2,10 @@ module.exports = (mongoose) => {
   var residentSchema = mongoose.Schema(
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
-      barangay_id: { type: mongoose.Schema.Types.ObjectId, ref: "barangays" },
+      organization_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "organizations",
+      },
       lastname: { type: String },
       firstname: { type: String },
       middlename: { type: String },
@@ -31,7 +34,7 @@ module.exports = (mongoose) => {
       mother: { type: String },
       address_1: { type: String },
       address_2: { type: String },
-      avatarColor: { type: String }
+      avatarColor: { type: String },
     },
     { timestamps: true }
   );

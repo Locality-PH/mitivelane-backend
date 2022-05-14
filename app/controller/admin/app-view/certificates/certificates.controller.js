@@ -6,7 +6,7 @@ exports.createCertificate = async (req, res) => {
   var id = new mongoose.Types.ObjectId();
   let data = {
     _id: id,
-    barangay_id: [req.user.auth_barangay],
+    organization_id: [req.user.auth_organization],
     cert_type: "cert",
     template_type: "simple_border",
     content: [
@@ -45,7 +45,7 @@ exports.getCertificate = async (req, res) => {
   try {
     await Certificate.find({
       _id: req.params.id,
-      barangay_id: req.user.auth_barangay,
+      organization_id: req.user.auth_organization,
     })
       .limit(1)
       .then((data) => {
@@ -67,7 +67,7 @@ exports.getCertificateAll = async (req, res) => {
     const start = new Number(req.query.start);
     console.log(req.query.result);
     if (result || start)
-      await Certificate.find({ barangay_id: req.user.auth_barangay })
+      await Certificate.find({ organization_id: req.user.auth_organization })
         .skip(start)
         .limit(result)
         .then((data) => {
@@ -93,12 +93,12 @@ exports.updateCertificate = async (req, res) => {
 
   // let data = {};
   // data = {
-  //   barangay_id: req.user.auth_barangay,
+  //   organization_id: req.user.auth_organization,
   //   full_name: req.body.country,
   //   signatures: req.body.signatures,
   //   country: req.body.country,
   //   municipality: req.body.municipality,
-  //   barangay: req.body.barangay,
+  //   organization: req.body.organization,
   //   office: req.body.office,
   //   cert_type: req.body.cert_type,
   //   template_type: req.body.template_type,
@@ -111,12 +111,15 @@ exports.updateCertificate = async (req, res) => {
     },
     {
       $set: {
-        barangay_id: req.user.auth_barangay,
+        organization_id: req.user.auth_organization,
         full_name: req.body.country,
+        firstLogo: req.body.firstLogo,
+        secondLogo: req.body.secondLogo,
+
         signatures: req.body.signatures,
         country: req.body.country,
         municipality: req.body.municipality,
-        barangay: req.body.barangay,
+        organization: req.body.organization,
         office: req.body.office,
         cert_type: req.body.cert_type,
         template_type: req.body.template_type,

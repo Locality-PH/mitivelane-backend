@@ -3,9 +3,9 @@ module.exports = (mongoose) => {
       {
         _id: { type: mongoose.Schema.Types.ObjectId },
         name: { type: String },
-        barangay_id: {
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'barangays'
+        organization_id: {
+          type: mongoose.Schema.Types.ObjectId, 
+          ref: 'organizations'
         }
       },
       { timestamps: true }

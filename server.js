@@ -6,9 +6,10 @@ const db = require("./app/models");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
 const app = express();
+app.use(express.json({ limit: "5mb" }));
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -28,7 +29,7 @@ require("./app/auth");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL:
-    "https://barangay-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "https://organization-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
   storageBucket: "randomDB-f12d3.appspot.com",
 });
 db.mongoose

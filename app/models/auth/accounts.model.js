@@ -47,15 +47,15 @@ module.exports = (mongoose) => {
         [
           {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "barangay_members",
+            ref: "organization_members",
           },
         ],
       ],
-      barangays: [
+      organizations: [
         [
           {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "barangay_members",
+            ref: "organization_members",
           },
         ],
       ],

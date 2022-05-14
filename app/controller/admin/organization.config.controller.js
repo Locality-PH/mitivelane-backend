@@ -3,49 +3,49 @@ var mongoose = require("mongoose");
 
 const Account = db.account;
 
-exports.getBarangayList = (req, res) => {
-  //console.log(req.params.barangay_id);
+exports.getOrganizationList = (req, res) => {
+  //console.log(req.params.organization_id);
   Account.find({ uuid: req.params.auth_id })
-    .select({ first_time: 2, barangays: 1, _id: 0 })
+    .select({ first_time: 2, organizations: 1, _id: 0 })
     .populate({
-      path: "barangays",
-      model: "barangays",
-      select: ["_id", "barangay_name"],
+      path: "organizations",
+      model: "organizations",
+      select: ["_id", "organization_name"],
     })
     .populate({
       path: "members",
-      model: "barangay_members",
-      select: ["_id", "barangay_id"],
+      model: "organization_members",
+      select: ["_id", "organization_id"],
     })
-    .then((barangay) => {
-      //console.log(barangay);
-      return res.json(barangay);
+    .then((organization) => {
+      //console.log(organization);
+      return res.json(organization);
     })
     .catch((err) => {
       return res.status(400).json("Error: " + err);
     });
 };
-exports.getPreBarangayList = (req, res) => {
+exports.getPreOrganizationList = (req, res) => {
   Account.find({ uuid: req.params.auth_id })
     .select({
       first_name: 4,
       last_name: 3,
       first_time: 2,
-      barangays: 1,
+      organizations: 1,
       _id: 0,
     })
     .populate({
-      path: "barangays",
-      model: "barangays",
-      select: ["_id", "barangay_name"],
+      path: "organizations",
+      model: "organizations",
+      select: ["_id", "organization_name"],
     })
     .populate({
       path: "members",
-      model: "barangay_members",
-      select: ["_id", "barangay_id"],
+      model: "organization_members",
+      select: ["_id", "organization_id"],
     })
-    .then((barangay) => {
-      res.json(barangay);
+    .then((organization) => {
+      res.json(organization);
     })
     .catch((err) => res.status(400).json("Error: " + err));
 };

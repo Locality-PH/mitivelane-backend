@@ -41,9 +41,9 @@ exports.updateAccount = async (req, res) => {
 exports.getDetails = async (req, res) => {
   await Account.find({ uuid: req.body.auth_id })
     .select({ full_name: 1, _id: 0 })
-    .then((barangay) => {
+    .then((organization) => {
       return res.json({
-        full_name: barangay[0].full_name,
+        full_name: organization[0].full_name,
       });
     })
     .catch((err) => {
@@ -60,9 +60,9 @@ exports.getSession = async (req, res) => {
       _id: 0,
     })
     .limit(1)
-    .then((barangay) => {
-      console.log(barangay);
-      barangay[0].sessions.map((item) => {
+    .then((organization) => {
+      console.log(organization);
+      organization[0].sessions.map((item) => {
         session.push({
           host: item.host,
           country: item.country,
@@ -77,7 +77,7 @@ exports.getSession = async (req, res) => {
       session = [].concat.apply([], session);
 
       return res.json({
-        full_name: barangay[0].full_name,
+        full_name: organization[0].full_name,
         session: session.reverse(),
       });
     })

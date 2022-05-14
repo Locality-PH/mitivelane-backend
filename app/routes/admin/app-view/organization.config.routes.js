@@ -1,5 +1,5 @@
 module.exports = (app) => {
-  const appConfig = require("../../../controller/admin/barangay.config.controller.js");
+  const appConfig = require("../../../controller/admin/organization.config.controller.js");
   const auth = require("../../../auth");
   var router = require("express").Router();
 
@@ -7,7 +7,7 @@ module.exports = (app) => {
   router.get(
     "/users/:auth_id",
     auth.authenticationToken,
-    appConfig.getBarangayList
+    appConfig.getOrganizationList
   );
   app.use("/api/app", router);
 };

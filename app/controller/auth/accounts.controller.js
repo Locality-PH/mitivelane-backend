@@ -6,7 +6,7 @@ const geoip = require("fast-geoip");
 var request = require("request").defaults({ encoding: null });
 
 var mongoose = require("mongoose");
-// const BarangayMember = db.barangayMember;
+// const OrganizationMember = db.organizationMember;
 const Account = db.account;
 let colortag = [
   "#0085c3",
@@ -79,12 +79,12 @@ exports.accessToken = async (req, res) => {
       // console.log(result);
       if (currentUserId !== null) {
         Account.find({ uuid: uuid })
-          // .populate({ path: "barangays", model: "barangays" })
-          .then((barangay) => {
-            // if (barangay[0].access_token == refreshToken) {
+          // .populate({ path: "organizations", model: "organizations" })
+          .then((organization) => {
+            // if (organization[0].access_token == refreshToken) {
 
             jwt.verify(
-              barangay[0].refresh_token,
+              organization[0].refresh_token,
               process.env.REFRESH_TOKEN_SECRET,
               (err, user) => {
                 if (err) {
@@ -170,15 +170,15 @@ async function registerOldUser(req, res) {
         profileLogo: 4,
         first_time: 3,
         members: 2,
-        barangays: 1,
+        organizations: 1,
         _id: 0,
       })
       .populate({
-        path: "barangays",
-        model: "barangays",
+        path: "organizations",
+        model: "organizations",
         select: [
           "_id",
-          "barangay_name",
+          "organization_name",
           "municipality",
           "province",
           "country",
@@ -187,16 +187,16 @@ async function registerOldUser(req, res) {
       })
       .populate({
         path: "members",
-        model: "barangay_members",
-        select: ["_id", "role", "email", "barangay_id"],
+        model: "organization_members",
+        select: ["_id", "role", "email", "organization_id"],
       })
-      .then((barangay) => {
+      .then((organization) => {
         const users = {
           auth_id: req.body.uuid,
-          profileLogo: barangay[0].profileLogo,
-          barangays: barangay[0].barangays,
-          members: barangay[0].members,
-          first_time: barangay[0].first_time,
+          profileLogo: organization[0].profileLogo,
+          organizations: organization[0].organizations,
+          members: organization[0].members,
+          first_time: organization[0].first_time,
         };
 
         const accessToken = generateAccessTokenLogin(users);
@@ -230,7 +230,7 @@ async function registerOldUser(req, res) {
 
             return res.json({
               accessToken,
-              profileUrl: barangay[0].profileUrl.data,
+              profileUrl: organization[0].profileUrl.data,
             });
           }
         );
@@ -308,7 +308,7 @@ async function registerNewUser(req, res) {
           const users = {
             profileLogo: colortag[random],
             auth_id: req.body.uuid,
-            barangays: [],
+            organizations: [],
             members: [],
             first_time: true,
           };
@@ -369,21 +369,21 @@ async function loginUser(req, res) {
   const geolocation = (await geoip.lookup(req.user.ipv4)) || "";
 
   await Account.find({ uuid: req.params.auth_id })
-    // .populate({ path: "barangays", model: "barangays" })
+    // .populate({ path: "organizations", model: "organizations" })
     .select({
       profileUrl: 5,
       profileLogo: 4,
       first_time: 3,
       members: 2,
-      barangays: 1,
+      organizations: 1,
       _id: 0,
     })
     .populate({
-      path: "barangays",
-      model: "barangays",
+      path: "organizations",
+      model: "organizations",
       select: [
         "_id",
-        "barangay_name",
+        "organization_name",
         "municipality",
         "province",
         "country",
@@ -392,17 +392,17 @@ async function loginUser(req, res) {
     })
     .populate({
       path: "members",
-      model: "barangay_members",
-      select: ["_id", "role", "email", "barangay_id"],
+      model: "organization_members",
+      select: ["_id", "role", "email", "organization_id"],
     })
 
-    .then((barangay) => {
+    .then((organization) => {
       const users = {
-        profileLogo: barangay[0].profileLogo,
+        profileLogo: organization[0].profileLogo,
         auth_id: req.params.auth_id,
-        barangays: barangay[0].barangays,
-        members: barangay[0].members,
-        first_time: barangay[0].first_time,
+        organizations: organization[0].organizations,
+        members: organization[0].members,
+        first_time: organization[0].first_time,
       };
       const accessToken = generateAccessTokenLogin(users);
       const refreshToken = jwt.sign(users, process.env.REFRESH_TOKEN_SECRET);
@@ -436,7 +436,7 @@ async function loginUser(req, res) {
 
           return res.json({
             accessToken,
-            profileUrl: barangay[0].profileUrl.data,
+            profileUrl: organization[0].profileUrl.data,
           });
         }
       );
@@ -512,7 +512,7 @@ async function loginNewUser(req, res) {
           const users = {
             profileLogo: colortag[random],
             auth_id: req.params.auth_id,
-            barangays: [],
+            organizations: [],
             members: [],
             first_time: true,
           };

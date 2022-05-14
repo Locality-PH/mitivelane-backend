@@ -1,54 +1,54 @@
 const db = require("../../../models");
 var mongoose = require("mongoose");
 
-const Barangay = db.barangay;
-const BarangayMember = db.barangayMember;
+const Organization = db.organization;
+const OrganizationMember = db.organizationMember;
 const Account = db.account;
 
-//Test Create Barangay
-exports.registerBarangay = (req, res) => {
-  var barangayId = new mongoose.Types.ObjectId();
-  if (!req.body.barangay_name) {
+//Test Create Organization
+exports.registerOrganization = (req, res) => {
+  var organizationId = new mongoose.Types.ObjectId();
+  if (!req.body.organization_name) {
     res.status(400).send({ message: "Content can not be empty!" });
     return;
   }
-  console.log(barangayId);
-  const barangay = new Barangay({
-    _id: barangayId,
-    barangay_name: req.body.barangay_name,
+  console.log(organizationId);
+  const organization = new Organization({
+    _id: organizationId,
+    organization_name: req.body.organization_name,
   });
-  barangay
-    .save(barangay)
+  organization
+    .save(organization)
     .then((_) => {
-      res.json("Barangay added!");
+      res.json("Organization added!");
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the Barangay.",
+          err.message || "Some error occurred while creating the Organization.",
       });
     });
 };
-exports.registerBarangayMember = (req, res) => {
-  var barangayMemberId = new mongoose.Types.ObjectId();
+exports.registerOrganizationMember = (req, res) => {
+  var organizationMemberId = new mongoose.Types.ObjectId();
 
-  const barangayMember = new BarangayMember({
-    _id: barangayMemberId,
-    barangay_name: req.body.barangay_name,
-    barangay_id: req.body.barangay_id,
+  const organizationMember = new OrganizationMember({
+    _id: organizationMemberId,
+    organization_name: req.body.organization_name,
+    organization_id: req.body.organization_id,
     name: req.body.name,
     email: req.body.email,
     role: "Administrator",
   });
-  barangayMember
-    .save(barangayMember)
+  organizationMember
+    .save(organizationMember)
     .then((_) => {
-      Barangay.findByIdAndUpdate(req.body.barangay_id)
-        .then((barangay) => {
-          barangay.barangay_member.push(barangayMemberId),
-            barangay
+      Organization.findByIdAndUpdate(req.body.organization_id)
+        .then((organization) => {
+          organization.organization_member.push(organizationMemberId),
+            organization
               .save()
-              .then(() => res.json("Barangay updated!"))
+              .then(() => res.json("Organization updated!"))
               .catch((err) => res.status(400).json("Error: " + err));
         })
         .catch((err) => res.status(400).json("Error: " + err));
@@ -61,9 +61,9 @@ exports.registerBarangayMember = (req, res) => {
     });
 };
 exports.insertdata = (req, res) => {
-  Barangay.findByIdAndUpdate(req.body.barangay_id)
+  Organization.findByIdAndUpdate(req.body.organization_id)
     .then((barang) => {
-      (barang.barangay_member = [req.body.member_id]),
+      (barang.organization_member = [req.body.member_id]),
         exercise
           .save()
           .then(() => res.json("Exercise updated!"))
@@ -73,45 +73,45 @@ exports.insertdata = (req, res) => {
 };
 
 exports.list = (req, res) => {
-  console.log(req.params.barangay_id);
-  Barangay.find({ _id: req.params.barangay_id })
-    .populate({ path: "barangay_member", model: "barangay_members" })
+  console.log(req.params.organization_id);
+  Organization.find({ _id: req.params.organization_id })
+    .populate({ path: "organization_member", model: "organization_members" })
     .then((users) => res.json(users))
     .catch((err) => res.status(400).json("Error: " + err));
 };
 
-//Create Finalized Barangay
-exports.createBarangay = (req, res) => {
-  var barangayId = new mongoose.Types.ObjectId();
-  var barangayMemberId = new mongoose.Types.ObjectId();
+//Create Finalized Organization
+exports.createOrganization = (req, res) => {
+  var organizationId = new mongoose.Types.ObjectId();
+  var organizationMemberId = new mongoose.Types.ObjectId();
 
-  console.log(barangayId);
-  //Barangay Create Data
-  const barangay = new Barangay({
-    _id: barangayId,
-    barangay_name: req.body.barangay_name,
+  console.log(organizationId);
+  //Organization Create Data
+  const organization = new Organization({
+    _id: organizationId,
+    organization_name: req.body.organization_name,
     country: req.body.country,
     province: req.body.province,
     municipality: req.body.municipality,
     address: req.body.address,
   });
-  barangay.save(barangay).then((_) => {
-    const barangayMember = new BarangayMember({
-      _id: barangayMemberId,
-      barangay_id: barangayId,
+  organization.save(organization).then((_) => {
+    const organizationMember = new OrganizationMember({
+      _id: organizationMemberId,
+      organization_id: organizationId,
       email: req.body.email,
       auth_id: req.body.auth_id,
       role: "Administrator",
     });
-    // Barangay Member Create
-    barangayMember
-      .save(barangayMember)
+    // Organization Member Create
+    organizationMember
+      .save(organizationMember)
       .then((_) => {
-        // Barangay   Update
-        Barangay.findByIdAndUpdate(barangayId)
-          .then((barangay) => {
-            barangay.barangay_member.push(barangayMemberId),
-              barangay
+        // Organization   Update
+        Organization.findByIdAndUpdate(organizationId)
+          .then((organization) => {
+            organization.organization_member.push(organizationMemberId),
+              organization
                 .save()
                 .then(() => {
                   //Account Update
@@ -121,8 +121,8 @@ exports.createBarangay = (req, res) => {
                     },
                     {
                       $push: {
-                        members: [barangayMemberId],
-                        barangays: [barangayId],
+                        members: [organizationMemberId],
+                        organizations: [organizationId],
                       },
                       $set: {
                         first_name: req.body.first_name,
@@ -149,8 +149,8 @@ exports.createBarangay = (req, res) => {
                       }
                       const currentActive = [
                         {
-                          barangay_id: barangayId,
-                          barangay_member_id: barangayMemberId,
+                          organization_id: organizationId,
+                          organization_member_id: organizationMemberId,
                           uuid: req.body.auth_id,
                         },
                       ];
@@ -166,16 +166,17 @@ exports.createBarangay = (req, res) => {
       .catch((err) => {
         res.status(500).send({
           message:
-            err.message || "Some error occurred while creating the Barangay.",
+            err.message ||
+            "Some error occurred while creating the Organization.",
         });
       });
   });
 };
 
-exports.getBarangayList = (req, res) => {
-  console.log(req.params.barangay_id);
+exports.getOrganizationList = (req, res) => {
+  console.log(req.params.organization_id);
   Account.find({ uuid: req.params.auth_id })
-    .populate({ path: "barangays", model: "barangays" })
-    .then((barangay) => res.status(200).json(barangay))
+    .populate({ path: "organizations", model: "organizations" })
+    .then((organization) => res.status(200).json(organization))
     .catch((err) => res.status(400).json("Error: " + err));
 };
