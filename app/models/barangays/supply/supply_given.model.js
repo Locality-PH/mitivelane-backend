@@ -6,7 +6,7 @@ module.exports = (mongoose) => {
         amount: { type: Number },
         date: { type: Date},
         current_supply: { type: Number },
-        organization_id: { type: mongoose.Schema.Types.ObjectId, ref: "barangays" },
+        barangay_id: { type: mongoose.Schema.Types.ObjectId, ref: "barangays" },
       },
       { timestamps: true }
     );

@@ -4,7 +4,7 @@ module.exports = (mongoose) => {
       _id: { type: mongoose.Schema.Types.ObjectId },
       email: { type: String },
       role: { type: String },
-      organization_id: { type: String },
+      barangay_id: { type: String },
       account: { type: mongoose.Schema.Types.ObjectId, ref: "accounts_infos" },
       // organization: [{ type: mongoose.Schema.Types.ObjectId, ref: "organizations" }],
     },

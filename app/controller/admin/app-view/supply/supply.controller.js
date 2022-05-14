@@ -13,6 +13,7 @@ exports.getGivenSupplies = async (req, res) => {
     organization_id = mongoose.Types.ObjectId(organization_id);
     var suppliesGiven, suppliesGivenCount;
 
+<<<<<<< HEAD
     await SupplyGiven.find({ organization_id })
       .limit(pageSize)
       .then(async (data) => {
@@ -37,6 +38,42 @@ exports.getReceivedSupplies = async (req, res) => {
     var pageSize = req.body.pageSize;
     organization_id = mongoose.Types.ObjectId(organization_id);
     var suppliesReceived, suppliesReceivedCount;
+=======
+        await SupplyGiven.find({ barangay_id }).limit(pageSize)
+        .then(async (data) => {
+            suppliesGiven = data
+            await SupplyGiven.countDocuments({ barangay_id })
+            .then((data) => {
+                suppliesGivenCount = data
+                res.status(200).send({ SupplyGiven: suppliesGiven, suppliesGivenCount})
+                console.log("connected")
+            })
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ error: "error" });
+    }
+};
+
+exports.getReceivedSupplies = async (req, res) => {
+    try {
+        var barangay_id = req.body.barangay_id
+        var pageSize = req.body.pageSize
+        barangay_id = mongoose.Types.ObjectId(barangay_id);
+        var suppliesReceived, suppliesReceivedCount
+
+        await SupplyReceived.find({ barangay_id }).limit(pageSize)
+        .then(async (data) => {
+            suppliesReceived = data
+            await SupplyReceived.countDocuments({ barangay_id })
+            .then((data) => {
+                suppliesReceivedCount = data
+                res.status(200).send({ SupplyReceived: suppliesReceived, suppliesReceivedCount})
+                console.log("connected")
+            })
+        })
+>>>>>>> parent of a99e15e (For merge)
 
     await SupplyReceived.find({ organization_id })
       .limit(pageSize)
@@ -60,6 +97,7 @@ exports.getReceivedSupplies = async (req, res) => {
 };
 
 exports.getGivenSupplyPage = async (req, res) => {
+<<<<<<< HEAD
   try {
     var page = parseInt(req.params.page) - 1;
     var pageSize = parseInt(req.params.pageSize);
@@ -92,6 +130,36 @@ exports.getReceivedSupplyPage = async (req, res) => {
     console.log(error);
     res.status(500).send({ error: "error" });
   }
+=======
+    try {
+        var page = parseInt(req.params.page) - 1
+        var pageSize = parseInt(req.params.pageSize)
+        var barangay_id = req.params.barangay_id
+        barangay_id = mongoose.Types.ObjectId(barangay_id);
+        const query = await SupplyGiven.find({ barangay_id }).skip(page * pageSize).limit(pageSize)
+        res.status(200).send(query)
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ error: "error" });
+    }
+};
+
+exports.getReceivedSupplyPage = async (req, res) => {
+    try {
+        console.log("receive supply page")
+        console.log(res.body)
+        var page = parseInt(req.params.page) - 1
+        var pageSize = parseInt(req.params.pageSize)
+        var barangay_id = req.params.barangay_id
+        barangay_id = mongoose.Types.ObjectId(barangay_id);
+        const query = await SupplyReceived.find({ barangay_id }).skip(page * pageSize).limit(pageSize)
+        console.log(query)
+        res.status(200).send(query)
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ error: "error" });
+    }
+>>>>>>> parent of a99e15e (For merge)
 };
 
 exports.getCurrentSupply = async (req, res) => {
