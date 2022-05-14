@@ -29,7 +29,7 @@ require("./app/auth");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL:
-    "https://barangay-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "https://organization-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
   storageBucket: "randomDB-f12d3.appspot.com",
 });
 db.mongoose

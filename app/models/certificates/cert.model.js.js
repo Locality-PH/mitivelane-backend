@@ -2,16 +2,16 @@ module.exports = (mongoose) => {
   var certificateSchema = mongoose.Schema(
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
-      barangay_id: {
+      organization_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "barangays",
+        ref: "organizations",
       },
       country: { type: String },
       firstLogo: { type: String },
       secondLogo: { type: String },
 
       municipality: { type: String },
-      barangay: { type: String },
+      organization: { type: String },
       clearance: { type: String },
 
       office: { type: String },

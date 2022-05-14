@@ -4,7 +4,7 @@ module.exports = (gcloud) => {
     keyFilename: "service-key.json",
   });
 
-  var bucket = storage.bucket("barangay-dev.appspot.com");
+  var bucket = storage.bucket("organization-dev.appspot.com");
 
   return AuthenticateToken;
 };

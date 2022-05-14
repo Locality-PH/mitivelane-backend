@@ -41,13 +41,13 @@ module.exports = (app) => {
     supplyController.updateSupplyGiven
   );
   router.get(
-    "/given/getPage/:barangay_id/:page/:pageSize",
+    "/given/getPage/:organization_id/:page/:pageSize",
     auth.authenticationToken,
     supplyController.getGivenSupplyPage
   );
 
   router.get(
-    "/receive/getPage/:barangay_id/:page/:pageSize",
+    "/receive/getPage/:organization_id/:page/:pageSize",
     auth.authenticationToken,
     supplyController.getReceivedSupplyPage
   );
@@ -68,7 +68,7 @@ module.exports = (app) => {
     supplyController.updateSupplyReceived
   );
   router.get(
-    "/receive/getPage/:barangay_id/:page/:pageSize",
+    "/receive/getPage/:organization_id/:page/:pageSize",
     auth.authenticationToken,
     supplyController.getReceivedSupplyPage
   );

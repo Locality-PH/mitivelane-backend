@@ -14,9 +14,11 @@ db.account = require("./auth/accounts.model.js")(mongoose);
 //chat
 db.message = require("./chat/message.model")(mongoose);
 db.conversation = require("./chat/conversation.model")(mongoose);
-//barangay
-db.barangayMember = require("./barangays/barangay_members.model.js")(mongoose);
-db.barangay = require("./barangays/barangay.model.js")(mongoose);
+//organization
+db.organizationMember = require("./organizations/organization_members.model.js")(
+  mongoose
+);
+db.organization = require("./organizations/organization.model.js")(mongoose);
 db.resident = require("./resident/residents.models")(mongoose);
 
 //blotter
@@ -24,18 +26,20 @@ db.blotter = require("./blotter/blotter.model")(mongoose);
 db.blotter_request = require("./blotter/blotter_request.model")(mongoose);
 
 //household
-db.household = require("./barangays/household/household.model")(mongoose);
-db.householdMember = require("./barangays/household/household_member.model")(
+db.household = require("./organizations/household/household.model")(mongoose);
+db.householdMember = require("./organizations/household/household_member.model")(
   mongoose
 );
 
 //purok
-db.purok = require("./barangays/purok/purok.model")(mongoose);
+db.purok = require("./organizations/purok/purok.model")(mongoose);
 
 //purok
-db.SupplyGiven = require("./barangays/supply/supply_given.model")(mongoose);
-db.SupplyReceive = require("./barangays/supply/supply_receive.model")(mongoose);
-db.SupplyInventory = require("./barangays/supply/supply_inventory.model")(
+db.SupplyGiven = require("./organizations/supply/supply_given.model")(mongoose);
+db.SupplyReceive = require("./organizations/supply/supply_receive.model")(
+  mongoose
+);
+db.SupplyInventory = require("./organizations/supply/supply_inventory.model")(
   mongoose
 );
 

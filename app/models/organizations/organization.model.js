@@ -1,33 +1,33 @@
 module.exports = (mongoose) => {
-  var barangaySchema = mongoose.Schema(
+  var organizationSchema = mongoose.Schema(
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
       slug: { type: String },
-      barangay_name: { type: String },
+      organization_name: { type: String },
       municipality: { type: String },
       province: { type: String },
       country: { type: String },
       address: { type: String },
-      barangay_supply: { type: Number, default: 0 },
-      barangay_member: [
+      organization_supply: { type: Number, default: 0 },
+      organization_member: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "barangay_members",
+          ref: "organization_members",
         },
       ],
     },
     { timestamps: true }
   );
-  barangaySchema.method("toJSON", function () {
+  organizationSchema.method("toJSON", function () {
     const { __v, _id, ...object } = this.toObject();
-    object.barangay_id = _id;
+    object.organization_id = _id;
     return object;
   });
-  const Tokens = mongoose.model("barangays", barangaySchema);
+  const Tokens = mongoose.model("organizations", organizationSchema);
   return Tokens;
 };
 
-// barangay_name: values.barangay,
+// organization_name: values.organization,
 // email: currentUser?.email,
 // auth_id: user_id,
 // province: values.province,

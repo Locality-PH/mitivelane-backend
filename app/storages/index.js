@@ -2,9 +2,9 @@ const { Storage } = require("@google-cloud/storage");
 
 const gcloud = {};
 gcloud.config = Storage.storage({
-  projectId: "barangay-dev",
+  projectId: "organization-dev",
   keyFilename: "service-key.json",
 });
 
-gcloud = Storage.bucket("barangay-dev.appspot.com");
+gcloud = Storage.bucket("organization-dev.appspot.com");
 module.exports = gcloud;
