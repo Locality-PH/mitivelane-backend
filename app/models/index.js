@@ -35,7 +35,7 @@ db.purok = require("./barangays/purok/purok.model")(mongoose);
 //purok
 db.SupplyGiven = require("./barangays/supply/supply_given.model")(mongoose);
 db.SupplyReceive = require("./barangays/supply/supply_receive.model")(mongoose);
-db.SupplyInventory = require("./barangays/supply/supply_inventory.model")(
+db.SupplyArchive = require("./barangays/supply/supply_archive.model")(
   mongoose
 );
 

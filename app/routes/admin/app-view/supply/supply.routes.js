@@ -40,13 +40,13 @@ module.exports = (app) => {
     auth.authenticationToken,
     supplyController.updateSupplyGiven
   );
-  router.get(
+  router.post(
     "/given/getPage/:barangay_id/:page/:pageSize",
     auth.authenticationToken,
     supplyController.getGivenSupplyPage
   );
 
-  router.get(
+  router.post(
     "/receive/getPage/:barangay_id/:page/:pageSize",
     auth.authenticationToken,
     supplyController.getReceivedSupplyPage
