@@ -41,21 +41,13 @@ module.exports = (app) => {
     supplyController.updateSupplyGiven
   );
   router.get(
-<<<<<<< HEAD
-    "/given/getPage/:organization_id/:page/:pageSize",
-=======
     "/given/getPage/:barangay_id/:page/:pageSize",
->>>>>>> parent of a99e15e (For merge)
     auth.authenticationToken,
     supplyController.getGivenSupplyPage
   );
 
   router.get(
-<<<<<<< HEAD
-    "/receive/getPage/:organization_id/:page/:pageSize",
-=======
     "/receive/getPage/:barangay_id/:page/:pageSize",
->>>>>>> parent of a99e15e (For merge)
     auth.authenticationToken,
     supplyController.getReceivedSupplyPage
   );
