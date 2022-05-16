@@ -6,7 +6,7 @@ module.exports = (mongoose) => {
         stocks: { type: Array },
         received: { type: Array },
         given: { type: Array },
-        organization_id: { type: mongoose.Schema.Types.ObjectId, ref: "barangays" },
+        organization_id: { type: mongoose.Schema.Types.ObjectId, ref: "organizations" },
       },
       { timestamps: true }
     );

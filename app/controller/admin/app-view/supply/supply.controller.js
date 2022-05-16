@@ -13,40 +13,30 @@ exports.getGivenSupplies = async (req, res) => {
     organization_id = mongoose.Types.ObjectId(organization_id);
     var suppliesGiven, suppliesGivenCount;
 
-        await SupplyGiven.find({ barangay_id }).limit(pageSize)
-        .then(async (data) => {
-            suppliesGiven = data
-            await SupplyGiven.countDocuments({ barangay_id })
-            .then((data) => {
-                suppliesGivenCount = data
-                res.status(200).send({ SupplyGiven: suppliesGiven, suppliesGivenCount})
-                console.log("connected")
-            })
-        })
-
-    } catch (error) {
-        console.log(error)
-        res.status(500).send({ error: "error" });
-    }
+    await SupplyGiven.find({ organization_id })
+      .limit(pageSize)
+      .then(async (data) => {
+        suppliesGiven = data;
+        await SupplyGiven.countDocuments({ organization_id }).then((data) => {
+          suppliesGivenCount = data;
+          res
+            .status(200)
+            .send({ SupplyGiven: suppliesGiven, suppliesGivenCount });
+          console.log("connected");
+        });
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
 };
 
 exports.getReceivedSupplies = async (req, res) => {
-    try {
-        var barangay_id = req.body.barangay_id
-        var pageSize = req.body.pageSize
-        barangay_id = mongoose.Types.ObjectId(barangay_id);
-        var suppliesReceived, suppliesReceivedCount
-
-        await SupplyReceived.find({ barangay_id }).limit(pageSize)
-        .then(async (data) => {
-            suppliesReceived = data
-            await SupplyReceived.countDocuments({ barangay_id })
-            .then((data) => {
-                suppliesReceivedCount = data
-                res.status(200).send({ SupplyReceived: suppliesReceived, suppliesReceivedCount})
-                console.log("connected")
-            })
-        })
+  try {
+    var organization_id = req.body.organization_id;
+    var pageSize = req.body.pageSize;
+    organization_id = mongoose.Types.ObjectId(organization_id);
+    var suppliesReceived, suppliesReceivedCount;
 
     await SupplyReceived.find({ organization_id })
       .limit(pageSize)
@@ -70,34 +60,81 @@ exports.getReceivedSupplies = async (req, res) => {
 };
 
 exports.getGivenSupplyPage = async (req, res) => {
-    try {
-        var page = parseInt(req.params.page) - 1
-        var pageSize = parseInt(req.params.pageSize)
-        var barangay_id = req.params.barangay_id
-        barangay_id = mongoose.Types.ObjectId(barangay_id);
-        const query = await SupplyGiven.find({ barangay_id }).skip(page * pageSize).limit(pageSize)
-        res.status(200).send(query)
-    } catch (error) {
-        console.log(error)
-        res.status(500).send({ error: "error" });
+  try {
+    var tableScreen = req.body.tableScreen
+    var tableScreenLength = Object.keys(tableScreen).length
+    console.log("tableScreen", tableScreen)
+    var page = parseInt(req.params.page) - 1;
+    var pageSize = parseInt(req.params.pageSize);
+    var organization_id = req.params.organization_id;
+    organization_id = mongoose.Types.ObjectId(organization_id);
+
+    if (tableScreenLength > 0) {
+      var sorter = tableScreen.sorter
+      var order = sorter.order + "ing" // either ascend or descend ing is need for mongoose
+      var field = sorter.field
+
+      await SupplyGiven.find({ organization_id })
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .sort({[field]: order})
+      .then((result) => {
+        res.status(200).send(result);
+      })
     }
+
+    if (tableScreenLength <= 0) {
+      await SupplyGiven.find({ organization_id })
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .then((result) => {
+        res.status(200).send(result);
+      })
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
 };
 
 exports.getReceivedSupplyPage = async (req, res) => {
-    try {
-        console.log("receive supply page")
-        console.log(res.body)
-        var page = parseInt(req.params.page) - 1
-        var pageSize = parseInt(req.params.pageSize)
-        var barangay_id = req.params.barangay_id
-        barangay_id = mongoose.Types.ObjectId(barangay_id);
-        const query = await SupplyReceived.find({ barangay_id }).skip(page * pageSize).limit(pageSize)
-        console.log(query)
-        res.status(200).send(query)
-    } catch (error) {
-        console.log(error)
-        res.status(500).send({ error: "error" });
+  try {
+    var tableScreen = req.body.tableScreen
+    var tableScreenLength = Object.keys(tableScreen).length
+    console.log("tableScreen", tableScreen)
+    var page = parseInt(req.params.page) - 1;
+    var pageSize = parseInt(req.params.pageSize);
+    var organization_id = req.params.organization_id;
+    organization_id = mongoose.Types.ObjectId(organization_id);
+
+    if (tableScreenLength > 0) {
+      var sorter = tableScreen.sorter
+      var order = sorter.order + "ing" // either ascend or descend ing is need for mongoose
+      var field = sorter.field
+
+      await SupplyReceived.find({ organization_id })
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .sort({[field]: order})
+      .then((result) => {
+        res.status(200).send(result);
+      })
     }
+
+    if (tableScreenLength <= 0) {
+      await SupplyReceived.find({ organization_id })
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .then((result) => {
+        res.status(200).send(result);
+      })
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
 };
 
 exports.getCurrentSupply = async (req, res) => {

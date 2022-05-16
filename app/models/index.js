@@ -34,10 +34,10 @@ db.householdMember = require("./organizations/household/household_member.model")
 //purok
 db.purok = require("./organizations/purok/purok.model")(mongoose);
 
-//purok
-db.SupplyGiven = require("./barangays/supply/supply_given.model")(mongoose);
-db.SupplyReceive = require("./barangays/supply/supply_receive.model")(mongoose);
-db.SupplyInventory = require("./barangays/supply/supply_inventory.model")(
+//Supply
+db.SupplyGiven = require("./organizations/supply/supply_given.model")(mongoose);
+db.SupplyReceive = require("./organizations/supply/supply_receive.model")(mongoose);
+db.SupplyInventory = require("./organizations/supply/supply_inventory.model")(
   mongoose
 );
 
