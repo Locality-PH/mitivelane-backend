@@ -22,7 +22,6 @@ exports.getGivenSupplies = async (req, res) => {
           res
             .status(200)
             .send({ SupplyGiven: suppliesGiven, suppliesGivenCount });
-          console.log("connected");
         });
       });
   } catch (error) {
@@ -49,7 +48,6 @@ exports.getReceivedSupplies = async (req, res) => {
               SupplyReceived: suppliesReceived,
               suppliesReceivedCount,
             });
-            console.log("connected");
           }
         );
       });
@@ -63,7 +61,6 @@ exports.getGivenSupplyPage = async (req, res) => {
   try {
     var tableScreen = req.body.tableScreen
     var tableScreenLength = Object.keys(tableScreen).length
-    console.log("tableScreen", tableScreen)
     var page = parseInt(req.params.page) - 1;
     var pageSize = parseInt(req.params.pageSize);
     var organization_id = req.params.organization_id;
@@ -102,7 +99,6 @@ exports.getReceivedSupplyPage = async (req, res) => {
   try {
     var tableScreen = req.body.tableScreen
     var tableScreenLength = Object.keys(tableScreen).length
-    console.log("tableScreen", tableScreen)
     var page = parseInt(req.params.page) - 1;
     var pageSize = parseInt(req.params.pageSize);
     var organization_id = req.params.organization_id;
@@ -181,7 +177,6 @@ exports.addSupplyGiven = async (req, res) => {
     //Supply
     const newSupply = new SupplyGiven(newSupplyData);
     await newSupply.save();
-    console.log("success");
     res.json(newSupply);
   } catch (error) {
     console.log(error);
@@ -247,7 +242,6 @@ exports.addSupplyReceived = async (req, res) => {
     //Supply
     const newSupply = new SupplyReceived(newSupplyData);
     await newSupply.save();
-    console.log("success");
     res.json(newSupply);
   } catch (error) {
     console.log(error);
@@ -283,8 +277,6 @@ exports.deleteSupplyReceived = async (req, res) => {
     var organization_id = req.body.organization_id;
     var new_supply_amount = req.body.new_supply_amount;
     const supplyReceivedIDs = req.body.supplyReceivedIDs;
-    console.log("supplyReceivedIDs", supplyReceivedIDs);
-    console.log("delete", supplyReceivedIDs);
     //Organization
     const query = await Organization.updateOne(
       { _id: organization_id },
