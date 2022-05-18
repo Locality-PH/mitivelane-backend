@@ -27,7 +27,7 @@ module.exports = (io) => {
 
     socket.on("socket:add-user", authToken => {
 	  addUser(authToken, socket.id)
-      io.emit("socket:new-user", authToken)
+      socket.broadcast.emit("socket:new-user", authToken)
 	  
 	  console.log(users)
     })
