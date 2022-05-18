@@ -22,7 +22,6 @@ exports.getGivenSupplies = async (req, res) => {
           res
             .status(200)
             .send({ SupplyGiven: suppliesGiven, suppliesGivenCount });
-          console.log("connected");
         });
       });
   } catch (error) {
@@ -49,7 +48,6 @@ exports.getReceivedSupplies = async (req, res) => {
               SupplyReceived: suppliesReceived,
               suppliesReceivedCount,
             });
-            console.log("connected");
           }
         );
       });
@@ -61,14 +59,36 @@ exports.getReceivedSupplies = async (req, res) => {
 
 exports.getGivenSupplyPage = async (req, res) => {
   try {
+    var tableScreen = req.body.tableScreen
+    var tableScreenLength = Object.keys(tableScreen).length
     var page = parseInt(req.params.page) - 1;
     var pageSize = parseInt(req.params.pageSize);
     var organization_id = req.params.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
-    const query = await SupplyGiven.find({ organization_id })
+
+    if (tableScreenLength > 0) {
+      var sorter = tableScreen.sorter
+      var order = sorter.order + "ing" // either ascend or descend ing is need for mongoose
+      var field = sorter.field
+
+      await SupplyGiven.find({ organization_id })
       .skip(page * pageSize)
-      .limit(pageSize);
-    res.status(200).send(query);
+      .limit(pageSize)
+      .sort({[field]: order})
+      .then((result) => {
+        res.status(200).send(result);
+      })
+    }
+
+    if (tableScreenLength <= 0) {
+      await SupplyGiven.find({ organization_id })
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .then((result) => {
+        res.status(200).send(result);
+      })
+    }
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
@@ -77,17 +97,36 @@ exports.getGivenSupplyPage = async (req, res) => {
 
 exports.getReceivedSupplyPage = async (req, res) => {
   try {
-    console.log("receive supply page");
-    console.log(res.body);
+    var tableScreen = req.body.tableScreen
+    var tableScreenLength = Object.keys(tableScreen).length
     var page = parseInt(req.params.page) - 1;
     var pageSize = parseInt(req.params.pageSize);
     var organization_id = req.params.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
-    const query = await SupplyReceived.find({ organization_id })
+
+    if (tableScreenLength > 0) {
+      var sorter = tableScreen.sorter
+      var order = sorter.order + "ing" // either ascend or descend ing is need for mongoose
+      var field = sorter.field
+
+      await SupplyReceived.find({ organization_id })
       .skip(page * pageSize)
-      .limit(pageSize);
-    console.log(query);
-    res.status(200).send(query);
+      .limit(pageSize)
+      .sort({[field]: order})
+      .then((result) => {
+        res.status(200).send(result);
+      })
+    }
+
+    if (tableScreenLength <= 0) {
+      await SupplyReceived.find({ organization_id })
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .then((result) => {
+        res.status(200).send(result);
+      })
+    }
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
@@ -138,7 +177,6 @@ exports.addSupplyGiven = async (req, res) => {
     //Supply
     const newSupply = new SupplyGiven(newSupplyData);
     await newSupply.save();
-    console.log("success");
     res.json(newSupply);
   } catch (error) {
     console.log(error);
@@ -204,7 +242,6 @@ exports.addSupplyReceived = async (req, res) => {
     //Supply
     const newSupply = new SupplyReceived(newSupplyData);
     await newSupply.save();
-    console.log("success");
     res.json(newSupply);
   } catch (error) {
     console.log(error);
@@ -240,8 +277,6 @@ exports.deleteSupplyReceived = async (req, res) => {
     var organization_id = req.body.organization_id;
     var new_supply_amount = req.body.new_supply_amount;
     const supplyReceivedIDs = req.body.supplyReceivedIDs;
-    console.log("supplyReceivedIDs", supplyReceivedIDs);
-    console.log("delete", supplyReceivedIDs);
     //Organization
     const query = await Organization.updateOne(
       { _id: organization_id },
