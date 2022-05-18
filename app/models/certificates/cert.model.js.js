@@ -6,6 +6,7 @@ module.exports = (mongoose) => {
         type: mongoose.Schema.Types.ObjectId,
         ref: "organizations",
       },
+      title: { type: String },
       country: { type: String },
       firstLogo: { type: String },
       secondLogo: { type: String },

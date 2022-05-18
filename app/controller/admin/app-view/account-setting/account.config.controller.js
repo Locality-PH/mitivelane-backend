@@ -21,7 +21,7 @@ exports.updateAccount = async (req, res) => {
       full_name: req.body.full_name,
     };
   }
-  await Account.findOneAndUpdate(
+  Account.findOneAndUpdate(
     {
       uuid: req.user.auth_id,
     },
@@ -52,7 +52,7 @@ exports.getDetails = async (req, res) => {
 };
 exports.getSession = async (req, res) => {
   let session = [];
-  await Account.find({ uuid: req.body.auth_id })
+  Account.find({ uuid: req.body.auth_id })
     .select({
       full_name: 2,
       //  sessions: { $slice: [0, req.body.limit] },
@@ -89,7 +89,7 @@ exports.removeSession = async (req, res) => {
   if (req.session_token) return res.sendStatus(404);
   const session_id = req.body.session_id;
 
-  return await Account.findOneAndUpdate(
+  Account.findOneAndUpdate(
     { uuid: req.user.auth_id },
     {
       $pull: {

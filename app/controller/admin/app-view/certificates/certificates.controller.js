@@ -8,6 +8,7 @@ exports.createCertificate = async (req, res) => {
     _id: id,
     organization_id: [req.user.auth_organization],
     cert_type: "cert",
+    title: "Untitled #",
     template_type: "simple_border",
     content: [
       {
