@@ -116,7 +116,6 @@ exports.updateCertificate = async (req, res) => {
         full_name: req.body.country,
         firstLogo: req.body.firstLogo,
         secondLogo: req.body.secondLogo,
-
         signatures: req.body.signatures,
         country: req.body.country,
         municipality: req.body.municipality,
