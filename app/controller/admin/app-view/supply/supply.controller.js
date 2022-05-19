@@ -6,51 +6,39 @@ const SupplyReceived = db.SupplyReceive;
 const SupplyInventory = db.SupplyInventory;
 const Organization = db.organization;
 
-exports.getGivenSupplies = async (req, res) => {
+exports.getGivenTotal = async (req, res) => {
   try {
     var organization_id = req.body.organization_id;
-    var pageSize = req.body.pageSize;
     organization_id = mongoose.Types.ObjectId(organization_id);
-    var suppliesGiven, suppliesGivenCount;
+    var suppliesGivenCount;
 
-    await SupplyGiven.find({ organization_id })
-      .limit(pageSize)
-      .then(async (data) => {
-        suppliesGiven = data;
-        await SupplyGiven.countDocuments({ organization_id }).then((data) => {
-          suppliesGivenCount = data;
-          res
-            .status(200)
-            .send({ SupplyGiven: suppliesGiven, suppliesGivenCount });
-        });
-      });
+    await SupplyGiven.countDocuments({ organization_id }).then((data) => {
+      suppliesGivenCount = data;
+      res
+        .status(200)
+        .send({ suppliesGivenCount });
+    });
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
   }
 };
 
-exports.getReceivedSupplies = async (req, res) => {
+exports.getReceivedTotal = async (req, res) => {
   try {
     var organization_id = req.body.organization_id;
-    var pageSize = req.body.pageSize;
     organization_id = mongoose.Types.ObjectId(organization_id);
-    var suppliesReceived, suppliesReceivedCount;
+    var suppliesReceivedCount;
 
-    await SupplyReceived.find({ organization_id })
-      .limit(pageSize)
-      .then(async (data) => {
-        suppliesReceived = data;
-        await SupplyReceived.countDocuments({ organization_id }).then(
-          (data) => {
-            suppliesReceivedCount = data;
-            res.status(200).send({
-              SupplyReceived: suppliesReceived,
-              suppliesReceivedCount,
-            });
-          }
-        );
-      });
+    await SupplyReceived.countDocuments({ organization_id }).then((data) => {
+        suppliesReceivedCount = data;
+        res.status(200).send({
+          suppliesReceivedCount,
+        });
+      }
+    );
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
@@ -72,21 +60,21 @@ exports.getGivenSupplyPage = async (req, res) => {
       var field = sorter.field
 
       await SupplyGiven.find({ organization_id })
-      .skip(page * pageSize)
-      .limit(pageSize)
-      .sort({[field]: order})
-      .then((result) => {
-        res.status(200).send(result);
-      })
+        .skip(page * pageSize)
+        .limit(pageSize)
+        .sort({ [field]: order })
+        .then((result) => {
+          res.status(200).send(result);
+        })
     }
 
     if (tableScreenLength <= 0) {
       await SupplyGiven.find({ organization_id })
-      .skip(page * pageSize)
-      .limit(pageSize)
-      .then((result) => {
-        res.status(200).send(result);
-      })
+        .skip(page * pageSize)
+        .limit(pageSize)
+        .then((result) => {
+          res.status(200).send(result);
+        })
     }
 
   } catch (error) {
@@ -110,21 +98,21 @@ exports.getReceivedSupplyPage = async (req, res) => {
       var field = sorter.field
 
       await SupplyReceived.find({ organization_id })
-      .skip(page * pageSize)
-      .limit(pageSize)
-      .sort({[field]: order})
-      .then((result) => {
-        res.status(200).send(result);
-      })
+        .skip(page * pageSize)
+        .limit(pageSize)
+        .sort({ [field]: order })
+        .then((result) => {
+          res.status(200).send(result);
+        })
     }
 
     if (tableScreenLength <= 0) {
       await SupplyReceived.find({ organization_id })
-      .skip(page * pageSize)
-      .limit(pageSize)
-      .then((result) => {
-        res.status(200).send(result);
-      })
+        .skip(page * pageSize)
+        .limit(pageSize)
+        .then((result) => {
+          res.status(200).send(result);
+        })
     }
 
   } catch (error) {

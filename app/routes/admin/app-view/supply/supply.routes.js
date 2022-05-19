@@ -4,15 +4,15 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.post(
-    "/given/getAll",
+    "/given/getTotal",
     auth.authenticationToken,
-    supplyController.getGivenSupplies
+    supplyController.getGivenTotal
   );
 
   router.post(
-    "/receive/getAll",
+    "/receive/getTotal",
     auth.authenticationToken,
-    supplyController.getReceivedSupplies
+    supplyController.getReceivedTotal
   );
 
   router.post(
