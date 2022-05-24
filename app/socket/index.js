@@ -21,29 +21,29 @@ module.exports = (io) => {
     console.log("Client connected with socket ", socket.id);
 
     socket.on("disconnect", () => {
-		removeUser(socket.id)
-		console.log("Client disconnected ", users)
-	});
+      removeUser(socket.id)
+      console.log("Client disconnected ", users)
+    });
 
     socket.on("socket:add-user", authToken => {
-	  addUser(authToken, socket.id)
+      addUser(authToken, socket.id)
       socket.broadcast.emit("socket:new-user", authToken)
-	  
-	  console.log(users)
+
+      console.log(users)
     })
-	
-	const chat = require("./chat/chat.socket")
-	chat(socket, getUser)
+
+    const chat = require("./chat/chat.socket")
+    chat(socket, getUser)
 
     // const sendMessage = (conversationId, receiverAuthToken, message) => {
-      // // const user = getUser(receiverAuthToken)
+    // // const user = getUser(receiverAuthToken)
 
-      // try {
-        // io.emit("chat:receive-message", conversationId, message)
-      // } catch (error) {
-        // // Do nothing for now
+    // try {
+    // io.emit("chat:receive-message", conversationId, message)
+    // } catch (error) {
+    // // Do nothing for now
 
-      // }
+    // }
     // }
 
     // socket.on("chat:send-message", sendMessage)
