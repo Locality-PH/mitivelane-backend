@@ -28,6 +28,7 @@
     "jwt-decode": "^3.1.2",
     "mongoose": "^6.1.2",
     "node-fetch": "^2.6.7",
+    "nodemailer": "^6.7.5",
     "request": "^2.88.2",
     "socket.io": "^4.4.1"
   },
