@@ -21,8 +21,8 @@ exports.getResidentTotal = async (req, res) => {
     organization_id = mongoose.Types.ObjectId(organization_id);
 
     await Resident.countDocuments({ organization_id }).then((result) => {
-        res.json(result);
-      }
+      res.json(result);
+    }
     );
 
   } catch (error) {
@@ -33,38 +33,62 @@ exports.getResidentTotal = async (req, res) => {
 
 exports.getResidentPage = async (req, res) => {
   try {
-    console.log("req.body", req.body)
-    var tableScreen = req.body.tableScreen
-    var tableScreenLength = Object.keys(tableScreen).length
+    // console.log("req.body", req.body)
     var page = parseInt(req.body.page) - 1;
     var pageSize = parseInt(req.body.pageSize);
     var organization_id = req.body.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
 
-    if (tableScreenLength > 0) {
-      console.log("has filter")
-      var sorter = tableScreen.sorter
-      var order = sorter.order + "ing" // either ascend or descend, ing is need for mongoose
-      var field = sorter.field
+    var tableScreen = req.body.tableScreen
+    var tableScreenLength = Object.keys(tableScreen).length
+    var sorter = null
+    var filter = { organization_id: organization_id }
+    var doesFilterExist = tableScreen.hasOwnProperty("filter")
+    var doesSorterExist = tableScreen.hasOwnProperty("sorter")
+    var numberKeys = ["age"] // put here keys that are number fields
 
-      await Resident.find({ organization_id })
-      .skip(page * pageSize)
-      .limit(pageSize)
-      .sort({[field]: order})
-      .then((result) => {
-        res.status(200).send(result);
-      })
+    if (doesFilterExist != false) {
+      var tempFilter = tableScreen.filter
+      var isKeyNumber = false
+
+      for (const [key, value] of Object.entries(tempFilter)) {
+        if (value != null) {
+          isKeyNumber = numberKeys.includes(key)
+
+          if (isKeyNumber == true) {
+            filter = { ...filter, [key]: value }
+          }
+
+          else {
+            filter = { ...filter, [key]: { $regex: value.join("|"), $options: "i" } }
+          }
+        }
+      }
     }
 
-    if (tableScreenLength <= 0) {
-      console.log("no filter")
-      await Resident.find({ organization_id })
+    if (doesSorterExist != false) {
+      var tempSorter = tableScreen.sorter
+      var field = tempSorter.field
+      var order = tempSorter.order + 'ing'
+      sorter = { [field]: order }
+    }
+
+
+    //console.log("filter", filter)
+    // console.log("sorter", sorter)
+
+    await Resident.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
-      .then((result) => {
-        res.status(200).send(result);
+      .sort(sorter)
+      .then(async (result) => {
+        var residentList = result
+        await Resident.countDocuments(filter)
+          .then((result) => {
+            var total = result
+            res.json({ residentList, total });
+          });
       })
-    }
 
   } catch (error) {
     console.log(error);
