@@ -11,6 +11,11 @@ module.exports = (app) => {
 
   router.get("/:id", auth.authenticationToken, certificate.getCertificate);
   router.post("/:id", auth.authenticationToken, certificate.updateCertificate);
+  router.delete(
+    "/:id",
+    auth.authenticationToken,
+    certificate.deleteCertificate
+  );
 
   router.get("/", auth.authenticationToken, certificate.getCertificateAll);
 

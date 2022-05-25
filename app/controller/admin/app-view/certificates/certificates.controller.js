@@ -10,6 +10,7 @@ exports.createCertificate = async (req, res) => {
     cert_type: "cert",
     title: "Untitled #",
     template_type: "simple_border",
+    font_family: "Tinos",
     content: [
       {
         entityMap: {},
@@ -25,7 +26,7 @@ exports.createCertificate = async (req, res) => {
       return res.json({ id: id });
     })
     .catch((err) => {
-      return res, json(err);
+      return res.json(err);
     });
 
   //   await users
@@ -106,7 +107,7 @@ exports.updateCertificate = async (req, res) => {
   //   content: req.body.content,
   // };
 
-  return await Certificate.findOneAndUpdate(
+  await Certificate.findOneAndUpdate(
     {
       _id: req.body.certificate_id,
     },
@@ -117,11 +118,13 @@ exports.updateCertificate = async (req, res) => {
         firstLogo: req.body.firstLogo,
         secondLogo: req.body.secondLogo,
         signatures: req.body.signatures,
+        title: req.body.title,
         country: req.body.country,
         municipality: req.body.municipality,
         organization: req.body.organization,
         office: req.body.office,
         cert_type: req.body.cert_type,
+        font_family: req.body.font_family,
         template_type: req.body.template_type,
         content: req.body.content,
         clearance: req.body.clearance,
@@ -144,4 +147,41 @@ exports.updateCertificate = async (req, res) => {
   //   const data = req.param;
   //   await Certificate.find(data.id);
   //   return res.json("get");
+};
+
+exports.deleteCertificate = async (req, res) => {
+  console.log(req.params.id);
+  try {
+    let certificate_id = req.params.id;
+    if (!req.user)
+      return res.status(404).send({ Error: "something went wrong" });
+
+    // let data = {};
+    // data = {
+    //   organization_id: req.user.auth_organization,
+    //   full_name: req.body.country,
+    //   signatures: req.body.signatures,
+    //   country: req.body.country,
+    //   municipality: req.body.municipality,
+    //   organization: req.body.organization,
+    //   office: req.body.office,
+    //   cert_type: req.body.cert_type,
+    //   template_type: req.body.template_type,
+    //   content: req.body.content,
+    // };
+
+    await Certificate.deleteOne({
+      _id: certificate_id,
+      organization_id: req.user.auth_organization,
+    })
+      .then(() => {
+        console.log("delete");
+        return res.json("Delete Success");
+      })
+      .catch((err) => {
+        return res.json(err);
+      });
+  } catch (err) {
+    return res.json(err);
+  }
 };

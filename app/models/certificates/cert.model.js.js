@@ -19,6 +19,7 @@ module.exports = (mongoose) => {
       cert_type: { type: String },
       template_type: { type: String },
       content: { type: Object },
+      font_family: { type: String },
       signatures: [
         {
           id: { type: String },
