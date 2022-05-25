@@ -102,10 +102,10 @@ exports.updatePurok = async (req, res) => {
 };
 
 exports.deletePurok = async (req, res) => {
-  const area_id = req.body.area_id;
+  const selectedArray = req.body.selectedArray;
 
   try {
-    await Purok.findOneAndDelete({ _id: area_id });
+    await Purok.deleteMany({ _id: selectedArray });
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
