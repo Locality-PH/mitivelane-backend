@@ -46,12 +46,12 @@ exports.getGivenSupplyPage = async (req, res) => {
           isKeyDate = dateKeys.includes(key)
 
           if (isKeyNumber == true) {
-            console.log("number");
+            // console.log("number");
             filter = { ...filter, [key]: value }
           }
 
           if (isKeyDate == false && isKeyNumber == false) {
-            console.log("string");
+            // console.log("string");
             filter = { ...filter, [key]: { $regex: value.join("|"), $options: "i" } }
           }
         }
@@ -126,12 +126,12 @@ exports.getReceivedSupplyPage = async (req, res) => {
           isKeyDate = dateKeys.includes(key)
 
           if (isKeyNumber == true) {
-            console.log("number");
+            // console.log("number");
             filter = { ...filter, [key]: value }
           }
 
           if (isKeyNumber == false) {
-            console.log("string");
+            // console.log("string");
             filter = { ...filter, [key]: { $regex: value.join("|"), $options: "i" } }
           }
         }
@@ -230,7 +230,7 @@ exports.addSupplyGiven = async (req, res) => {
             }
 
             else {
-              console.log("inventory is null")
+              // console.log("inventory is null")
               // this resembles 12 months
               var newInventory = {}
               var month = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -279,8 +279,8 @@ exports.updateSupplyGiven = async (req, res) => {
         let newAmount = newSupplyGiven.amount
         let amountBalance = newAmount - oldAmount
 
-        console.log("yearSame", oldYear == newYear)
-        console.log("monthSame", oldMonth == newMonth)
+        // console.log("yearSame", oldYear == newYear)
+        // console.log("monthSame", oldMonth == newMonth)
 
         let isDateSame = oldYear == newYear && oldMonth == newMonth
 
@@ -310,13 +310,13 @@ exports.updateSupplyGiven = async (req, res) => {
             .then(async (result) => {
 
               if (result != null) {
-                console.log("result", result)
+                // console.log("result", result)
                 var month = result.given_month
                 month[newMonth] = month[newMonth] + newAmount
 
                 var newInventory = { given_month: month }
 
-                console.log("month", month)
+                // console.log("month", month)
 
                 await SupplyInventory.updateOne(
                   { _id: result._id },
@@ -325,7 +325,7 @@ exports.updateSupplyGiven = async (req, res) => {
               }
 
               else {
-                console.log("inventory is null")
+                // console.log("inventory is null")
                 // this resembles 12 months
                 var newInventory = {}
                 var month = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -381,8 +381,8 @@ exports.deleteSupplyGiven = async (req, res) => {
       }
     });
 
-    console.log("removeSupplyMonth", removeSupplyMonth)
-    console.log("deleteIdList", deleteIdList)
+    // console.log("removeSupplyMonth", removeSupplyMonth)
+    // console.log("deleteIdList", deleteIdList)
 
     //Organization
     await Organization.updateOne(
@@ -450,7 +450,7 @@ exports.addSupplyReceived = async (req, res) => {
             }
 
             else {
-              console.log("inventory is null")
+              // console.log("inventory is null")
               // this resembles 12 months
               var newInventory = {}
               var month = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -476,18 +476,98 @@ exports.addSupplyReceived = async (req, res) => {
 
 exports.updateSupplyReceived = async (req, res) => {
   try {
-    var newSupplyReceived = req.body.newSupplyReceived;
-    var new_supply_amount = req.body.new_supply_amount;
     var organization_id = req.body.organization_id;
+    var new_supply_amount = req.body.new_supply_amount;
+    var newSupplyReceived = req.body.newSupplyReceived;
+    var supply_id = newSupplyReceived.supply_receive_id
     newSupplyReceived.current_supply = new_supply_amount;
+
+    await SupplyReceived.findOne({ _id: supply_id })
+      .then(async (result) => {
+        // console.log("result", result)
+        let oldSupplyReceived = result
+        let oldDate = oldSupplyReceived.date
+        let newDate = newSupplyReceived.date
+
+        let oldYear = moment(oldDate).year()
+        let oldMonth = moment(oldDate).month()
+        let newYear = moment(newDate).year()
+        let newMonth = moment(newDate).month()
+
+        let oldAmount = oldSupplyReceived.amount
+        let newAmount = newSupplyReceived.amount
+        let amountBalance = newAmount - oldAmount
+
+        // console.log("yearSame", oldYear == newYear)
+        // console.log("monthSame", oldMonth == newMonth)
+
+        let isDateSame = oldYear == newYear && oldMonth == newMonth
+
+        await SupplyInventory.findOne({ organization_id, year: oldYear })
+          .then(async (result) => {
+
+            var month = result.received_month
+
+            if (isDateSame == true) {
+              month[oldMonth] = month[oldMonth] + amountBalance
+            }
+
+            else {
+              month[oldMonth] = month[oldMonth] - oldAmount
+            }
+
+            var newInventory = { received_month: month }
+
+            await SupplyInventory.updateOne(
+              { _id: result._id },
+              { ...newInventory }
+            )
+          })
+
+        if (isDateSame != true) {
+          await SupplyInventory.findOne({ organization_id, year: newYear })
+            .then(async (result) => {
+
+              if (result != null) {
+                // console.log("result", result)
+                var month = result.received_month
+                month[newMonth] = month[newMonth] + newAmount
+
+                var newInventory = { received_month: month }
+
+                // console.log("month", month)
+
+                await SupplyInventory.updateOne(
+                  { _id: result._id },
+                  { ...newInventory }
+                )
+              }
+
+              else {
+                // console.log("inventory is null")
+                // this resembles 12 months
+                var newInventory = {}
+                var month = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                var given_month = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                month[newMonth] = month[newMonth] + newAmount
+                var _id = new mongoose.Types.ObjectId();
+                newInventory = { given_month, received_month: month, year: newYear, organization_id, _id }
+
+                await new SupplyInventory(newInventory).save()
+              }
+            })
+        }
+      })
+
+
     //Organization
-    const query = await Organization.updateOne(
+    await Organization.updateOne(
       { _id: organization_id },
       { organization_supply: new_supply_amount }
     );
     //Supply
     await SupplyReceived.updateOne(
-      { _id: newSupplyReceived.supply_receive_id },
+      { _id: supply_id },
       newSupplyReceived
     );
     res.sendStatus(200);
@@ -499,16 +579,53 @@ exports.updateSupplyReceived = async (req, res) => {
 
 exports.deleteSupplyReceived = async (req, res) => {
   try {
+    // console.log("req.body", req.body)
     var organization_id = req.body.organization_id;
     var new_supply_amount = req.body.new_supply_amount;
-    const supplyReceivedIDs = req.body.supplyReceivedIDs;
+    var year = moment(req.body.year).year()
+
+    var selectedRowKeys = req.body.selectedRowKeys;
+    var deleteIdList = []
+    var removeSupplyMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    selectedRowKeys.forEach(row => {
+      let rowYear = moment(row.date).year()
+      let rowMonth = moment(row.date).month()
+
+      if (year == rowYear) {
+        removeSupplyMonth[rowMonth] = removeSupplyMonth[rowMonth] + row.amount
+
+        deleteIdList.push(row._id)
+      }
+    });
+
+    // console.log("removeSupplyMonth", removeSupplyMonth)
+    // console.log("deleteIdList", deleteIdList)
+
     //Organization
-    const query = await Organization.updateOne(
+    await Organization.updateOne(
       { _id: organization_id },
-      { organization_supply: new_supply_amount }
-    );
+      { organization_supply: new_supply_amount })
+      .then(async () => {
+        await SupplyInventory.findOne({ organization_id, year })
+          .then(async (result) => {
+
+            var month = result.received_month
+
+            for (let i = 0; i < month.length; i++) {
+              month[i] = month[i] - removeSupplyMonth[i]
+            }
+
+            var newInventory = { received_month: month }
+
+            await SupplyInventory.updateOne(
+              { _id: result._id },
+              { ...newInventory }
+            )
+          })
+      })
     //Supply
-    await SupplyReceived.deleteMany({ _id: supplyReceivedIDs });
+    await SupplyReceived.deleteMany({ _id: deleteIdList });
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
