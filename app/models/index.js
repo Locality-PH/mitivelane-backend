@@ -26,18 +26,18 @@ db.blotter = require("./blotter/blotter.model")(mongoose);
 db.blotter_request = require("./blotter/blotter_request.model")(mongoose);
 
 //household
-db.household = require("./organizations/household/household.model")(mongoose);
-db.householdMember = require("./organizations/household/household_member.model")(
+db.household = require("./household/household.model")(mongoose);
+db.householdMember = require("./household/household_member.model")(
   mongoose
 );
 
 //purok
-db.purok = require("./organizations/purok/purok.model")(mongoose);
+db.purok = require("./purok/purok.model")(mongoose);
 
 //Supply
-db.SupplyGiven = require("./organizations/supply/supply_given.model")(mongoose);
-db.SupplyReceive = require("./organizations/supply/supply_receive.model")(mongoose);
-db.SupplyInventory = require("./organizations/supply/supply_inventory.model")(
+db.SupplyGiven = require("./supply/supply_given.model")(mongoose);
+db.SupplyReceive = require("./supply/supply_receive.model")(mongoose);
+db.SupplyInventory = require("./supply/supply_inventory.model")(
   mongoose
 );
 

@@ -4,18 +4,6 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.post(
-    "/given/getTotal",
-    auth.authenticationToken,
-    supplyController.getGivenTotal
-  );
-
-  router.post(
-    "/receive/getTotal",
-    auth.authenticationToken,
-    supplyController.getReceivedTotal
-  );
-
-  router.post(
     "/get/current",
     auth.authenticationToken,
     supplyController.getCurrentSupply

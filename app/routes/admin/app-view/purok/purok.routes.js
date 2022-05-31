@@ -7,8 +7,6 @@ module.exports = (app) => {
 
     router.post("/getPage", auth.authenticationToken, purokController.getPurokPage);
 
-    router.get("/getTotal/:organization_id", auth.authenticationToken, purokController.getTotal)
-
     router.post("/add", auth.authenticationToken, purokController.addPurok);
     router.post("/delete", auth.authenticationToken, purokController.deletePurok);
     router.post("/update", auth.authenticationToken, purokController.updatePurok);
