@@ -1,5 +1,6 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
+var moment = require('moment');
 
 const Purok = db.purok;
 
@@ -17,54 +18,80 @@ exports.getPuroks = async (req, res) => {
   }
 };
 
-exports.getTotal = async (req, res) => {
-  try {
-    var organization_id = req.params.organization_id;
-    organization_id = mongoose.Types.ObjectId(organization_id);
-    await Purok.countDocuments({ organization_id })
-      .then((result) => {
-        res.json(result)
-      })
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ error: "error" });
-  }
-}
-
 exports.getPurokPage = async (req, res) => {
-  // Check initialize var for requirments
-  console.log(req.body)
   try {
-    var tableScreen = req.body.tableScreen
-    var tableScreenLength = Object.keys(tableScreen).length
+    console.log("req.body", req.body)
     var page = parseInt(req.body.page) - 1;
     var pageSize = parseInt(req.body.pageSize);
-    var total = req.body.total
     var organization_id = req.body.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
 
-    if (tableScreenLength > 0) {
-      var sorter = tableScreen.sorter
-      var order = sorter.order + "ing" // either ascend or descend ing is need for mongoose
-      var field = sorter.field
+    var tableScreen = req.body.tableScreen
+    var tableScreenLength = Object.keys(tableScreen).length
+    var sorter = null
+    var filter = { organization_id: organization_id }
+    var doesFilterExist = tableScreen.hasOwnProperty("filter")
+    var doesSorterExist = tableScreen.hasOwnProperty("sorter")
+    var numberKeys = [] // put here keys that are number fields
+    var dateKeys = ["createdAt"] // put here keys that are date fields
 
-      await Purok.find({ organization_id })
-      .skip(page * pageSize)
-      .limit(pageSize)
-      .sort({[field]: order})
-      .then((result) => {
-        res.status(200).send(result);
-      })
+    if (doesFilterExist != false) {
+      var tempFilter = tableScreen.filter
+      var isKeyNumber = false
+      var isKeyDate = false
+
+      for (const [key, value] of Object.entries(tempFilter)) {
+        if (value != null) {
+          isKeyNumber = numberKeys.includes(key)
+          isKeyDate = dateKeys.includes(key)
+
+          if (isKeyNumber == true) {
+            filter = { ...filter, [key]: value }
+          }
+
+          if (isKeyDate == true) {
+            var today = moment(value[0]).startOf('day')
+            var endDate = moment(value[0]).endOf('day')
+
+            var dateFilter = {
+              [key]: {
+                $gte: today,
+                $lte: endDate
+              }
+            }
+
+            filter = { ...filter, ...dateFilter}
+          }
+
+          if (isKeyDate == false && isKeyNumber == false) {
+            filter = { ...filter, [key]: { $regex: value.join("|"), $options: "i" } }
+          }
+        }
+      }
     }
 
-    if (tableScreenLength <= 0) {
-      await Purok.find({ organization_id })
+    if (doesSorterExist != false) {
+      var tempSorter = tableScreen.sorter
+      var field = tempSorter.field
+      var order = tempSorter.order + 'ing'
+      sorter = { [field]: order }
+    }
+
+    // console.log("filter", filter)
+    // console.log("sorter", sorter)
+
+    await Purok.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
-      .then((result) => {
-        res.status(200).send(result);
+      .sort(sorter)
+      .then(async (result) => {
+        var list = result
+        await Purok.countDocuments(filter)
+          .then((result) => {
+            var total = result
+            res.json({ list, total });
+          });
       })
-    }
 
   } catch (error) {
     console.log(error);

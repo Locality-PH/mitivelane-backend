@@ -1,9 +1,10 @@
 module.exports = (mongoose) => {
-  var supplyStockSchema = mongoose.Schema(
+  var supplyInventorySchema = mongoose.Schema(
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
-      month: { type: String },
-      total_supply: { type: Number },
+      given_month: { type: Array },
+      received_month: { type: Array },
+      year: { type: String },
       organization_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "organizations",
@@ -11,11 +12,12 @@ module.exports = (mongoose) => {
     },
     { timestamps: true }
   );
-  supplyStockSchema.method("toJSON", function () {
+  supplyInventorySchema.method("toJSON", function () {
     const { __v, _id, ...object } = this.toObject();
-    object.supply_stock_id = _id;
+    object.supply_inventories_id = _id;
     return object;
   });
-  const Tokens = mongoose.model("supply_stocks", supplyStockSchema);
+
+  const Tokens = mongoose.model("supply_inventories", supplyInventorySchema);
   return Tokens;
 };

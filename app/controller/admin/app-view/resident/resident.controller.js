@@ -58,8 +58,8 @@ exports.getResidentPage = async (req, res) => {
           if (isKeyNumber == true) {
             filter = { ...filter, [key]: value }
           }
-
-          else {
+          
+          if (isKeyNumber == false) {
             filter = { ...filter, [key]: { $regex: value.join("|"), $options: "i" } }
           }
         }
@@ -72,7 +72,6 @@ exports.getResidentPage = async (req, res) => {
       var order = tempSorter.order + 'ing'
       sorter = { [field]: order }
     }
-
 
     //console.log("filter", filter)
     // console.log("sorter", sorter)
@@ -117,7 +116,7 @@ exports.addResident = async (req, res) => {
   );
   newResidentData.avatarColor = avatarColor;
 
-  console.log(newResidentData);
+  // console.log(newResidentData);
 
   try {
     const newResident = new Resident(newResidentData);
@@ -137,7 +136,7 @@ exports.deleteResident = async (req, res) => {
   try {
     // await Resident.findOneAndDelete({_id: resident_id})
     const request = await Resident.deleteMany({ _id: resident_id });
-    console.log("request", request);
+    // console.log("request", request);
     res.json("deleted");
   } catch (error) {
     console.log(error);
@@ -147,7 +146,7 @@ exports.deleteResident = async (req, res) => {
 
 exports.updateResident = async (req, res) => {
   const newResidentData = req.body.values;
-  console.log("new val", newResidentData);
+  // console.log("new val", newResidentData);
   const resident_id = req.body.resident_id;
 
   try {
