@@ -19,6 +19,7 @@ db.organizationMember = require("./organizations/organization_members.model.js")
   mongoose
 );
 db.organization = require("./organizations/organization.model.js")(mongoose);
+db.organization_request = require("./organizations/organization_request.model.js")(mongoose);
 db.resident = require("./resident/residents.models")(mongoose);
 
 //blotter
