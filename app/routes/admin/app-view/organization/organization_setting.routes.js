@@ -9,6 +9,36 @@ module.exports = (app) => {
     organizationSetting.addMember
   );
 
+  router.get(
+    "/get-organization-request/:organization_id",
+    auth.authenticationToken,
+    organizationSetting.getOrganizationRequest
+  );
+
+  router.post(
+    "/delete-organization-request",
+    auth.authenticationToken,
+    organizationSetting.deleteOrganizationRequest
+  );
+
+  router.post(
+    "/validate-email",
+    auth.authenticationToken,
+    organizationSetting.validateEmail
+  );
+
+  router.post(
+    "/verify-request",
+    auth.authenticationToken,
+    organizationSetting.verifyRequest
+  );
+
+  router.post(
+    "/accept-request",
+    auth.authenticationToken,
+    organizationSetting.acceptRequest
+  );
+
   app.use("/api/organization_setting", router);
 };
 
