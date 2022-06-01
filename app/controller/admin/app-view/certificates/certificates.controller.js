@@ -3,21 +3,34 @@ const Certificate = db.certificates;
 var mongoose = require("mongoose");
 
 exports.createCertificate = async (req, res) => {
-  var id = new mongoose.Types.ObjectId();
+  var id = new mongoose.Types.ObjectId(req.body.certificate_id);
   let data = {
     _id: id,
     organization_id: [req.user.auth_organization],
-    cert_type: "cert",
-    title: "Untitled #",
-    template_type: "simple_border",
-    font_family: "Tinos",
-    content: [
-      {
-        entityMap: {},
-        blocks: [],
-      },
-    ],
+    firstLogo: req.body.firstLogo,
+    secondLogo: req.body.secondLogo,
+    signatures: req.body.signatures,
+    title: req.body.title ? req.body.title : "Untitled #",
+    country: req.body.country,
+    municipality: req.body.municipality,
+    organization: req.body.organization,
+    office: req.body.office,
+    cert_type: req.body.cert_type ? req.body.cert_type : "cert",
+    font_family: req.body.font_family ? req.body.font_family : "Tinos",
+    template_type: req.body.template_type
+      ? req.body.template_type
+      : "simple_border",
+    content: req.body.content
+      ? req.body.content
+      : [
+          {
+            entityMap: {},
+            blocks: [],
+          },
+        ],
+    clearance: req.body.clearance,
   };
+
   const cert = new Certificate(data);
 
   await cert
@@ -114,7 +127,6 @@ exports.updateCertificate = async (req, res) => {
     {
       $set: {
         organization_id: req.user.auth_organization,
-        full_name: req.body.country,
         firstLogo: req.body.firstLogo,
         secondLogo: req.body.secondLogo,
         signatures: req.body.signatures,

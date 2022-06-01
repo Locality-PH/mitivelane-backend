@@ -24,6 +24,8 @@ module.exports = (mongoose) => {
         {
           id: { type: String },
           formName: { type: String },
+          formName2: { type: String },
+          active: { type: Boolean },
           image: { type: String },
         },
       ],
