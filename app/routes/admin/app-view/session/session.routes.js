@@ -1,0 +1,12 @@
+module.exports = (app) => {
+    const sessionController = require("../../../../controller/admin/app-view/session/session.controller");
+    const auth = require("../../../../auth");
+    var router = require("express").Router();
+
+    router.post("/get", auth.authenticationToken, sessionController.getSession);
+    router.post("/add", auth.authenticationToken, sessionController.addSession);
+    router.post("/delete", auth.authenticationToken, sessionController.deleteSession);
+    router.post("/update", auth.authenticationToken, sessionController.updateSession);
+    app.use("/api/session", router);
+  };
+  

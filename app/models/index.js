@@ -36,11 +36,14 @@ db.householdMember = require("./household/household_member.model")(
 db.purok = require("./purok/purok.model")(mongoose);
 
 //Supply
-db.SupplyGiven = require("./supply/supply_given.model")(mongoose);
-db.SupplyReceive = require("./supply/supply_receive.model")(mongoose);
-db.SupplyInventory = require("./supply/supply_inventory.model")(
+db.supplyGiven = require("./supply/supply_given.model")(mongoose);
+db.supplyReceive = require("./supply/supply_receive.model")(mongoose);
+db.supplyInventory = require("./supply/supply_inventory.model")(
   mongoose
 );
+
+//Session
+db.session = require("./session/session.model")(mongoose);
 
 //certificates
 db.certificates = require("./certificates/cert.model.js")(mongoose);

@@ -2,9 +2,9 @@ const db = require("../../../../models");
 var mongoose = require("mongoose");
 var moment = require("moment")
 
-const SupplyGiven = db.SupplyGiven;
-const SupplyReceived = db.SupplyReceive;
-const SupplyInventory = db.SupplyInventory;
+const SupplyGiven = db.supplyGiven;
+const SupplyReceived = db.supplyReceive;
+const SupplyInventory = db.supplyInventory;
 const Organization = db.organization;
 
 exports.getGivenSupplyPage = async (req, res) => {
