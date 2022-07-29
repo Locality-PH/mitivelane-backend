@@ -22,10 +22,10 @@ exports.getGivenSupplyPage = async (req, res) => {
     var doesSorterExist = tableScreen.hasOwnProperty("sorter")
     var numberKeys = ["amount"] // put here keys that are number fields
 
-    //This is custome filter that have no date filter
-    var current_year = req.body.year
-    var startDate = moment(current_year).startOf('year')
-    var endDate = moment(current_year).endOf('year')
+    //This is custom filter that have no date filter
+    var current_date = req.body.dateFilter
+    var startDate = moment(current_date).startOf('year')
+    var endDate = moment(current_date).endOf('year')
 
     filter = {
       ...filter,
@@ -102,10 +102,10 @@ exports.getReceivedSupplyPage = async (req, res) => {
     var doesSorterExist = tableScreen.hasOwnProperty("sorter")
     var numberKeys = ["amount"] // put here keys that are number fields
 
-    //This is custome filter that have no date filter
-    var current_year = req.body.year
-    var startDate = moment(current_year).startOf('year')
-    var endDate = moment(current_year).endOf('year')
+    //This is custom filter that have no date filter
+    var current_date = req.body.dateFilter
+    var startDate = moment(current_date).startOf('year')
+    var endDate = moment(current_date).endOf('year')
 
     filter = {
       ...filter,
@@ -254,8 +254,6 @@ exports.addSupplyGiven = async (req, res) => {
   }
 };
 
-
-
 exports.updateSupplyGiven = async (req, res) => {
   try {
     var organization_id = req.body.organization_id;
@@ -364,7 +362,7 @@ exports.deleteSupplyGiven = async (req, res) => {
     // console.log("req.body", req.body)
     var organization_id = req.body.organization_id;
     var new_supply_amount = req.body.new_supply_amount;
-    var year = moment(req.body.year).year()
+    var year = moment(req.body.dateFilter).year()
 
     var selectedRowKeys = req.body.selectedRowKeys;
     var deleteIdList = []
@@ -582,7 +580,7 @@ exports.deleteSupplyReceived = async (req, res) => {
     // console.log("req.body", req.body)
     var organization_id = req.body.organization_id;
     var new_supply_amount = req.body.new_supply_amount;
-    var year = moment(req.body.year).year()
+    var year = moment(req.body.dateFilter).year()
 
     var selectedRowKeys = req.body.selectedRowKeys;
     var deleteIdList = []
@@ -632,3 +630,19 @@ exports.deleteSupplyReceived = async (req, res) => {
     res.status(500).send({ error: "error" });
   }
 };
+
+exports.getSupplyInventory = async (req, res) => {
+  const organization_id = req.params.organization_id;
+  const year = req.params.year;
+
+  console.log("organization_id", organization_id)
+  console.log("year", year)
+
+  try {
+    const inventory = await SupplyInventory.findOne({ organization_id, year});
+    res.json(inventory);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: error });
+  }
+}

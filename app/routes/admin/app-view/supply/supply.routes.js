@@ -55,10 +55,12 @@ module.exports = (app) => {
     auth.authenticationToken,
     supplyController.updateSupplyReceived
   );
+
   router.get(
-    "/receive/getPage/:organization_id/:page/:pageSize",
+    "/inventory/:organization_id/:year",
     auth.authenticationToken,
-    supplyController.getReceivedSupplyPage
+    supplyController.getSupplyInventory
   );
+
   app.use("/api/supply", router);
 };
