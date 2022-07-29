@@ -635,8 +635,8 @@ exports.getSupplyInventory = async (req, res) => {
   const organization_id = req.params.organization_id;
   const year = req.params.year;
 
-  console.log("organization_id", organization_id)
-  console.log("year", year)
+  // console.log("organization_id", organization_id)
+  // console.log("year", year)
 
   try {
     const inventory = await SupplyInventory.findOne({ organization_id, year});
