@@ -35,6 +35,8 @@ module.exports = (mongoose) => {
       address_1: { type: String },
       address_2: { type: String },
       avatarColor: { type: String },
+      avatarImg: { type: String },
+      avatarImgType: { type: String },
     },
     { timestamps: true }
   );
