@@ -6,7 +6,8 @@ const Session = db.session;
 exports.getAuditPage = async (req, res) => {
   try {
     console.log("req.body", req.body)
-    var dateFilter = moment(req.body.dateFilter).startOf('day')
+    var dateFilter = moment(req.body.dateFilter).endOf('day')
+    var sortFilter = req.body.sortFilter.toLowerCase()
     var page = parseInt(req.body.currentPage) - 1;
     var pageSize = parseInt(req.body.pageSize);
     var organization_id = req.body.organization_id;
@@ -19,21 +20,17 @@ exports.getAuditPage = async (req, res) => {
       }
     }
 
-    console.log("dateFilter", dateFilter)
-    console.log("filter", filter)
-
     await Session
       .find(filter)
-      // .skip(page * pageSize)
-      // .limit(pageSize)
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .sort({createdAt: sortFilter})
       .then(async (result) => {
         var list = result
         await Session.countDocuments(filter)
           .then((result) => {
             var total = result
             res.json({ list, total });
-            console.log("list", list)
-            console.log("total", total)
           });
       })
 
@@ -58,10 +55,5 @@ exports.addSession = async (req, res) => {
     console.log(error);
     res.status(500).send({ error: error });
   }
-};
-
-exports.test = async (req, res) => {
-  console.log("test")
-  res.json("test")
 };
 
