@@ -10,7 +10,7 @@ module.exports = (mongoose) => {
       country: { type: String },
       firstLogo: { type: String },
       secondLogo: { type: String },
-
+      is_active: { type: Boolean },
       municipality: { type: String },
       organization: { type: String },
       clearance: { type: String },

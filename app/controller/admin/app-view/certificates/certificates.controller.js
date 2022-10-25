@@ -8,6 +8,7 @@ exports.createCertificate = async (req, res) => {
     _id: id,
     organization_id: [req.user.auth_organization],
     firstLogo: req.body.firstLogo,
+    is_active: false,
     secondLogo: req.body.secondLogo,
     signatures: req.body.signatures,
     line_height: req.body.line_height,
@@ -80,7 +81,7 @@ exports.getCertificate = async (req, res) => {
 
 exports.getCertificateAll = async (req, res) => {
   try {
-    const result = new Number(req.query.result);
+    const result = new Number(req.body.cert_type);
     const start = new Number(req.query.start);
     console.log(req.query.result);
     if (result || start)
@@ -94,6 +95,32 @@ exports.getCertificateAll = async (req, res) => {
         .catch((_) => {
           return res.json("Something went wrong please try again");
         });
+  } catch (e) {
+    res.json(e);
+  }
+
+  //   const data = req.param;
+  //   await Certificate.find(data.id);
+  //   return res.json("get");
+};
+
+exports.getCertificateName = async (req, res) => {
+  try {
+    console.log(req.query.cert_type);
+
+    await Certificate.find({
+      organization_id: req.user.auth_organization,
+      cert_type: req.query.cert_type,
+    })
+      .select("_id, organization_id , cert_type , title ")
+      .then((data) => {
+        //  console.log(data);
+
+        return res.json(data);
+      })
+      .catch((_) => {
+        return res.json("Something went wrong please try again");
+      });
   } catch (e) {
     res.json(e);
   }
@@ -133,6 +160,7 @@ exports.updateCertificate = async (req, res) => {
         secondLogo: req.body.secondLogo,
         signatures: req.body.signatures,
         title: req.body.title,
+        is_active: req.body.is_active,
         line_height: req.body.line_height,
         color_picker: req.body.color_picker,
         country: req.body.country,
