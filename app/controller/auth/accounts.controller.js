@@ -191,6 +191,7 @@ async function registerOldUser(req, res) {
         select: ["_id", "role", "email", "organization_id"],
       })
       .then((organization) => {
+        console.log(organization);
         const users = {
           auth_id: req.body.uuid,
           profileLogo: organization[0].profileLogo,
@@ -397,6 +398,8 @@ async function loginUser(req, res) {
     })
 
     .then((organization) => {
+      console.log(organization[0].organizations);
+
       const users = {
         profileLogo: organization[0].profileLogo,
         auth_id: req.params.auth_id,
