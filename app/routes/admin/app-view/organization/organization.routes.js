@@ -9,6 +9,12 @@ module.exports = (app) => {
     organization.getAllOrganizations
   );
 
+  router.get(
+    "/get-latest-organizations",
+    auth.authenticationToken,
+    organization.getLatestOrganizations
+  );
+
   app.use("/api/organization", router);
 };
 
