@@ -14,6 +14,7 @@ module.exports = (mongoose) => {
       age: { type: Number },
       birth_of_place: { type: String },
       gender: { type: String },
+      blood_type: { type: String },
       voter_status: { type: String },
       civil_status: { type: String },
       occupation: { type: String },
