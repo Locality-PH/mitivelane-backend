@@ -7,8 +7,8 @@
     "devStart": "nodemon server.js",
     "devStartAuth": "nodemon authServer.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "npm install pm2 -g",
-    "start": "pm2-runtime start ecosystem.config.js --env production"
+    "start": "NODE_ENV=development ./node_modules/.bin/netlify-lambda serve src",
+    "build": "NODE_ENV=production ./node_modules/.bin/netlify-lambda build src"
   },
   "keywords": [],
   "author": "",
@@ -28,9 +28,11 @@
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.3",
     "mongoose": "^6.4.6",
+    "netlify-lambda": "^2.0.15",
     "node-fetch": "^2.6.7",
     "nodemailer": "^6.7.5",
     "request": "^2.88.2",
+    "serverless-http": "^3.1.0",
     "socket.io": "^4.4.1"
   },
   "devDependencies": {
