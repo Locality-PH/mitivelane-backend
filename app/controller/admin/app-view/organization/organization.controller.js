@@ -6,7 +6,6 @@ const OrganizationMember = db.organizationMember
 var mongoose = require("mongoose");
 
 exports.getAllOrganizations = async (req, res) => {
-  console.log("Requested in Get All organizations")
   try {
     const organization = await Organization.find({})
 
@@ -29,6 +28,23 @@ exports.getLatestOrganizations = async (req, res) => {
 
     return res.json(organization);
   } catch (error) {
+    return res.json([]);
+  }
+};
+
+exports.getOrganization = async (req, res) => {
+  const organizationId = req.params.organization_id;
+
+  try {
+    const organization = await Organization.findOne({
+      _id: organizationId
+    })
+      .populate("organization_member")
+
+    return res.json(organization)
+
+  }
+  catch (error) {
     return res.json([]);
   }
 };

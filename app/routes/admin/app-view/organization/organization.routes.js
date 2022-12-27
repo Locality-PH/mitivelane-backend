@@ -15,6 +15,12 @@ module.exports = (app) => {
     organization.getLatestOrganizations
   );
 
+  router.get(
+    "/get-organization/:organization_id",
+    auth.authenticationToken,
+    organization.getOrganization
+  );
+
   app.use("/api/organization", router);
 };
 
