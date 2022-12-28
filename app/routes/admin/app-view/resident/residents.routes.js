@@ -8,6 +8,7 @@ module.exports = (app) => {
     router.post("/getPage", auth.authenticationToken, residentController.getResidentPage);
 
     router.get("/getTotal/:organization_id", auth.authenticationToken, residentController.getResidentTotal)
+    router.get("/populationStatus/:organization_id", auth.authenticationToken, residentController.getPopulationStatus)
 
     router.post("/add", auth.authenticationToken, residentController.addResident);
     router.post("/delete", auth.authenticationToken, residentController.deleteResident);
