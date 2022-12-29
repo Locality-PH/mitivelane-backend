@@ -58,7 +58,7 @@ exports.getResidentPage = async (req, res) => {
           if (isKeyNumber == true) {
             filter = { ...filter, [key]: value }
           }
-          
+
           if (isKeyNumber == false) {
             filter = { ...filter, [key]: { $regex: value.join("|"), $options: "i" } }
           }
@@ -94,6 +94,37 @@ exports.getResidentPage = async (req, res) => {
     res.status(500).send({ error: "error" });
   }
 };
+
+exports.getPopulationStatus = async (req, res) => {
+  let residentMale
+  let residentFemale
+  let residentRegisteredVoters
+  let residentPopulation
+
+  try {
+    var organization_id = req.params.organization_id;
+    organization_id = mongoose.Types.ObjectId(organization_id);
+
+    residentMale = await Resident.countDocuments({ gender: 'Male', organization_id}).exec()
+    residentFemale = await Resident.countDocuments({ gender: 'Female' , organization_id}).exec()
+    residentRegisteredVoters = await Resident.countDocuments({ voter_status: 'Registered' , organization_id}).exec()
+    residentPopulation = await Resident.countDocuments({organization_id}).exec()
+
+    console.log("residentMale", residentMale)
+    console.log("residentFemale", residentFemale)
+    console.log("residentRegisteredVoters", residentRegisteredVoters)
+    console.log("residentPopulation", residentPopulation)
+
+    res.json(
+      {residentMale,
+      residentFemale,
+      residentRegisteredVoters,
+      residentPopulation});
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
+}
 
 exports.addResident = async (req, res) => {
   let colortag = [
