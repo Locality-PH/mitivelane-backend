@@ -54,7 +54,7 @@ app.get("/", (_, res) => {
 require("./app/routes/")(app);
 
 //socket
-require("./app/socket/")(io);
+//require("./app/socket/")(io);
 
 //test Auth
 app.get("/api/posts", authenticateToken, (req, res) => {
