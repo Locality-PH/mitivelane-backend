@@ -4,27 +4,15 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.post(
-    "/add-member",
-    auth.authenticationToken,
-    organizationSetting.addMember
-  );
-
-  router.get(
-    "/get-organization-request/:organization_id",
-    auth.authenticationToken,
-    organizationSetting.getOrganizationRequest
-  );
-
-  router.post(
-    "/delete-organization-request",
-    auth.authenticationToken,
-    organizationSetting.deleteOrganizationRequest
-  );
-
-  router.post(
     "/validate-email",
     auth.authenticationToken,
     organizationSetting.validateEmail
+  );
+
+  router.post(
+    "/add-member",
+    auth.authenticationToken,
+    organizationSetting.addMember
   );
 
   router.post(
@@ -38,6 +26,36 @@ module.exports = (app) => {
     auth.authenticationToken,
     organizationSetting.acceptRequest
   );
+
+  router.get(
+    "/get-organization-members/:organization_id",
+    auth.authenticationToken,
+    organizationSetting.getOrganizationMembers
+  );
+
+  router.post(
+    "/delete-organization-member",
+    auth.authenticationToken,
+    organizationSetting.deleteOrganizationMember
+  );
+
+  router.post(
+    "/delete-organization",
+    auth.authenticationToken,
+    organizationSetting.deleteOrganization
+  );
+
+  router.get(
+    "/get-organization-request/:organization_id",
+    auth.authenticationToken,
+    organizationSetting.getOrganizationRequest
+  );
+
+  // router.post(
+  //   "/delete-organization-request",
+  //   auth.authenticationToken,
+  //   organizationSetting.deleteOrganizationRequest
+  // );
 
   app.use("/api/organization_setting", router);
 };
