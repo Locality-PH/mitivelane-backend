@@ -21,7 +21,7 @@ module.exports = (mongoose) => {
       address: { type: String },
       first_time: { type: Boolean },
       permission: { type: Boolean },
-
+      status: { type: Boolean },
       country: { type: String },
       remember_me: { type: Boolean },
       full_name: { type: String },
@@ -37,6 +37,16 @@ module.exports = (mongoose) => {
           os: { type: String },
           browser: { type: String },
           date: { type: Date },
+        },
+      ],
+      billing_method: [
+        {
+          card_number: { type: String, required: true },
+          card_holder: { type: String, required: true },
+          issuer: { type: String, required: true },
+          valid_thru: { type: String },
+          cvc: { type: String },
+          active_card: { type: Boolean },
         },
       ],
       // access_token: { type: String, required: true },

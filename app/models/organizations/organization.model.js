@@ -8,6 +8,7 @@ module.exports = (mongoose) => {
       province: { type: String },
       country: { type: String },
       address: { type: String },
+      organization_status: { type: Boolean },
       organization_supply: { type: Number, default: 0 },
       organization_member: [
         {

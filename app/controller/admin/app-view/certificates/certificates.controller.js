@@ -15,6 +15,7 @@ exports.createCertificate = async (req, res) => {
     color_picker: req.body.color_picker,
     title: req.body.title ? req.body.title : "Untitled #",
     country: req.body.country,
+    status: req.body.status,
     municipality: req.body.municipality,
     organization: req.body.organization,
     office: req.body.office,
@@ -112,7 +113,7 @@ exports.getCertificateName = async (req, res) => {
       organization_id: req.user.auth_organization,
       cert_type: req.query.cert_type,
     })
-      .select("_id, organization_id , cert_type , title ")
+      .select("_id, organization_id , cert_type , title , status")
       .then((data) => {
         //  console.log(data);
 
@@ -160,6 +161,7 @@ exports.updateCertificate = async (req, res) => {
         secondLogo: req.body.secondLogo,
         signatures: req.body.signatures,
         title: req.body.title,
+        status: req.body.status,
         is_active: req.body.is_active,
         line_height: req.body.line_height,
         color_picker: req.body.color_picker,
