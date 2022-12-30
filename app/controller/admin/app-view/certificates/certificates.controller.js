@@ -9,7 +9,7 @@ exports.createCertificate = async (req, res) => {
     _id: id,
     organization_id: [req.user.auth_organization],
     firstLogo: req.body.firstLogo,
-    is_active: false,
+    status: false,
     secondLogo: req.body.secondLogo,
     signatures: req.body.signatures,
     line_height: req.body.line_height,
@@ -113,7 +113,7 @@ exports.getCertificateName = async (req, res) => {
       organization_id: req.user.auth_organization,
       cert_type: req.query.cert_type,
     })
-      .select("_id, organization_id , cert_type , title ")
+      .select("_id, organization_id , cert_type , title , status ")
       .then((data) => {
         //  console.log(data);
 
@@ -166,6 +166,7 @@ exports.updateCertificate = async (req, res) => {
         color_picker: req.body.color_picker,
         country: req.body.country,
         municipality: req.body.municipality,
+        status: req.body.status,
         organization: req.body.organization,
         office: req.body.office,
         cert_type: req.body.cert_type,
@@ -175,13 +176,6 @@ exports.updateCertificate = async (req, res) => {
         clearance: req.body.clearance,
       },
     }
-    // { new: true },
-    // (err, _) => {
-    //   if (err) {
-    //     return res.json("Error: " + err);
-    //   }
-    //   return res.json(req.body);
-    // }
   )
     .then(() => {
       return res.json(req.body);
