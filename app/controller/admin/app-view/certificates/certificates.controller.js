@@ -3,9 +3,10 @@ const Certificate = db.certificates;
 var mongoose = require("mongoose");
 
 exports.createCertificate = async (req, res) => {
-  var id = new mongoose.Types.ObjectId(req.body.certificate_id);
+  const id = new mongoose.Types.ObjectId(req.body.certificate_id);
   console.log(id);
-  let data = {
+
+  const data = {
     _id: id,
     organization_id: [req.user.auth_organization],
     firstLogo: req.body.firstLogo,
@@ -14,69 +15,43 @@ exports.createCertificate = async (req, res) => {
     signatures: req.body.signatures,
     line_height: req.body.line_height,
     color_picker: req.body.color_picker,
-    title: req.body.title ? req.body.title : "Untitled #",
+    title: req.body.title || "Untitled #",
     country: req.body.country,
     municipality: req.body.municipality,
     organization: req.body.organization,
     office: req.body.office,
-    cert_type: req.body.cert_type ? req.body.cert_type : "cert",
-    font_family: req.body.font_family ? req.body.font_family : "Tinos",
-    template_type: req.body.template_type
-      ? req.body.template_type
-      : "simple_border",
-    content: req.body.content
-      ? req.body.content
-      : [
-          {
-            entityMap: {},
-            blocks: [],
-          },
-        ],
+    cert_type: req.body.cert_type || "cert",
+    font_family: req.body.font_family || "Tinos",
+    template_type: req.body.template_type || "simple_border",
+    content: req.body.content || [{ entityMap: {}, blocks: [] }],
     clearance: req.body.clearance,
   };
 
   const cert = new Certificate(data);
 
-  await cert
-    .save(cert)
-    .then((_) => {
-      return res.json({ id: id });
-    })
-    .catch((err) => {
-      return res.json(err);
-    });
-
-  //   await users
-  //     .save(users)
-  //     .then(async (_) => {
-  //       return res.status(200).json({ id: id });
-  //     })
-  //     .catch((error) => {
-  //       return res.status(400).json(error);
-  //     });
+  try {
+    await cert.save();
+    res.json({ id });
+  } catch (error) {
+    res.json(error);
+  }
 };
 
 exports.getCertificate = async (req, res) => {
-  //   const data = req.param;
-  //   await Certificate.find(data.id);
-  //   return res.json("get");
-
   try {
-    await Certificate.find({
+    const data = await Certificate.findOne({
       _id: req.params.id,
       organization_id: req.user.auth_organization,
-    })
-      .limit(1)
-      .then((data) => {
-        console.log(data);
-        return res.json(data);
-      })
-      .catch((err) => {
-        res.statusCode = 401;
-        return res.json("Error: " + err);
-      });
-  } catch (e) {
-    res.json(e);
+    });
+
+    if (!data) {
+      res.statusCode = 404;
+      return res.json({ message: "Certificate not found" });
+    }
+
+    res.json(data);
+  } catch (error) {
+    res.json(error);
   }
 };
 
@@ -132,94 +107,59 @@ exports.getCertificateName = async (req, res) => {
 };
 
 exports.updateCertificate = async (req, res) => {
-  if (!req.user) {
-    return res.status(404).send({ Error: "something went wrong" });
-  }
-
-  // let data = {};
-  // data = {
-  //   organization_id: req.user.auth_organization,
-  //   full_name: req.body.country,
-  //   signatures: req.body.signatures,
-  //   country: req.body.country,
-  //   municipality: req.body.municipality,
-  //   organization: req.body.organization,
-  //   office: req.body.office,
-  //   cert_type: req.body.cert_type,
-  //   template_type: req.body.template_type,
-  //   content: req.body.content,
-  // };
-
-  await Certificate.findOneAndUpdate(
-    {
-      _id: req.body.certificate_id,
-    },
-    {
-      $set: {
-        organization_id: req.user.auth_organization,
-        firstLogo: req.body.firstLogo,
-        secondLogo: req.body.secondLogo,
-        signatures: req.body.signatures,
-        title: req.body.title,
-        is_active: req.body.is_active,
-        line_height: req.body.line_height,
-        color_picker: req.body.color_picker,
-        country: req.body.country,
-        municipality: req.body.municipality,
-        status: req.body.status,
-        organization: req.body.organization,
-        office: req.body.office,
-        cert_type: req.body.cert_type,
-        font_family: req.body.font_family,
-        template_type: req.body.template_type,
-        content: req.body.content,
-        clearance: req.body.clearance,
-      },
+  try {
+    if (!req.user) {
+      return res.status(404).send({ Error: "something went wrong" });
     }
-  )
-    .then(() => {
-      return res.json(req.body);
-    })
-    .catch((err) => {
-      return res.json(err);
-    });
-  //   const data = req.param;
-  //   await Certificate.find(data.id);
-  //   return res.json("get");
+
+    const updatedCertificate = await Certificate.findOneAndUpdate(
+      {
+        _id: req.body.certificate_id,
+      },
+      {
+        $set: {
+          organization_id: req.user.auth_organization,
+          firstLogo: req.body.firstLogo,
+          secondLogo: req.body.secondLogo,
+          signatures: req.body.signatures,
+          title: req.body.title,
+          is_active: req.body.is_active,
+          line_height: req.body.line_height,
+          color_picker: req.body.color_picker,
+          country: req.body.country,
+          municipality: req.body.municipality,
+          status: req.body.status,
+          organization: req.body.organization,
+          office: req.body.office,
+          cert_type: req.body.cert_type,
+          font_family: req.body.font_family,
+          template_type: req.body.template_type,
+          content: req.body.content,
+          clearance: req.body.clearance,
+        },
+      }
+    );
+
+    return res.json(updatedCertificate);
+  } catch (err) {
+    return res.json(err);
+  }
 };
 
 exports.deleteCertificate = async (req, res) => {
-  console.log(req.params.id);
-  try {
-    let certificate_id = req.params.id;
-    if (!req.user)
-      return res.status(404).send({ Error: "something went wrong" });
+  const certificateId = req.params.id;
+  const organizationId = req.user?.auth_organization;
 
-    // let data = {};
-    // data = {
-    //   organization_id: req.user.auth_organization,
-    //   full_name: req.body.country,
-    //   signatures: req.body.signatures,
-    //   country: req.body.country,
-    //   municipality: req.body.municipality,
-    //   organization: req.body.organization,
-    //   office: req.body.office,
-    //   cert_type: req.body.cert_type,
-    //   template_type: req.body.template_type,
-    //   content: req.body.content,
-    // };
+  try {
+    if (!organizationId) {
+      return res.status(404).send({ Error: "something went wrong" });
+    }
 
     await Certificate.deleteOne({
-      _id: certificate_id,
-      organization_id: req.user.auth_organization,
-    })
-      .then(() => {
-        console.log("delete");
-        return res.json("Delete Success");
-      })
-      .catch((err) => {
-        return res.json(err);
-      });
+      _id: certificateId,
+      organization_id: organizationId,
+    });
+    return res.json("Delete Success");
   } catch (err) {
     return res.json(err);
   }

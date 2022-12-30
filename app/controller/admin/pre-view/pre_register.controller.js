@@ -29,36 +29,32 @@ exports.registerOrganization = (req, res) => {
       });
     });
 };
-exports.registerOrganizationMember = (req, res) => {
-  var organizationMemberId = new mongoose.Types.ObjectId();
-
-  const organizationMember = new OrganizationMember({
-    _id: organizationMemberId,
-    organization_name: req.body.organization_name,
-    organization_id: req.body.organization_id,
-    name: req.body.name,
-    email: req.body.email,
-    role: "Administrator",
-  });
-  organizationMember
-    .save(organizationMember)
-    .then((_) => {
-      Organization.findByIdAndUpdate(req.body.organization_id)
-        .then((organization) => {
-          organization.organization_member.push(organizationMemberId),
-            organization
-              .save()
-              .then(() => res.json("Organization updated!"))
-              .catch((err) => res.status(400).json("Error: " + err));
-        })
-        .catch((err) => res.status(400).json("Error: " + err));
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Tutorial.",
-      });
+exports.registerOrganizationMember = async (req, res) => {
+  try {
+    const organizationMemberId = new mongoose.Types.ObjectId();
+    const organizationMember = new OrganizationMember({
+      _id: organizationMemberId,
+      organization_name: req.body.organization_name,
+      organization_id: req.body.organization_id,
+      name: req.body.name,
+      email: req.body.email,
+      role: "Administrator",
     });
+    await organizationMember.save();
+
+    const updatedOrganization = await Organization.findByIdAndUpdate(
+      req.body.organization_id,
+      { $push: { organization_member: organizationMemberId } },
+      { new: true }
+    );
+    await updatedOrganization.save();
+
+    return res.json("Organization updated!");
+  } catch (error) {
+    return res.status(500).send({
+      message: error.message || "Some error occurred while creating the data.",
+    });
+  }
 };
 exports.insertdata = (req, res) => {
   Organization.findByIdAndUpdate(req.body.organization_id)
@@ -81,21 +77,22 @@ exports.list = (req, res) => {
 };
 
 //Create Finalized Organization
-exports.createOrganization = (req, res) => {
-  var organizationId = new mongoose.Types.ObjectId();
-  var organizationMemberId = new mongoose.Types.ObjectId();
+exports.createOrganization = async (req, res) => {
+  const organizationId = new mongoose.Types.ObjectId();
+  const organizationMemberId = new mongoose.Types.ObjectId();
+  try {
+    // Create organization
+    const organization = new Organization({
+      _id: organizationId,
+      organization_name: req.body.organization_name,
+      country: req.body.country,
+      province: req.body.province,
+      municipality: req.body.municipality,
+      address: req.body.address,
+    });
+    await organization.save();
 
-  console.log(organizationId);
-  //Organization Create Data
-  const organization = new Organization({
-    _id: organizationId,
-    organization_name: req.body.organization_name,
-    country: req.body.country,
-    province: req.body.province,
-    municipality: req.body.municipality,
-    address: req.body.address,
-  });
-  organization.save(organization).then((_) => {
+    // Create organization member
     const organizationMember = new OrganizationMember({
       _id: organizationMemberId,
       organization_id: organizationId,
@@ -103,76 +100,77 @@ exports.createOrganization = (req, res) => {
       auth_id: req.body.auth_id,
       role: "Administrator",
     });
-    // Organization Member Create
-    organizationMember
-      .save(organizationMember)
-      .then((_) => {
-        // Organization   Update
-        Organization.findByIdAndUpdate(organizationId)
-          .then((organization) => {
-            organization.organization_member.push(organizationMemberId),
-              organization
-                .save()
-                .then(() => {
-                  //Account Update
-                  Account.findOneAndUpdate(
-                    {
-                      uuid: req.body.auth_id,
-                    },
-                    {
-                      $push: {
-                        members: [organizationMemberId],
-                        organizations: [organizationId],
-                      },
-                      $set: {
-                        first_name: req.body.first_name,
-                        full_name:
-                          req.body.first_name + " " + req.body.last_name,
-                        last_name: req.body.last_name,
-                        middle_name: req.body.middle_name,
-                        birthday: req.body.birthday,
-                        gender: req.body.gender,
-                        civil_status: req.body.civil_status,
-                        country: req.body.personal_country,
-                        province: req.body.personal_province,
-                        municipality: req.body.personal_municipality,
-                        mobile: req.body.mobile_number,
-                        telephone: req.body.telephone_number,
-                        address: req.body.personal_address,
-                        first_time: req.body.first_time,
-                      },
-                    },
-                    { new: true },
-                    (err, doc) => {
-                      if (err) {
-                        res.status(400).json("Error: " + err);
-                      }
-                      const currentActive = [
-                        {
-                          organization_id: organizationId,
-                          organization_member_id: organizationMemberId,
-                          uuid: req.body.auth_id,
-                        },
-                      ];
-                      console.log(doc);
-                      res.status(200).json(currentActive);
-                    }
-                  );
-                })
-                .catch((err) => res.status(400).json("Error: " + err));
-          })
-          .catch((err) => res.status(400).json("Error: " + err));
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message ||
-            "Some error occurred while creating the Organization.",
-        });
-      });
-  });
-};
+    await organizationMember.save();
 
+    // Update organization with organization member
+    const updatedOrganization = await Organization.findByIdAndUpdate(
+      organizationId,
+      { $push: { organization_member: organizationMemberId } },
+      { new: true }
+    );
+    await updatedOrganization.save();
+
+    // Update account with organization and organization member
+    await Account.findOneAndUpdate(
+      { uuid: req.body.auth_id },
+      {
+        $push: {
+          members: [organizationMemberId],
+          organizations: [organizationId],
+        },
+        $set: {
+          first_name: req.body.first_name,
+          full_name: req.body.first_name + " " + req.body.last_name,
+          last_name: req.body.last_name,
+          middle_name: req.body.middle_name,
+          birthday: req.body.birthday,
+          gender: req.body.gender,
+          civil_status: req.body.civil_status,
+          country: req.body.personal_country,
+          province: req.body.personal_province,
+          municipality: req.body.personal_municipality,
+          mobile: req.body.mobile_number,
+          telephone: req.body.telephone_number,
+          address: req.body.personal_address,
+          first_time: req.body.first_time,
+        },
+      },
+      { new: true }
+    );
+
+    const currentActive = [
+      {
+        organization_id: organizationId,
+        organization_member_id: organizationMemberId,
+        uuid: req.body.auth_id,
+      },
+    ];
+
+    return res.status(200).json(currentActive);
+  } catch (error) {
+    // Delete created organization and organization member
+    const orgData = Organization.findByIdAndDelete(organizationId);
+    const orgMember = OrganizationMember.findByIdAndDelete(
+      organizationMemberId
+    );
+    const accountData = Account.findOneAndUpdate(
+      { uuid: req.user.auth_id },
+      {
+        $pull: {
+          organizations: [organizationId],
+          members: [organizationMemberId],
+        },
+      },
+      { new: true, multi: true }
+    );
+    await Promise.all([orgData, orgMember]);
+
+    return res.status(500).send({
+      message:
+        error.message || "Some error occurred while creating the Organization.",
+    });
+  }
+};
 exports.getOrganizationList = (req, res) => {
   console.log(req.params.organization_id);
   Account.find({ uuid: req.params.auth_id })
