@@ -18,6 +18,51 @@ exports.getHouseholds = async (req, res) => {
   }
 };
 
+exports.getHouseholdPage = async (req, res) => {
+  try {
+
+    console.log("req.body", req.body)
+
+    const organization_id = req.body.organization_id;
+    const page = req.body.page - 1
+    const pageSize = req.body.pageSize
+    var dataFilter = req.body.dataFilter
+    var sortFilter = { 'updated_at': dataFilter.sort }
+    var searchFilter = { organization_id }
+
+    if (dataFilter.value != '') {
+      searchFilter = { ...searchFilter, [dataFilter.field]: { $regex: dataFilter.value, $options: "i" } }
+      sortFilter = { [dataFilter.field]: dataFilter.sort }
+    }
+
+    console.log("dataFilter", dataFilter)
+    console.log("searchFilter", searchFilter)
+    console.log("sortFilter", sortFilter)
+
+    const query1 = Household.find(searchFilter)
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .sort(sortFilter)
+      .populate("household_members")
+
+    const query2 = Household.countDocuments(searchFilter)
+
+    await Promise.all([query1, query2])
+      .then(([household, total]) => {
+        console.log("household", household)
+        console.log("total", total)
+
+        res.json({ household, total })
+      })
+
+    // res.json(households);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: error });
+  }
+};
+
+
 exports.getHousehold = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
