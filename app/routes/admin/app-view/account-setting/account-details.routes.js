@@ -15,6 +15,11 @@ module.exports = (app) => {
     accountDetails.getSession
   );
   router.post(
+    "/user/details/all",
+    auth.authenticationToken,
+    accountDetails.getDetailsAll
+  );
+  router.post(
     "/user/details",
     auth.authenticationToken,
     accountDetails.getDetails

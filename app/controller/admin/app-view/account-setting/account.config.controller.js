@@ -38,6 +38,21 @@ exports.updateAccount = async (req, res) => {
     return res.json("Error: " + error);
   }
 };
+exports.getDetailsAll = async (req, res) => {
+  try {
+    const organization = await Account.find({ uuid: req.body.auth_id }).limit(
+      1
+    );
+
+    return res.json({
+      full_name: organization[0].full_name,
+      country: organization[0].country,
+      address: organization[0].address,
+    });
+  } catch (error) {
+    return res.json("Error: " + error);
+  }
+};
 exports.getDetails = async (req, res) => {
   try {
     const organization = await Account.find({ uuid: req.body.auth_id })
@@ -51,6 +66,7 @@ exports.getDetails = async (req, res) => {
     return res.json("Error: " + error);
   }
 };
+
 exports.getSession = async (req, res) => {
   try {
     const organization = await Account.find({ uuid: req.body.auth_id })
