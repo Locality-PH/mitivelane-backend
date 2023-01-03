@@ -77,12 +77,13 @@ exports.getPurokPage = async (req, res) => {
       sorter = { [field]: order }
     }
 
-    // console.log("filter", filter)
+    console.log("filter", filter)
     // console.log("sorter", sorter)
 
     await Purok.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
+      .collation({locale: "en" })
       .sort(sorter)
       .then(async (result) => {
         var list = result

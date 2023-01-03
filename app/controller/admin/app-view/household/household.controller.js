@@ -18,6 +18,50 @@ exports.getHouseholds = async (req, res) => {
   }
 };
 
+exports.getHouseholdPage = async (req, res) => {
+  try {
+
+    // console.log("req.body", req.body)
+    const organization_id = req.body.organization_id;
+    const page = req.body.page - 1
+    const pageSize = req.body.pageSize
+    var dataFilter = req.body.dataFilter
+    var sortFilter = { [dataFilter.field]: dataFilter.sort }
+    var searchFilter = { organization_id }
+
+    if (dataFilter.value != '') {
+      searchFilter = { ...searchFilter, [dataFilter.field]: { $regex: dataFilter.value, $options: "i" } }
+    }
+
+    // console.log("dataFilter", dataFilter)
+    // console.log("searchFilter", searchFilter)
+    // console.log("sortFilter", sortFilter)
+
+    const query1 = Household.find(searchFilter)
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .collation({locale: "en" })
+      .sort(sortFilter)
+      .populate("household_members")
+
+    const query2 = Household.countDocuments(searchFilter)
+
+    await Promise.all([query1, query2])
+      .then(([household, total]) => {
+        // console.log("household", household)
+        // console.log("total", total)
+
+        res.json({ household, total })
+      })
+
+    // res.json(households);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: error });
+  }
+};
+
+
 exports.getHousehold = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
@@ -52,8 +96,8 @@ exports.addHousehold = async (req, res) => {
       newHouseholdData.household_members.push(member._id);
     });
 
-    console.log(newHouseholdData);
-    console.log("newHouseholdMembersData", newHouseholdMembersData);
+    // console.log(newHouseholdData);
+    // console.log("newHouseholdMembersData", newHouseholdMembersData);
 
     const newHousehold = new Household(newHouseholdData);
     await newHousehold.save();
@@ -93,6 +137,7 @@ exports.updateHousehold = async (req, res) => {
     const query2 = Household.updateOne({ _id: household_id }, household);
     const query3 = HouseholdMember.insertMany(household_newMembers);
 
+    // console.log(household);
     await Promise.all([query1, query2, query3]);
 
     for (const member of household_updatedMembers) {

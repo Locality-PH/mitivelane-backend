@@ -71,6 +71,7 @@ exports.getGivenSupplyPage = async (req, res) => {
     await SupplyGiven.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
+      .collation({locale: "en" })
       .sort(sorter)
       .then(async (result) => {
         var list = result
@@ -151,6 +152,7 @@ exports.getReceivedSupplyPage = async (req, res) => {
     await SupplyReceived.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
+      .collation({locale: "en" })
       .sort(sorter)
       .then(async (result) => {
         var list = result

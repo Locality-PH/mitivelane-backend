@@ -5,7 +5,7 @@ module.exports = (app) => {
 
     router.post("/getAll", auth.authenticationToken, residentController.getResidents);
 
-    router.post("/getPage", auth.authenticationToken, residentController.getResidentPage);
+    router.post("/page", auth.authenticationToken, residentController.getResidentPage);
 
     router.get("/getTotal/:organization_id", auth.authenticationToken, residentController.getResidentTotal)
     router.get("/populationStatus/:organization_id", auth.authenticationToken, residentController.getPopulationStatus)

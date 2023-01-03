@@ -79,6 +79,7 @@ exports.getResidentPage = async (req, res) => {
     await Resident.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
+      .collation({locale: "en" })
       .sort(sorter)
       .then(async (result) => {
         var residentList = result
@@ -110,10 +111,10 @@ exports.getPopulationStatus = async (req, res) => {
     residentRegisteredVoters = await Resident.countDocuments({ voter_status: 'Registered' , organization_id}).exec()
     residentPopulation = await Resident.countDocuments({organization_id}).exec()
 
-    console.log("residentMale", residentMale)
-    console.log("residentFemale", residentFemale)
-    console.log("residentRegisteredVoters", residentRegisteredVoters)
-    console.log("residentPopulation", residentPopulation)
+    // console.log("residentMale", residentMale)
+    // console.log("residentFemale", residentFemale)
+    // console.log("residentRegisteredVoters", residentRegisteredVoters)
+    // console.log("residentPopulation", residentPopulation)
 
     res.json(
       {residentMale,

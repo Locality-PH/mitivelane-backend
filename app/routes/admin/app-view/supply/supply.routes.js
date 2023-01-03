@@ -29,7 +29,7 @@ module.exports = (app) => {
     supplyController.updateSupplyGiven
   );
   router.post(
-    "/given/getPage/:organization_id/:page/:pageSize",
+    "/given/page/:organization_id/:page/:pageSize",
     auth.authenticationToken,
     supplyController.getGivenSupplyPage
   );
