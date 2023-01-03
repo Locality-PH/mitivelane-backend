@@ -16,6 +16,13 @@ Content-Type: application/json
 {"uuid": "OpbH0odClBSymVIIw2DWRrJ7PfJ3", "email": "von.aralar@gmail.com", "code": "null"}
 
 
+###
+POST http://localhost:3000/api/cert-display/create
+Content-Type: application/json
+
+{
+     "organization_name": "BARAS"
+}
 
 
 ###
@@ -134,6 +141,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 
 
 ###
-POST http://localhost:5000/api/cert-display/create
+POST http://localhost:5000/api/cert-display/create/data
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRDVCcjNSZXdrU1pDRUNzWUVVcHNYS3VJcmlBMyIsImF1dGhfYmFyYW5nYXkiOiI2MjI4NzkxOGZhM2VkMWMzOTcxMTQ1M2EiLCJpYXQiOjE2NTE4MTcwMzQsImV4cCI6MTY1MTkxNzAzNH0.N4IIciOchFppUOLdZcEkQOYVs5tytW0kRAcfh4_ZUzQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJjODFlYzYwM2EyOTBmYjEwYTM2ZGQ3IiwiaWF0IjoxNjcyMzY0MzQ1LCJleHAiOjE2NzI0NjQzNDV9.o_czXy1_OHsPYZ9fj_GaYdw9pwIXFzJDv-5UTl--tV4

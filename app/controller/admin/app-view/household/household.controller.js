@@ -115,47 +115,38 @@ exports.addHousehold = async (req, res) => {
 exports.updateHousehold = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
-    var household = req.body.household;
-    household.household_members = [];
-    var household_members = req.body.householdMembers;
-    var deletedMembers = req.body.deletedMembers;
-    var household_id = req.body.household._id;
+    const household = req.body.household;
+    const household_members = req.body.householdMembers;
+    const deletedMembers = req.body.deletedMembers;
+    const household_id = req.body.household._id;
 
-    var household_newMembers = [];
-    var household_updatedMembers = [];
+    const household_newMembers = household_members.filter(
+      (member) => !member.isOld
+    );
+    const household_updatedMembers = household_members.filter(
+      (member) => member.isOld && member.action === "edited"
+    );
 
-    household_members.forEach((member) => {
-      if (member.isOld == false) {
-        member._id = new mongoose.Types.ObjectId();
-        household_newMembers.push(member);
-      }
+    console.log("household_newMembers", household_newMembers);
+    console.log("household_updatedMembers", household_updatedMembers);
 
-      if (member.isOld == true) {
-        if (member.action == "added") {
-          member._id = new mongoose.Types.ObjectId();
-          household_newMembers.push(member);
-        }
+    console.log(household);
 
-        if (member.action == "edited") {
-          household_updatedMembers.push(member);
-        }
-      }
+    household.household_members = household_members.map((member) => member._id);
 
-      household.household_members.push(member._id);
-    });
+    const query1 = HouseholdMember.deleteMany({ _id: deletedMembers });
+    const query2 = Household.updateOne({ _id: household_id }, household);
+    const query3 = HouseholdMember.insertMany(household_newMembers);
 
-    // console.log("household_newMembers", household_newMembers)
-    // console.log("household_updatedMembers", household_updatedMembers)
-
+<<<<<<< HEAD
     // console.log(household);
+=======
+    await Promise.all([query1, query2, query3]);
+>>>>>>> 417d0ef0b40947e10d78a0b1eedc1da1179e4578
 
-    const query1 = await HouseholdMember.deleteMany({ _id: deletedMembers });
-    const query2 = await Household.updateOne({ _id: household_id }, household);
-    const query3 = await HouseholdMember.insertMany(household_newMembers);
-
-    household_updatedMembers.map(async (member) => {
+    for (const member of household_updatedMembers) {
       await HouseholdMember.updateOne({ _id: member._id }, member);
-    });
+    }
 
     res.json("updated");
   } catch (error) {

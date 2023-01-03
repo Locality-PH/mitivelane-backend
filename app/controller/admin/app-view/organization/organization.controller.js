@@ -1,30 +1,13 @@
 const db = require("../../../../models");
-const Organization = db.organization
-const OrganizationRequest = db.organization_request
-const Account = db.account
-const OrganizationMember = db.organizationMember
+const Organization = db.organization;
+const OrganizationRequest = db.organization_request;
+const Account = db.account;
+const OrganizationMember = db.organizationMember;
 var mongoose = require("mongoose");
 
 exports.getAllOrganizations = async (req, res) => {
   try {
-    const organization = await Organization.find({})
-
-    return res.json(organization)
-
-  }
-  catch (error) {
-    return res.json([]);
-  }
-};
-
-exports.getLatestOrganizations = async (req, res) => {
-  const limit = 5;
-
-  try {
-    const organization = await Organization.find({})
-      .sort({ createdAt: -1 })
-      .limit(limit)
-    // .populate("reporters");
+    const organization = await Organization.find({});
 
     return res.json(organization);
   } catch (error) {
@@ -32,19 +15,27 @@ exports.getLatestOrganizations = async (req, res) => {
   }
 };
 
-exports.getOrganization = async (req, res) => {
-  const organizationId = req.params.organization_id;
-
+exports.getLatestOrganizations = async (req, res) => {
   try {
-    const organization = await Organization.findOne({
-      _id: organizationId
-    })
-      .populate("organization_member")
+    const organizations = await Organization.find({})
+      .sort({ createdAt: -1 })
+      .limit(5);
+    // .populate("reporters");
 
-    return res.json(organization)
-
+    return res.json(organizations);
+  } catch (error) {
+    return res.json([]);
   }
-  catch (error) {
+};
+exports.getOrganization = async (req, res) => {
+  try {
+    const organizationId = req.params.organization_id;
+    const organization = await Organization.findOne({
+      _id: organizationId,
+    }).populate("organization_member");
+
+    return res.json(organization || []);
+  } catch (error) {
     return res.json([]);
   }
 };

@@ -14,6 +14,7 @@ module.exports = (mongoose) => {
       municipality: { type: String },
       organization: { type: String },
       clearance: { type: String },
+      status: { type: Boolean },
       line_height: { type: String },
       color_picker: { type: String },
       office: { type: String },

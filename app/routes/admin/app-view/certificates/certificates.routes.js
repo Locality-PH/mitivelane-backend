@@ -10,12 +10,13 @@ module.exports = (app) => {
     auth.authenticationToken,
     certificate.getCertificateName
   );
-  router.post("/:id", auth.authenticationToken, certificate.updateCertificate);
   router.post(
-    "/create",
+    "/create/data",
     auth.authenticationToken,
     certificate.createCertificate
   );
+  router.post("/:id", auth.authenticationToken, certificate.updateCertificate);
+
   router.delete(
     "/:id",
     auth.authenticationToken,

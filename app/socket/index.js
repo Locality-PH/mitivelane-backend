@@ -18,18 +18,18 @@ const getUser = (userAuthToken) => {
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
-    console.log("Client connected with socket ", socket.id);
+    // console.log("Client connected with socket ", socket.id);
 
     socket.on("disconnect", () => {
       removeUser(socket.id)
-      console.log("Client disconnected ", users)
+      // console.log("Client disconnected ", users)
     });
 
     socket.on("socket:add-user", authToken => {
       addUser(authToken, socket.id)
       socket.broadcast.emit("socket:new-user", authToken)
 
-      console.log(users)
+      // console.log(users)
     })
 
     const chat = require("./chat/chat.socket")
