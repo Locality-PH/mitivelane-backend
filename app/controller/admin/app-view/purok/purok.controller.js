@@ -83,6 +83,7 @@ exports.getPurokPage = async (req, res) => {
     await Purok.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
+      .collation({locale: "en" })
       .sort(sorter)
       .then(async (result) => {
         var list = result

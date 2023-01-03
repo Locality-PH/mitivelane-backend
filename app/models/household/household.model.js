@@ -3,7 +3,7 @@ module.exports = (mongoose) => {
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
       name: { type: String },
-      house_number: { type: String },
+      house_number: { type: Number },
       address: { type: String },
       purok: { type: String },
       house_status: { type: String },

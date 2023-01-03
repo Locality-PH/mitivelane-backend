@@ -79,6 +79,7 @@ exports.getResidentPage = async (req, res) => {
     await Resident.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
+      .collation({locale: "en" })
       .sort(sorter)
       .then(async (result) => {
         var residentList = result

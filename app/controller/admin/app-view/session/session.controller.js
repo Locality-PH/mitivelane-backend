@@ -24,6 +24,7 @@ exports.getAuditPage = async (req, res) => {
       .find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
+      .collation({locale: "en" })
       .sort({createdAt: sortFilter})
       .then(async (result) => {
         var list = result

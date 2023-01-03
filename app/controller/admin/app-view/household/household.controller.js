@@ -22,17 +22,15 @@ exports.getHouseholdPage = async (req, res) => {
   try {
 
     // console.log("req.body", req.body)
-
     const organization_id = req.body.organization_id;
     const page = req.body.page - 1
     const pageSize = req.body.pageSize
     var dataFilter = req.body.dataFilter
-    var sortFilter = { 'updated_at': dataFilter.sort }
+    var sortFilter = { [dataFilter.field]: dataFilter.sort }
     var searchFilter = { organization_id }
 
     if (dataFilter.value != '') {
       searchFilter = { ...searchFilter, [dataFilter.field]: { $regex: dataFilter.value, $options: "i" } }
-      sortFilter = { [dataFilter.field]: dataFilter.sort }
     }
 
     // console.log("dataFilter", dataFilter)
@@ -42,6 +40,7 @@ exports.getHouseholdPage = async (req, res) => {
     const query1 = Household.find(searchFilter)
       .skip(page * pageSize)
       .limit(pageSize)
+      .collation({locale: "en" })
       .sort(sortFilter)
       .populate("household_members")
 
@@ -138,11 +137,8 @@ exports.updateHousehold = async (req, res) => {
     const query2 = Household.updateOne({ _id: household_id }, household);
     const query3 = HouseholdMember.insertMany(household_newMembers);
 
-<<<<<<< HEAD
     // console.log(household);
-=======
     await Promise.all([query1, query2, query3]);
->>>>>>> 417d0ef0b40947e10d78a0b1eedc1da1179e4578
 
     for (const member of household_updatedMembers) {
       await HouseholdMember.updateOne({ _id: member._id }, member);
