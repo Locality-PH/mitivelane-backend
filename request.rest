@@ -144,3 +144,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 POST http://localhost:5000/api/cert-display/create/data
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJjODFlYzYwM2EyOTBmYjEwYTM2ZGQ3IiwiaWF0IjoxNjcyMzY0MzQ1LCJleHAiOjE2NzI0NjQzNDV9.o_czXy1_OHsPYZ9fj_GaYdw9pwIXFzJDv-5UTl--tV4
+
+###
+POST  http://localhost:5000/api/app/user/details/all
+Content-Type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjcyNjM4NDA5LCJleHAiOjE2NzI3Mzg0MDl9.3AdUHVuInDQV6Mr0BJmKE-LNFqb3_s-rnwRBSCkfXuA
+
+{
+     "auth_id": "kwWXpExbfoTAVnQZQVeVqMzCRFP2"
+}
