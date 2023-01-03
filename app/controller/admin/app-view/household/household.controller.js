@@ -21,7 +21,7 @@ exports.getHouseholds = async (req, res) => {
 exports.getHouseholdPage = async (req, res) => {
   try {
 
-    console.log("req.body", req.body)
+    // console.log("req.body", req.body)
 
     const organization_id = req.body.organization_id;
     const page = req.body.page - 1
@@ -35,9 +35,9 @@ exports.getHouseholdPage = async (req, res) => {
       sortFilter = { [dataFilter.field]: dataFilter.sort }
     }
 
-    console.log("dataFilter", dataFilter)
-    console.log("searchFilter", searchFilter)
-    console.log("sortFilter", sortFilter)
+    // console.log("dataFilter", dataFilter)
+    // console.log("searchFilter", searchFilter)
+    // console.log("sortFilter", sortFilter)
 
     const query1 = Household.find(searchFilter)
       .skip(page * pageSize)
@@ -49,8 +49,8 @@ exports.getHouseholdPage = async (req, res) => {
 
     await Promise.all([query1, query2])
       .then(([household, total]) => {
-        console.log("household", household)
-        console.log("total", total)
+        // console.log("household", household)
+        // console.log("total", total)
 
         res.json({ household, total })
       })
@@ -97,8 +97,8 @@ exports.addHousehold = async (req, res) => {
       newHouseholdData.household_members.push(member._id);
     });
 
-    console.log(newHouseholdData);
-    console.log("newHouseholdMembersData", newHouseholdMembersData);
+    // console.log(newHouseholdData);
+    // console.log("newHouseholdMembersData", newHouseholdMembersData);
 
     const newHousehold = new Household(newHouseholdData);
     await newHousehold.save();
@@ -147,7 +147,7 @@ exports.updateHousehold = async (req, res) => {
     // console.log("household_newMembers", household_newMembers)
     // console.log("household_updatedMembers", household_updatedMembers)
 
-    console.log(household);
+    // console.log(household);
 
     const query1 = await HouseholdMember.deleteMany({ _id: deletedMembers });
     const query2 = await Household.updateOne({ _id: household_id }, household);

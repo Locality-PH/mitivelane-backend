@@ -110,10 +110,10 @@ exports.getPopulationStatus = async (req, res) => {
     residentRegisteredVoters = await Resident.countDocuments({ voter_status: 'Registered' , organization_id}).exec()
     residentPopulation = await Resident.countDocuments({organization_id}).exec()
 
-    console.log("residentMale", residentMale)
-    console.log("residentFemale", residentFemale)
-    console.log("residentRegisteredVoters", residentRegisteredVoters)
-    console.log("residentPopulation", residentPopulation)
+    // console.log("residentMale", residentMale)
+    // console.log("residentFemale", residentFemale)
+    // console.log("residentRegisteredVoters", residentRegisteredVoters)
+    // console.log("residentPopulation", residentPopulation)
 
     res.json(
       {residentMale,
