@@ -234,6 +234,59 @@ exports.acceptRequest = async (req, res) => {
   }
 };
 
+exports.acceptRequest2 = async (req, res) => {
+  const values = req.body;
+  const _id = values._id;
+  const memberId = new mongoose.Types.ObjectId();
+
+  try {
+    const organizationRequest = await OrganizationRequest.findOne({ _id: _id });
+    const account = await Account.findOne({ uuid: values.uuid });
+
+    if (organizationRequest.email == account.email) {
+      const organizationId = organizationRequest.organization_id;
+
+      if (organizationRequest.status == "Pending") {
+        const accountId = account._id;
+
+        const organizationMember = new OrganizationMember({
+          _id: memberId,
+          email: organizationRequest.email,
+          role: organizationRequest.role,
+          organization_id: organizationId,
+          account: accountId,
+        });
+
+        await organizationMember.save();
+
+        await Account.updateOne(
+          { _id: accountId },
+          {
+            $push: {
+              organizations: [organizationId],
+              members: [organizationMember],
+            },
+          }
+        );
+        await Organization.updateOne(
+          { _id: organizationId },
+          { $push: { organization_member: [organizationMember] } }
+        );
+        await OrganizationRequest.updateOne({ _id: _id }, { status: "Accepted" });
+
+        return res.json("Success");
+      } else if (organizationRequest.status == "Accepted") {
+        return res.json("Joined");
+      }
+    } else {
+      console.log("not match at lajfaljfl")
+    }
+
+  } catch (error) {
+    return res.json("Error");
+  }
+};
+
 // Methods for Organization Member
 exports.getOrganizationMembers = async (req, res) => {
   const _id = req.body._id;
