@@ -38,6 +38,42 @@ exports.updateAccount = async (req, res) => {
     return res.json("Error: " + error);
   }
 };
+
+exports.updateAccountTest = async (req, res) => {
+  try {
+    let data = {};
+    if (req.body.profile_url && req.body.profile_url !== "") {
+      const mimeType = req.body.profile_url.match(
+        /[^:]\w+\/[\w-+\d.]+(?=;|,)/
+      )[0];
+      data = {
+        full_name: req.body.full_name,
+        profileUrl: {
+          contentType: mimeType,
+          data: req.body.profile_url,
+        },
+      };
+    } else {
+      data = {
+        full_name: req.body.full_name,
+      };
+    }
+
+    await Account.findOneAndUpdate(
+      {
+        uuid: req.user.auth_id,
+      },
+      {
+        $set: data,
+      },
+      { new: true }
+    );
+
+    return res.json(req.body);
+  } catch (error) {
+    return res.json("Error: " + error);
+  }
+};
 exports.getDetailsAll = async (req, res) => {
   try {
     const organization = await Account.find({ uuid: req.body.auth_id }).limit(

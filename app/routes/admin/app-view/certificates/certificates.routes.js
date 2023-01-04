@@ -4,7 +4,9 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.get("/", auth.authenticationToken, certificate.getCertificateAll);
+
   router.get("/:id", auth.authenticationToken, certificate.getCertificate);
+
   router.get(
     "/name/data",
     auth.authenticationToken,

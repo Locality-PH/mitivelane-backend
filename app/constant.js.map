@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "constant.js",
+  "sourceRoot": "",
+  "sources": [
+    "./constant/constant.js"
+  ],
+  "names": [],
+  "mappings": ";AAAA,MAAM,SAAS,GAAG,wk2BAAwk2B,CAAC;AAE3l2B,MAAM,CAAC,OAAO,GAAG;IACf,SAAS,EAAE,SAAS;CACrB,CAAC"
+}

@@ -272,16 +272,18 @@ exports.acceptRequest2 = async (req, res) => {
           { _id: organizationId },
           { $push: { organization_member: [organizationMember] } }
         );
-        await OrganizationRequest.updateOne({ _id: _id }, { status: "Accepted" });
+        await OrganizationRequest.updateOne(
+          { _id: _id },
+          { status: "Accepted" }
+        );
 
         return res.json("Success");
       } else if (organizationRequest.status == "Accepted") {
         return res.json("Joined");
       }
     } else {
-      console.log("not match at lajfaljfl")
+      console.log("not match at lajfaljfl");
     }
-
   } catch (error) {
     return res.json("Error");
   }
