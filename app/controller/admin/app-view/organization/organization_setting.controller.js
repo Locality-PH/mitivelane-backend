@@ -192,55 +192,6 @@ exports.acceptRequest = async (req, res) => {
 
   try {
     const organizationRequest = await OrganizationRequest.findOne({ _id: _id });
-    const organizationId = organizationRequest.organization_id;
-
-    if (organizationRequest.status == "Pending") {
-      const account = await Account.findOne({
-        email: organizationRequest.email,
-      });
-      const accountId = account._id;
-
-      const organizationMember = new OrganizationMember({
-        _id: memberId,
-        email: organizationRequest.email,
-        role: organizationRequest.role,
-        organization_id: organizationId,
-        account: accountId,
-      });
-
-      await organizationMember.save();
-
-      await Account.updateOne(
-        { _id: accountId },
-        {
-          $push: {
-            organizations: [organizationId],
-            members: [organizationMember],
-          },
-        }
-      );
-      await Organization.updateOne(
-        { _id: organizationId },
-        { $push: { organization_member: [organizationMember] } }
-      );
-      await OrganizationRequest.updateOne({ _id: _id }, { status: "Accepted" });
-
-      return res.json("Success");
-    } else if (organizationRequest.status == "Accepted") {
-      return res.json("Joined");
-    }
-  } catch (error) {
-    return res.json("Error");
-  }
-};
-
-exports.acceptRequest2 = async (req, res) => {
-  const values = req.body;
-  const _id = values._id;
-  const memberId = new mongoose.Types.ObjectId();
-
-  try {
-    const organizationRequest = await OrganizationRequest.findOne({ _id: _id });
     const account = await Account.findOne({ uuid: values.uuid });
 
     if (organizationRequest.email == account.email) {
@@ -279,7 +230,8 @@ exports.acceptRequest2 = async (req, res) => {
         return res.json("Joined");
       }
     } else {
-      console.log("not match at lajfaljfl")
+      console.log("not match email and org request id")
+      return res.json("Error");
     }
 
   } catch (error) {
