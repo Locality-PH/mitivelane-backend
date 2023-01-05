@@ -45,6 +45,12 @@ module.exports = (app) => {
     organizationSetting.deleteOrganization
   );
 
+  router.post(
+    "/leave-organization",
+    auth.authenticationToken,
+    organizationSetting.leaveOrganization
+  );
+
   router.get(
     "/get-organization-request/:organization_id",
     auth.authenticationToken,

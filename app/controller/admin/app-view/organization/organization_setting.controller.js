@@ -8,7 +8,7 @@ const Resident = db.resident;
 const Blotter = db.blotter;
 
 const Transporter = require("../../../../../nodemailerSetup");
-console.log(process.env.URL);
+
 // Methods for user invitation
 exports.validateEmail = async (req, res) => {
   const values = req.body;
@@ -142,7 +142,7 @@ exports.addMember = async (req, res) => {
         html: `<p>${values.current_user_name} invited you to his Organization</p>
 				<h1>Invitation Code: ${value.code}</h1>
 				</br>
-				<a href="http://localhost:3000/auth/organization-invite/${newMemberId}">Click here to Verify.<a>`,
+				<a href="http://${process.env.URL}/auth/organization-invite/${newMemberId}">Click here to Verify.<a>`,
       };
 
       await Transporter.sendMail(mailOptions, function (error, info) {
@@ -243,13 +243,13 @@ exports.acceptRequest = async (req, res) => {
 exports.getOrganizationMembers = async (req, res) => {
   const _id = req.body._id;
 
-  try {
-    await OrganizationMember.deleteOne({ _id: _id });
+  // try {
+  //   await OrganizationMember.deleteOne({ _id: _id });
 
-    return res.json("Success");
-  } catch (error) {
-    return res.json("Error");
-  }
+  //   return res.json("Success");
+  // } catch (error) {
+  //   return res.json("Error");
+  // }
 };
 
 exports.deleteOrganizationMember = (req, res) => {
@@ -307,6 +307,48 @@ exports.deleteOrganization = async (req, res) => {
   }
 };
 
+exports.leaveOrganization = async (req, res) => {
+  const values = req.body
+  const organizationId = values.organization_id;
+
+  try {
+    const account = await Account.findOne({ uuid: values.uuid });
+    const email = account.email
+
+    const organizationRequest = await OrganizationRequest.findOne({ organization_id: organizationId, email: email });
+    const organizationRequestId = organizationRequest._id;
+
+    return OrganizationMember.findOne({
+      organization_id: organizationId,
+      email: email,
+    }).then((organizationMember) => {
+      const organizationMemberId = organizationMember._id;
+
+      return Promise.all([
+        Account.updateOne(
+          { email: email },
+          {
+            $pull: {
+              organizations: [organizationId],
+              members: [organizationMemberId],
+            },
+          }
+        ),
+        Organization.updateOne(
+          { _id: organizationId },
+          {
+            $pull: { organization_member: organizationMemberId },
+          }
+        ),
+        OrganizationMember.deleteOne({ _id: organizationMemberId }),
+        OrganizationRequest.deleteOne({ _id: organizationRequestId }),
+      ]);
+    }).then(() => res.json("Success"));
+  } catch (error) {
+    return res.json("Error");
+  }
+};
+
 exports.getOrganizationRequest = async (req, res) => {
   const organizationId = req.params.organization_id;
 
@@ -314,6 +356,13 @@ exports.getOrganizationRequest = async (req, res) => {
     const organizationRequest = await OrganizationRequest.find({
       organization_id: organizationId,
     });
+
+    const organization = await Organization.findOne({_id: organizationId})
+    const organizationMemberId = organization.organization_member[0]
+    const organizationMember = await OrganizationMember.findOne({ _id: organizationMemberId })
+    const ownerEmail = organizationMember.email 
+
+    organizationRequest.unshift({_id: "1", email: ownerEmail, role: "Administrator", status: "Owner"})
 
     return res.json(organizationRequest);
   } catch (error) {
