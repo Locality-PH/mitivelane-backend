@@ -28,9 +28,9 @@ db.blotter_request = require("./blotter/blotter_request.model")(mongoose);
 
 //household
 db.household = require("./household/household.model")(mongoose);
-db.householdMember = require("./household/household_member.model")(
-  mongoose
-);
+// db.householdMember = require("./household/household_member.model")(
+//   mongoose
+// );
 
 //purok
 db.purok = require("./purok/purok.model")(mongoose);

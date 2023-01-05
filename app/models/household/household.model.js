@@ -16,7 +16,7 @@ module.exports = (mongoose) => {
       household_members: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "household_members",
+          ref: "residents",
         },
       ],
     },
