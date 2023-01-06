@@ -24,8 +24,8 @@ app.use(cors());
 app.use(helmet.hsts());
 app.use(express.json());
 app.use(bodyParser.json());
-app.use(express.json({ limit: "5mb" }));
-app.use(express.urlencoded({ extended: true, limit: "5mb" }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 const constantData = require("./app/constant/constant");
 //Firebase

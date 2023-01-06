@@ -73,14 +73,25 @@ exports.updateAccountTest = async (req, res) => {
 };
 exports.getDetailsAll = async (req, res) => {
   try {
-    const organization = await Account.find({ uuid: req.body.auth_id }).limit(
-      1
-    );
+    const organization = await Account.find({ uuid: req.body.auth_id })
+      .select({
+        address: 2,
+        address2: 2,
+        mobile: 2,
+        city: 2,
+        postal: 2,
+        country: 1,
+        _id: 0,
+      })
+      .limit(1);
 
     return res.json({
-      full_name: organization[0].full_name,
       country: organization[0].country,
       address: organization[0].address,
+      address2: organization[0].address2,
+      phone_number: organization[0].mobile,
+      city: organization[0].city,
+      postal: organization[0].postal,
     });
   } catch (error) {
     return res.json("Error: " + error);
