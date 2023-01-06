@@ -22,11 +22,13 @@ module.exports = (mongoose) => {
     },
     { timestamps: true }
   );
+
   householdSchema.method("toJSON", function () {
     const { __v, _id, ...object } = this.toObject();
     object.household_id = _id;
     return object;
   });
+
   const Tokens = mongoose.model("households", householdSchema);
   return Tokens;
 };

@@ -5,12 +5,55 @@ const Resident = db.resident;
 const Household = db.household;
 // const HouseholdMember = db.householdMember;
 
+const getSelectedResidentFields = (choosenFields, excludedFields, excludeAvatar) => {
+
+  var selectedFields = '' //empty string means all field
+
+  // console.log("choosenFields", choosenFields)
+  // console.log("excludedFields", excludedFields)
+  // console.log("excludeAvatar", excludeAvatar)
+
+  if (choosenFields != undefined) {
+    for (let i = 0; i < choosenFields.length; i++) {
+      selectedFields += choosenFields[i]
+
+      if (i != choosenFields.length - 1) {
+        selectedFields += " "
+      }
+    }
+  }
+
+  else {
+    if (excludedFields != undefined) {
+      for (let i = 0; i < excludedFields.length; i++) {
+        selectedFields += "-" + excludedFields[i]
+
+        if (i != excludedFields.length - 1) {
+          selectedFields += " "
+        }
+      }
+    }
+
+    if (excludeAvatar == true) {
+      if (selectedFields != "") {
+        selectedFields += " "
+      }
+
+      selectedFields += "-avatarColor -avatarImg -avatarImgType"
+    }
+  }
+
+  return selectedFields
+}
+
+
 exports.getHouseholds = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
     const households = await Household.find({
       organization: organization_id,
-    }).populate("residents");
+    })
+      .populate("household_members");
     res.json(households);
   } catch (error) {
     console.log(error);
@@ -20,6 +63,13 @@ exports.getHouseholds = async (req, res) => {
 
 exports.getHouseholdPage = async (req, res) => {
   try {
+    //for selecting database fields
+    var excludeAvatar = req.body.excludeAvatar
+    var choosenFields = req.body.fields
+    var excludedFields = req.body.excludedFields
+    excludeAvatar != undefined ? excludeAvatar : false
+
+    var selectedFields = getSelectedResidentFields(choosenFields, excludedFields, excludeAvatar)
 
     // console.log("req.body", req.body)
     const organization_id = req.body.organization_id;
@@ -40,9 +90,9 @@ exports.getHouseholdPage = async (req, res) => {
     const query1 = Household.find(searchFilter)
       .skip(page * pageSize)
       .limit(pageSize)
-      .collation({locale: "en" })
+      .collation({ locale: "en" })
       .sort(sortFilter)
-      .populate("household_members")
+      .populate("household_members", selectedFields)
 
     const query2 = Household.countDocuments(searchFilter)
 
@@ -69,7 +119,8 @@ exports.getHousehold = async (req, res) => {
     const households = await Household.findOne({
       organization: organization_id,
       _id: household_id,
-    }).populate("residents");
+    })
+      .populate("household_members");
     res.json(households);
   } catch (error) {
     console.log(error);
@@ -116,34 +167,19 @@ exports.updateHousehold = async (req, res) => {
     const organization_id = req.body.organization_id;
     const household = req.body.household;
     const household_members = req.body.householdMembers;
-    const deletedMembers = req.body.deletedMembers;
     const household_id = req.body.household._id;
 
-    const household_newMembers = household_members.filter(
-      (member) => !member.isOld
-    );
-    const household_updatedMembers = household_members.filter(
-      (member) => member.isOld && member.action === "edited"
-    );
+    household_members_ids = []
 
-    console.log("household_newMembers", household_newMembers);
-    console.log("household_updatedMembers", household_updatedMembers);
+    household_members.map(
+      (member) => {
+        console.log("member._id", member._id)
+        household_members_ids.push(member._id)
+      });
 
-    console.log(household);
+    household.household_members = household_members_ids
 
-    household.household_members = household_members.map((member) => member._id);
-
-    // const query1 = HouseholdMember.deleteMany({ _id: deletedMembers });
-    const query2 = Household.updateOne({ _id: household_id }, household);
-    // const query3 = HouseholdMember.insertMany(household_newMembers);
-
-    // console.log(household);
-    await Promise.all([query2]);
-
-    // for (const member of household_updatedMembers) {
-    //   // await HouseholdMember.updateOne({ _id: member._id }, member);
-    // }
-
+    await Household.updateOne({ _id: household_id }, household);
     res.json("updated");
   } catch (error) {
     console.log(error);

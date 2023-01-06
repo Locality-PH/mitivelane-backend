@@ -4,7 +4,7 @@ module.exports = (app) => {
     var router = require("express").Router();
 
     router.post("/getAll", auth.authenticationToken, residentController.getResidents);
-
+    router.post("/get", auth.authenticationToken, residentController.getResident);
     router.post("/page", auth.authenticationToken, residentController.getResidentPage);
 
     router.get("/getTotal/:organization_id", auth.authenticationToken, residentController.getResidentTotal)
