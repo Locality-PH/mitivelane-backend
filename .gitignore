@@ -107,4 +107,4 @@ dist
 # TernJS port file
 .tern-port
 #service key file
-service-key.json
+#service-key.json
