@@ -4,7 +4,6 @@ module.exports = (app) => {
   var router = require("express").Router();
   var token = require("express").Router();
 
-  // router.post("/add", accounts.add);
   router.post("/register", auth.authenticationToken, accounts.registerUser);
   router.post("/login/:auth_id", auth.authenticationToken, accounts.loginUser);
   token.post("/refresh/", accounts.accessToken);

@@ -65,4 +65,3 @@ module.exports = (app) => {
 
   app.use("/api/organization_setting", router);
 };
-

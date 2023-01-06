@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./app/",
+    "sourceMap": true,
+    "strict": true,
+    "module": "commonjs",
+    "target": "es6",
+    "allowJs": true
+  },
+  "exclude": ["node_modules", "**/*.test.js", "**/*.test.jsx"],
+  "files": ["./server.js"],
+  "include": ["./app/**/*"],
+  "index": "./server.js"
+}

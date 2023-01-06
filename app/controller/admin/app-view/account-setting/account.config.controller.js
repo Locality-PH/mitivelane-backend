@@ -7,6 +7,39 @@ exports.updateAccount = async (req, res) => {
   try {
     let data = {};
     if (req.body.profile_url && req.body.profile_url !== "") {
+      data = {
+        full_name: req.body.full_name,
+        profileUrl: {
+          contentType: req.body.mime_type,
+          data: req.body.profile_url,
+        },
+      };
+    } else {
+      data = {
+        full_name: req.body.full_name,
+      };
+    }
+
+    await Account.findOneAndUpdate(
+      {
+        uuid: req.user.auth_id,
+      },
+      {
+        $set: data,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json(req.body);
+  } catch (error) {
+    return res.status(400).json("Error: " + error);
+  }
+};
+
+exports.updateAccountTest = async (req, res) => {
+  try {
+    let data = {};
+    if (req.body.profile_url && req.body.profile_url !== "") {
       const mimeType = req.body.profile_url.match(
         /[^:]\w+\/[\w-+\d.]+(?=;|,)/
       )[0];

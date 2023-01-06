@@ -223,7 +223,10 @@ exports.acceptRequest = async (req, res) => {
           { _id: organizationId },
           { $push: { organization_member: [organizationMember] } }
         );
-        await OrganizationRequest.updateOne({ _id: _id }, { status: "Accepted" });
+        await OrganizationRequest.updateOne(
+          { _id: _id },
+          { status: "Accepted" }
+        );
 
         return res.json("Success");
       } else if (organizationRequest.status == "Accepted") {
@@ -233,7 +236,6 @@ exports.acceptRequest = async (req, res) => {
       console.log("not match email and org request id")
       return res.json("Error");
     }
-
   } catch (error) {
     return res.json("Error");
   }
