@@ -50,6 +50,11 @@ require("./app/routes/")(app);
 // test API
 require("./app/test/routes")(app);
 
+// Welcome page API
+app.get("/", (_, res) => {
+  res.json({ message: "Welcome to MITIVELANE application." });
+});
+
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

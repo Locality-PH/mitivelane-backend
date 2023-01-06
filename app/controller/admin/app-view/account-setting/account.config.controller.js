@@ -7,13 +7,10 @@ exports.updateAccount = async (req, res) => {
   try {
     let data = {};
     if (req.body.profile_url && req.body.profile_url !== "") {
-      const mimeType = req.body.profile_url.match(
-        /[^:]\w+\/[\w-+\d.]+(?=;|,)/
-      )[0];
       data = {
         full_name: req.body.full_name,
         profileUrl: {
-          contentType: mimeType,
+          contentType: req.body.mime_type,
           data: req.body.profile_url,
         },
       };
@@ -33,9 +30,9 @@ exports.updateAccount = async (req, res) => {
       { new: true }
     );
 
-    return res.json(req.body);
+    return res.status(200).json(req.body);
   } catch (error) {
-    return res.json("Error: " + error);
+    return res.status(400).json("Error: " + error);
   }
 };
 
