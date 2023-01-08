@@ -163,7 +163,7 @@ exports.createOrganization = async (req, res) => {
       },
       { new: true, multi: true }
     );
-    await Promise.all([orgData, orgMember]);
+    await Promise.all([orgData, orgMember, accountData]);
 
     return res.status(500).send({
       message:

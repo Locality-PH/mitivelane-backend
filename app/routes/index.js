@@ -3,6 +3,7 @@ module.exports = (app) => {
   require("./admin/pre-view/organization.routes")(app);
   require("./admin/app-view/organization.config.routes")(app);
   require("./admin/app-view/account-setting/account-details.routes")(app);
+  require("./admin/app-view/account-setting/billing.routes")(app);
   require("./admin/app-view/resident/residents.routes")(app);
   require("./admin/app-view/household/household.routes")(app);
   require("./admin/app-view/purok/purok.routes")(app);

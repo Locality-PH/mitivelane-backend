@@ -42,20 +42,17 @@ module.exports = (mongoose) => {
           date: { type: Date },
         },
       ],
-      billing_method: [
-        {
-          card_number: { type: String, required: true },
-          card_holder: { type: String, required: true },
-          issuer: { type: String, required: true },
-          valid_thru: { type: String },
-          cvc: { type: String },
-          active_card: { type: Boolean },
-        },
-      ],
       // access_token: { type: String, required: true },
       // refresh_token: { type: String, required: true },
       // expiration: { type: Date, required: true },
-
+      billing_method: [
+        [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "billings",
+          },
+        ],
+      ],
       members: [
         [
           {
