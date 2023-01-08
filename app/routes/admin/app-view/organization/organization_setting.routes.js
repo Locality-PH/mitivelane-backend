@@ -27,12 +27,6 @@ module.exports = (app) => {
     organizationSetting.acceptRequest
   );
 
-  router.post(
-    "/accept-request2",
-    auth.authenticationToken,
-    organizationSetting.acceptRequest2
-  );
-
   router.get(
     "/get-organization-members/:organization_id",
     auth.authenticationToken,
@@ -49,6 +43,12 @@ module.exports = (app) => {
     "/delete-organization",
     auth.authenticationToken,
     organizationSetting.deleteOrganization
+  );
+
+  router.post(
+    "/leave-organization",
+    auth.authenticationToken,
+    organizationSetting.leaveOrganization
   );
 
   router.get(

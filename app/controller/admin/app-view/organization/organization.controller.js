@@ -4,6 +4,7 @@ const OrganizationRequest = db.organization_request;
 const Account = db.account;
 const OrganizationMember = db.organizationMember;
 var mongoose = require("mongoose");
+const { organizationMember } = require("../../../../models");
 
 exports.getAllOrganizations = async (req, res) => {
   try {
@@ -27,6 +28,7 @@ exports.getLatestOrganizations = async (req, res) => {
     return res.json([]);
   }
 };
+
 exports.getOrganization = async (req, res) => {
   try {
     const organizationId = req.params.organization_id;
@@ -37,5 +39,28 @@ exports.getOrganization = async (req, res) => {
     return res.json(organization || []);
   } catch (error) {
     return res.json([]);
+  }
+};
+
+exports.getOrganizationOwner = async (req, res) => {
+  try {
+    const organizationId = req.params.organization_id;
+    const uuid = req.params.uuid
+
+    const organization = await Organization.findOne({ _id: organizationId })
+    const organizationMemberId = organization.organization_member[0]
+    const organizationMember = await OrganizationMember.findOne({ _id: organizationMemberId })
+    const ownerEmail = organizationMember.email
+
+    const account = await Account.findOne({ email: ownerEmail });
+
+    if (account.uuid == uuid) {
+      return res.json(true)
+    } else {
+      return res.json(false)
+    }
+
+  } catch (error) {
+    return res.json(false)
   }
 };
