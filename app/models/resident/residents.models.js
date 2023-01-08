@@ -9,6 +9,7 @@ module.exports = (mongoose) => {
       lastname: { type: String },
       firstname: { type: String },
       middlename: { type: String },
+      fullname: { type: String },
       alias: { type: String },
       birthday: { type: String },
       age: { type: Number },
@@ -27,6 +28,9 @@ module.exports = (mongoose) => {
       weight: { type: Number },
       height_unit: { type: String },
       weight_unit: { type: String },
+      educational_attainment: {type: String},
+      ofw: {type: String, default: 'No'},
+      illness: {type: String, default: 'None'},
       email: { type: String },
       pag_ibig: { type: String },
       philhealth: { type: String },
@@ -43,11 +47,13 @@ module.exports = (mongoose) => {
     },
     { timestamps: true }
   );
+
   residentSchema.method("toJSON", function () {
     const { __v, _id, ...object } = this.toObject();
     object.resident_id = _id;
     return object;
   });
+
   const Tokens = mongoose.model("residents", residentSchema);
   return Tokens;
 };
