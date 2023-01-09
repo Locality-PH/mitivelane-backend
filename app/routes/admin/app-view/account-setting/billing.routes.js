@@ -14,5 +14,11 @@ module.exports = (app) => {
     auth.authenticationToken,
     billingDetails.getBilling
   );
+
+  router.post(
+    "/user/billing/delete",
+    auth.authenticationToken,
+    billingDetails.deleteBilling
+  );
   app.use("/api/app", router);
 };

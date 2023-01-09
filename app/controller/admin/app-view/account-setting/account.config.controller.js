@@ -145,7 +145,7 @@ exports.getSession = async (req, res) => {
 };
 exports.removeSession = async (req, res) => {
   try {
-    if (!req.session_token) {
+    if (req.body.session_token) {
       return res.sendStatus(404);
     }
 

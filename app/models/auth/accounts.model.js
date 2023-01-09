@@ -29,6 +29,7 @@ module.exports = (mongoose) => {
       remember_me: { type: Boolean },
       full_name: { type: String },
       profileLogo: { type: String },
+      is_Deactivate: { type: Boolean },
       sessions: [
         {
           user_agent: { type: String, required: true },

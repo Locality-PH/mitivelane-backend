@@ -148,7 +148,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 ###
 POST  http://localhost:5000/api/app/user/billing/create
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzMwMDcxOTMsImV4cCI6MTY3MzEwNzE5M30.K6_tE0BBBxIKcKx1kE9VvGtgqDMqKN-Q29Dx_BqXDHQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjczMjU5MjkyLCJleHAiOjE2NzMzNTkyOTJ9.-R37hvS90EjKMKeg9rtdZca9A5stxto8xhgBJ2Z_gBA
 
 
      {
@@ -163,5 +163,35 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 GET  http://localhost:5000/api/app/user/billing/data
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzMwMDcxOTMsImV4cCI6MTY3MzEwNzE5M30.K6_tE0BBBxIKcKx1kE9VvGtgqDMqKN-Q29Dx_BqXDHQ
+
+
+###
+POST http://localhost:5000/api/app/user/billing/delete
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjczMjYyODExLCJleHAiOjE2NzMzNjI4MTF9.SfhPbeGTWY0tS95H5SUd8mHi94I8JcGy8hsFoRTXlCM
+
+{
+     "card_id": "63b8242e352d1826dddccc2d"
+}
+
+###
+POST  http://localhost:5000/api/app/user/billing/delete
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjczMjYyODExLCJleHAiOjE2NzMzNjI4MTF9.SfhPbeGTWY0tS95H5SUd8mHi94I8JcGy8hsFoRTXlCM
+
+{
+     "card_id": "63b8236d003926ae565233e0"
+}
+
+###
+POST http://localhost:3000/api/app/user/sessions/delete
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjczMjY0NzU1LCJleHAiOjE2NzMzNjQ3NTV9.eVBewMoHPTAjxFMPthb2kPMjrkUdScXsMMGsJbSnRME
+
+
+{"session_id": "63ba1db9b8908e848d525c21"}
+
+
+
+
 
 
