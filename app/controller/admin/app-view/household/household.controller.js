@@ -1,5 +1,6 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
+var moment = require('moment');
 
 const Resident = db.resident;
 const Household = db.household;
@@ -79,11 +80,23 @@ exports.getHouseholdPage = async (req, res) => {
     var sortFilter = { [dataFilter.field]: dataFilter.sort }
     var searchFilter = { organization_id }
 
-    if (dataFilter.value != '') {
-      searchFilter = { ...searchFilter, [dataFilter.field]: { $regex: dataFilter.value, $options: "i" } }
+    if (dataFilter.value != '' && dataFilter.value != null) {
+      if (dataFilter.type == "string") {
+        searchFilter = { ...searchFilter, [dataFilter.field]: { $regex: dataFilter.value, $options: "i" } }
+      }
+
+      if (dataFilter.type == "date") {
+        var today = moment(dataFilter.value).startOf('day')
+        var endDate = moment(dataFilter.value).endOf('day')
+
+        searchFilter = {
+          ...searchFilter, [dataFilter.field]: { $gte: today, $lte: endDate }
+        }
+      }
+
     }
 
-    // console.log("dataFilter", dataFilter)
+    //console.log("dataFilter", dataFilter)
     // console.log("searchFilter", searchFilter)
     // console.log("sortFilter", sortFilter)
 
