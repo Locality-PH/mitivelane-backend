@@ -36,7 +36,7 @@ exports.getResident = async (req, res) => {
 
   try {
     const resident = await Resident
-      .findOne({ organization_id, resident_id})
+      .findOne({ organization_id, _id: resident_id})
       .select(selectedFields)
     res.json(resident);
   } catch (error) {
