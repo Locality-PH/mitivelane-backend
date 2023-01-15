@@ -49,5 +49,8 @@ db.session = require("./session/session.model")(mongoose);
 
 //certificates
 db.certificates = require("./certificates/cert.model.js")(mongoose);
+db.certificates_request = require("./certificates/cert_request.model.js")(
+  mongoose
+);
 
 module.exports = db;

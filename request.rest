@@ -185,12 +185,44 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 
 ###
 POST http://localhost:3000/api/app/user/sessions/delete
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjczMjY0NzU1LCJleHAiOjE2NzMzNjQ3NTV9.eVBewMoHPTAjxFMPthb2kPMjrkUdScXsMMGsJbSnRME
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjczMzk5ODk5LCJleHAiOjE2NzM0OTk4OTl9.n8EBzGil2upiMTZWcZmB2QGHgDAsJGhxlngPQHfLfmk
 
 
 {"session_id": "63ba1db9b8908e848d525c21"}
 
 
+
+
+###
+POST http://localhost:3000/api/app/user/billing/updateCard
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjczMzk5ODk5LCJleHAiOjE2NzM0OTk4OTl9.n8EBzGil2upiMTZWcZmB2QGHgDAsJGhxlngPQHfLfmk
+Content-Type: application/json
+
+
+{
+     "card_id_prev": "63be0bf9caa90a80d0185e8f",
+     "card_id_new": "63be0e53b5050c55f0b72bce"
+}
+
+
+###
+POST http://localhost:3000/api/app/user/update/all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjczMzk5ODk5LCJleHAiOjE2NzM0OTk4OTl9.n8EBzGil2upiMTZWcZmB2QGHgDAsJGhxlngPQHfLfmk
+Content-Type: application/json
+
+
+{
+     "address": "75262 Chandler Ranch",
+     "city": "sadasd",
+     "phone_number": "(123) 213-21",
+     "country": "AS",
+     "postal": "12321",
+     "address2": ""
+}
+
+###
+GET http://localhost:3000/api/cert-display/request/data
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzM2ODUzNjEsImV4cCI6MTY3Mzc4NTM2MX0.oD91am5H5ODpXRquqWnoiPW3XoDe0xKHGrGU8V8tdTA
 
 
 

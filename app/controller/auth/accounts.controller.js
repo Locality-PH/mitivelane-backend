@@ -1,12 +1,10 @@
 const token = require("../../auth");
 const db = require("../../models");
-var jwt = require("jsonwebtoken");
 const geoip = require("fast-geoip");
-
+var jwt = require("jsonwebtoken");
 var request = require("request").defaults({ encoding: null });
-
 var mongoose = require("mongoose");
-// const OrganizationMember = db.organizationMember;
+
 const Account = db.account;
 let colortag = [
   "#0085c3",
@@ -149,6 +147,26 @@ exports.logOut = async (req, res) => {
     .catch((err) => res.status(400).json("Error: " + err));
 };
 
+exports.deactiaveAccount = async (req, res) => {
+  try {
+    await Account.findOneAndUpdate(
+      {
+        uuid: req.user.auth_id,
+      },
+      {
+        $set: {
+          is_deactivate: true,
+        },
+      },
+      { new: true }
+    );
+
+    return res.status(200).json("Deactivation Successful");
+  } catch (error) {
+    return res.status(400).json("Error: " + error.message);
+  }
+};
+
 function generateAccessToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "30m" });
 }
@@ -208,6 +226,9 @@ async function registerOldUser(req, res) {
             uuid: req.body.uuid,
           },
           {
+            $set: {
+              is_deactivate: false,
+            },
             $push: {
               sessions: [
                 {
@@ -247,6 +268,7 @@ async function registerNewUser(req, res) {
   let base64data = null;
   const geolocation = (await geoip.lookup(req.user.ipv4)) || "";
   const random = Math.floor(Math.random() * colortag.length);
+  const randomUser = `user-${makeid(8)}`;
   var id = new mongoose.Types.ObjectId();
   let join_last_name = "";
   let join_first_name = "";
@@ -277,7 +299,7 @@ async function registerNewUser(req, res) {
         uuid: req.body.uuid,
         email: req.body.email,
         first_time: true,
-        full_name: req.body.user,
+        full_name: req.body.user || randomUser,
         first_name: join_first_name,
         last_name: join_last_name,
         profileUrl: {
@@ -292,7 +314,7 @@ async function registerNewUser(req, res) {
         uuid: req.body.uuid,
         email: req.body.email,
         first_time: true,
-        full_name: req.body.user,
+        full_name: req.body.user || randomUser,
         first_name: join_first_name,
         last_name: join_last_name,
         profileLogo: colortag[random],
@@ -312,6 +334,7 @@ async function registerNewUser(req, res) {
             organizations: [],
             members: [],
             first_time: true,
+            full_name: randomUser,
           };
           const accessToken = generateAccessTokenLogin(users);
           const refreshToken = jwt.sign(
@@ -324,6 +347,9 @@ async function registerNewUser(req, res) {
               uuid: req.body.uuid,
             },
             {
+              $set: {
+                is_deactivate: false,
+              },
               $push: {
                 sessions: [
                   {
@@ -415,6 +441,9 @@ async function loginUser(req, res) {
           uuid: req.params.auth_id,
         },
         {
+          $set: {
+            is_deactivate: false,
+          },
           $push: {
             sessions: [
               {
@@ -530,6 +559,9 @@ async function loginNewUser(req, res) {
               uuid: req.params.auth_id,
             },
             {
+              $set: {
+                is_deactivate: false,
+              },
               $push: {
                 sessions: [
                   {
@@ -577,6 +609,16 @@ async function loginNewUser(req, res) {
   // });
 }
 
+function makeid(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 const getBase64FromUrl = async (url) => {
   const data = await fetch(url);
   const blob = await data.blob();

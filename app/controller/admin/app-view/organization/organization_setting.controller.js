@@ -233,7 +233,7 @@ exports.acceptRequest = async (req, res) => {
         return res.json("Joined");
       }
     } else {
-      console.log("not match email and org request id")
+      console.log("not match email and org request id");
       return res.json("Error");
     }
   } catch (error) {
@@ -310,42 +310,47 @@ exports.deleteOrganization = async (req, res) => {
 };
 
 exports.leaveOrganization = async (req, res) => {
-  const values = req.body
+  const values = req.body;
   const organizationId = values.organization_id;
 
   try {
     const account = await Account.findOne({ uuid: values.uuid });
-    const email = account.email
+    const email = account.email;
 
-    const organizationRequest = await OrganizationRequest.findOne({ organization_id: organizationId, email: email });
+    const organizationRequest = await OrganizationRequest.findOne({
+      organization_id: organizationId,
+      email: email,
+    });
     const organizationRequestId = organizationRequest._id;
 
     return OrganizationMember.findOne({
       organization_id: organizationId,
       email: email,
-    }).then((organizationMember) => {
-      const organizationMemberId = organizationMember._id;
+    })
+      .then((organizationMember) => {
+        const organizationMemberId = organizationMember._id;
 
-      return Promise.all([
-        Account.updateOne(
-          { email: email },
-          {
-            $pull: {
-              organizations: [organizationId],
-              members: [organizationMemberId],
-            },
-          }
-        ),
-        Organization.updateOne(
-          { _id: organizationId },
-          {
-            $pull: { organization_member: organizationMemberId },
-          }
-        ),
-        OrganizationMember.deleteOne({ _id: organizationMemberId }),
-        OrganizationRequest.deleteOne({ _id: organizationRequestId }),
-      ]);
-    }).then(() => res.json("Success"));
+        return Promise.all([
+          Account.updateOne(
+            { email: email },
+            {
+              $pull: {
+                organizations: [organizationId],
+                members: [organizationMemberId],
+              },
+            }
+          ),
+          Organization.updateOne(
+            { _id: organizationId },
+            {
+              $pull: { organization_member: organizationMemberId },
+            }
+          ),
+          OrganizationMember.deleteOne({ _id: organizationMemberId }),
+          OrganizationRequest.deleteOne({ _id: organizationRequestId }),
+        ]);
+      })
+      .then(() => res.json("Success"));
   } catch (error) {
     return res.json("Error");
   }
@@ -359,12 +364,19 @@ exports.getOrganizationRequest = async (req, res) => {
       organization_id: organizationId,
     });
 
-    const organization = await Organization.findOne({_id: organizationId})
-    const organizationMemberId = organization.organization_member[0]
-    const organizationMember = await OrganizationMember.findOne({ _id: organizationMemberId })
-    const ownerEmail = organizationMember.email 
+    const organization = await Organization.findOne({ _id: organizationId });
+    const organizationMemberId = organization.organization_member[0];
+    const organizationMember = await OrganizationMember.findOne({
+      _id: organizationMemberId,
+    });
+    const ownerEmail = organizationMember.email;
 
-    organizationRequest.unshift({_id: "1", email: ownerEmail, role: "Administrator", status: "Owner"})
+    organizationRequest.unshift({
+      _id: "1",
+      email: ownerEmail,
+      role: "Administrator",
+      status: "Owner",
+    });
 
     return res.json(organizationRequest);
   } catch (error) {

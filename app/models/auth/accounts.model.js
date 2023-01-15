@@ -17,7 +17,7 @@ module.exports = (mongoose) => {
       province: { type: String },
       municipality: { type: String },
       telephone: { type: Number },
-      mobile: { type: Number },
+      mobile: { type: String },
       address: { type: String },
       address2: { type: String },
       first_time: { type: Boolean },
@@ -29,7 +29,7 @@ module.exports = (mongoose) => {
       remember_me: { type: Boolean },
       full_name: { type: String },
       profileLogo: { type: String },
-      is_Deactivate: { type: Boolean },
+      is_deactivate: { type: Boolean },
       sessions: [
         {
           user_agent: { type: String, required: true },
@@ -41,6 +41,12 @@ module.exports = (mongoose) => {
           os: { type: String },
           browser: { type: String },
           date: { type: Date },
+        },
+      ],
+      follows: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "organizations",
         },
       ],
       // access_token: { type: String, required: true },

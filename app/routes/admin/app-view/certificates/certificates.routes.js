@@ -4,9 +4,7 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.get("/", auth.authenticationToken, certificate.getCertificateAll);
-
   router.get("/:id", auth.authenticationToken, certificate.getCertificate);
-
   router.get(
     "/name/data",
     auth.authenticationToken,
@@ -18,7 +16,6 @@ module.exports = (app) => {
     certificate.createCertificate
   );
   router.post("/:id", auth.authenticationToken, certificate.updateCertificate);
-
   router.delete(
     "/:id",
     auth.authenticationToken,

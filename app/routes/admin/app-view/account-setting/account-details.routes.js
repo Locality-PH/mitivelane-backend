@@ -10,6 +10,11 @@ module.exports = (app) => {
     accountDetails.updateAccount
   );
   router.post(
+    "/user/update/all",
+    auth.authenticationToken,
+    accountDetails.updateAccountAll
+  );
+  router.post(
     "/user/sessions",
     auth.authenticationToken,
     accountDetails.getSession

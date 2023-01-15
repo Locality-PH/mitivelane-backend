@@ -32,10 +32,35 @@ exports.updateAccount = async (req, res) => {
 
     return res.status(200).json(req.body);
   } catch (error) {
-    return res.status(400).json("Error: " + error);
+    return res.status(400).json("Error: " + error.message);
   }
 };
 
+exports.updateAccountAll = async (req, res) => {
+  try {
+    await Account.findOneAndUpdate(
+      {
+        uuid: req.user.auth_id,
+      },
+      {
+        $set: {
+          country: req.body.country,
+          address: req.body.address,
+          address2: req.body.address2,
+          mobile: req.body.phone_number,
+          city: req.body.city,
+          postal: req.body.postal,
+        },
+      },
+      { new: true }
+    );
+
+    return res.status(200).json("Billing updated successfully");
+  } catch (error) {
+    return res.status(400).json("Error: " + error.message);
+  }
+};
+// To be Deleted
 exports.updateAccountTest = async (req, res) => {
   try {
     let data = {};
@@ -75,10 +100,10 @@ exports.getDetailsAll = async (req, res) => {
   try {
     const organization = await Account.find({ uuid: req.body.auth_id })
       .select({
-        address: 2,
-        address2: 2,
-        mobile: 2,
-        city: 2,
+        address: 6,
+        address2: 5,
+        mobile: 4,
+        city: 3,
         postal: 2,
         country: 1,
         _id: 0,
