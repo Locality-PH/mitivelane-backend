@@ -384,6 +384,23 @@ exports.getOrganizationRequest = async (req, res) => {
   }
 };
 
+exports.editOrganization = async (req, res) => {
+  const values = req.body;
+
+  try {
+    await Organization.updateOne(
+      { _id: values.organization_id },
+      {
+        organization_name: values.organization_name,
+      }
+    );
+
+    return res.json("Success");
+  } catch (error) {
+    return res.json("Error");
+  }
+};
+
 // exports.deleteOrganizationRequest = async (req, res) => {
 // 	const _id = req.body._id;
 

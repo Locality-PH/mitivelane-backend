@@ -9,8 +9,8 @@ exports.requestBlotter = async (req, res) => {
 
   try {
     values._id = _id;
-    const blotterRequestData = new BlotterRequest(values);
 
+    const blotterRequestData = new BlotterRequest(values);
     await blotterRequestData.save();
 
     return res.json("Success");
