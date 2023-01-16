@@ -36,6 +36,24 @@ module.exports = (mongoose) => {
           ref: "residents",
         },
       ],
+      victimsInvolve: [
+        {
+          type: String,
+          ref: "residents",
+        },
+      ],
+      suspectsInvolve: [
+        {
+          type: String,
+          ref: "residents",
+        },
+      ],
+      respondentsInvolve: [
+        {
+          type: String,
+          ref: "residents",
+        },
+      ],
       subject: { type: String },
       narrative: { type: Object },
       incident_type: { type: String },
