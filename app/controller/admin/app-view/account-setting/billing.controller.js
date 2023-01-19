@@ -15,7 +15,7 @@ exports.createBilling = async (req, res) => {
       user_id: req.user.auth_id,
       valid_thru: req.body.valid_thru,
       cvc: req.body.cvc,
-      active_card: req.body.active_card,
+      active_card: false,
     });
     await billing.save();
 
@@ -57,12 +57,23 @@ exports.createBilling = async (req, res) => {
 
 exports.getBilling = async (req, res) => {
   try {
-    Account.find({ uuid: req.user.auth_id })
+    await Account.find({ uuid: req.user.auth_id })
       .select({
         billing_method: 1,
         _id: 0,
       })
-      .populate({ path: "billing_method", model: "billings" })
+      .populate({
+        path: "billing_method",
+        model: "billings",
+        select: [
+          "_id",
+          "issuer",
+          "user_id",
+          "card_number",
+          "active_card",
+          "valid_thru",
+        ],
+      })
       .then((organization) => res.status(200).json(organization))
       .catch((err) => {
         return res.status(400).json("Error: " + err);
@@ -78,7 +89,10 @@ exports.deleteBilling = async (req, res) => {
       !(
         req.body.card_id &&
         req.body.card_id !== "" &&
-        req.body.card_id.length > 0
+        req.body.card_id.length > 0 &&
+        req.body.card_id_new &&
+        req.body.card_id_new !== "" &&
+        req.body.card_id_new.length > 0
       )
     ) {
       return res.status(400).json("card id is required");
@@ -96,8 +110,68 @@ exports.deleteBilling = async (req, res) => {
       },
       { new: true, multi: true }
     );
-    await Promise.all([billingData, accountData]);
+
+    const billingDataNew = await Billing.findOneAndUpdate(
+      {
+        user_id: req.user.auth_id,
+        _id:
+          req.body.card_id_new === "N/A"
+            ? new mongoose.Types.ObjectId()
+            : req.body.card_id_new,
+      },
+      {
+        $set: {
+          active_card: true,
+        },
+      }
+    );
+    console.log(billingDataNew);
+    await Promise.all([billingData, accountData, billingDataNew]);
+
     return res.status(200).json("Delete Successful");
+  } catch (error) {
+    return res.status(400).json("Error: " + error);
+  }
+};
+exports.updateBillingCard = async (req, res) => {
+  try {
+    if (
+      !(
+        req.body.card_id_prev &&
+        req.body.card_id_prev !== "" &&
+        req.body.card_id_prev.length > 0 &&
+        req.body.card_id_new &&
+        req.body.card_id_new !== "" &&
+        req.body.card_id_new.length > 0
+      )
+    ) {
+      return res.status(400).json("card id is required");
+    }
+    const billingDataNew = await Billing.findOneAndUpdate(
+      {
+        user_id: req.user.auth_id,
+        _id: req.body.card_id_new,
+      },
+      {
+        $set: {
+          active_card: true,
+        },
+      }
+    );
+
+    const billingDataPrev = await Billing.findOneAndUpdate(
+      {
+        user_id: req.user.auth_id,
+        _id: req.body.card_id_prev,
+      },
+      {
+        $set: {
+          active_card: false,
+        },
+      }
+    );
+    Promise.all([billingDataNew, billingDataPrev]);
+    res.status(200).json("update successful");
   } catch (error) {
     return res.status(400).json("Error: " + error);
   }

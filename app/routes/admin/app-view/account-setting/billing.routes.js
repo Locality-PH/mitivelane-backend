@@ -20,5 +20,10 @@ module.exports = (app) => {
     auth.authenticationToken,
     billingDetails.deleteBilling
   );
+  router.post(
+    "/user/billing/updateCard",
+    auth.authenticationToken,
+    billingDetails.updateBillingCard
+  );
   app.use("/api/app", router);
 };

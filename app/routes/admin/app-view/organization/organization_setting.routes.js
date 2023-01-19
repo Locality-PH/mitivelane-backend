@@ -56,6 +56,12 @@ module.exports = (app) => {
     auth.authenticationToken,
     organizationSetting.getOrganizationRequest
   );
+  
+  router.post(
+    "/edit-organization",
+    auth.authenticationToken,
+    organizationSetting.editOrganization
+  );
 
   // router.post(
   //   "/delete-organization-request",

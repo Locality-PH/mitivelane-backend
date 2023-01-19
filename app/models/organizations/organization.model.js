@@ -10,6 +10,13 @@ module.exports = (mongoose) => {
       address: { type: String },
       organization_status: { type: Boolean },
       organization_supply: { type: Number, default: 0 },
+      organization_supply: { type: Number, default: 0 },
+      followers: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "accounts_infos",
+        },
+      ],
       organization_member: [
         {
           type: mongoose.Schema.Types.ObjectId,

@@ -8,6 +8,12 @@ module.exports = (app) => {
   router.post("/login/:auth_id", auth.authenticationToken, accounts.loginUser);
   token.post("/refresh/", accounts.accessToken);
   token.post("/logout/", auth.authenticationToken, accounts.logOut);
+  token.post(
+    "/deactivate",
+    auth.authenticationToken,
+    accounts.deactiaveAccount
+  );
+
   app.use("/api/", token);
   app.use("/api/auth", router);
 };
