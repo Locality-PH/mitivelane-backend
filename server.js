@@ -22,10 +22,21 @@ const { io } = require("./app/config/socket.config");
 // Middleware
 app.use(cors());
 app.use(helmet.hsts());
-app.use(express.json());
-app.use(bodyParser.json());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(
+  bodyParser.json({
+    limit: "50mb",
+  })
+);
+
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb",
+    parameterLimit: 100000,
+    extended: true,
+  })
+);
 
 const constantData = require("./app/constant/constant");
 //Firebase
