@@ -210,8 +210,6 @@ exports.addResident = async (req, res) => {
   );
   newResidentData.avatarColor = avatarColor;
 
-  // console.log(newResidentData);
-
   try {
     const newResident = new Resident(newResidentData);
     console.log(newResident);

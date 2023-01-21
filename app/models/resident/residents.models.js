@@ -44,6 +44,10 @@ module.exports = (mongoose) => {
       avatarColor: { type: String },
       avatarImg: { type: String },
       avatarImgType: { type: String },
+      profile: {
+        "fileUrl": String,
+        "fileType": String,
+      },
     },
     { timestamps: true }
   );
