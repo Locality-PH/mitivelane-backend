@@ -5,7 +5,7 @@ const storage = fb.admin.storage();
 const functions = require("firebase-functions");
 
 exports.testApi = (req, res) => {
-  res.json({ test: "API test" });
+  res.json({ profile_url: req.body.profile_url });
 };
 exports.testUploadFirebase = functions.https.onRequest((req, res) => {
   const fileName = `${uuid}.jpg`;

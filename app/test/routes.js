@@ -6,10 +6,9 @@ module.exports = (app) => {
   const testApi = require("./controller.js");
   var router = require("express").Router();
   // router.post("/add", accounts.add);
-  router.get(
+  router.post(
     "/posts",
     //authenticateToken,
-    upload.single("file"),
     testApi.testApi
   );
   router.post(

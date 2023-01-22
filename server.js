@@ -40,7 +40,6 @@ app.use(
   })
 );
 
-const constantData = require("./app/constant/constant");
 //Firebase
 const fb = require("./app/config/firebase.config");
 

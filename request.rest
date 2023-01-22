@@ -227,3 +227,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 
 
 
+###
+POST http://localhost:3000/api/posts
+Content-Type: application/json
+
+{"profile_url": "sdadsa"}
+
+
+
