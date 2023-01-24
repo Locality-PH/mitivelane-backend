@@ -23,6 +23,10 @@ module.exports = (mongoose) => {
           ref: "organization_members",
         },
       ],
+      profile: {
+        "fileUrl": String,
+        "fileType": String,
+      }
     },
     { timestamps: true }
   );
