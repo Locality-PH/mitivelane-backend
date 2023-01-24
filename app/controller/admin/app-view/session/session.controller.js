@@ -1,16 +1,18 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
 var moment = require("moment");
+const { query } = require("express");
 const Session = db.session;
 
 exports.getAuditPage = async (req, res) => {
   try {
-    console.log("req.body", req.body)
-    var dateFilter = moment(req.body.dateFilter).endOf('day')
-    var sortFilter = req.body.sortFilter.toLowerCase()
-    var page = parseInt(req.body.currentPage) - 1;
-    var pageSize = parseInt(req.body.pageSize);
-    var organization_id = req.body.organization_id;
+    var data = req.body
+    var today = moment().endOf('day')
+    var dateFilter = data.dateFilter != undefined ? moment(data.dateFilter).endOf('day') : today
+    var sortFilter = data.sortFilter != undefined ? data.sortFilter.toLowerCase() : "desc"
+    var page = parseInt(data.currentPage) - 1;
+    var pageSize = parseInt(data.pageSize);
+    var organization_id = data.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
 
     var filter = {
@@ -20,20 +22,18 @@ exports.getAuditPage = async (req, res) => {
       }
     }
 
-    await Session
+    var query1 = await Session
       .find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
-      .collation({locale: "en" })
-      .sort({createdAt: sortFilter})
-      .then(async (result) => {
-        var list = result
-        await Session.countDocuments(filter)
-          .then((result) => {
-            var total = result
-            res.json({ list, total });
-          });
-      })
+      .collation({ locale: "en" })
+      .sort({ createdAt: sortFilter })
+    var query2 = Session.countDocuments(filter)
+
+    Promise.all([query1, query2])
+    .then(([list, total]) => {
+      res.json({ list, total });
+    })
 
   } catch (error) {
     console.log(error);
