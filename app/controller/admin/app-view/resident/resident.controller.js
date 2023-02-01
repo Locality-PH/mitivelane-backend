@@ -36,7 +36,7 @@ exports.getResident = async (req, res) => {
 
   try {
     const resident = await Resident
-      .findOne({ organization_id, resident_id})
+      .findOne({ organization_id, _id: resident_id})
       .select(selectedFields)
     res.json(resident);
   } catch (error) {
@@ -209,8 +209,6 @@ exports.addResident = async (req, res) => {
     req.body.organization_id
   );
   newResidentData.avatarColor = avatarColor;
-
-  // console.log(newResidentData);
 
   try {
     const newResident = new Resident(newResidentData);
