@@ -392,6 +392,10 @@ exports.editOrganization = async (req, res) => {
       { _id: values.organization_id },
       {
         organization_name: values.organization_name,
+        profile: {
+          fileUrl: values.profile_url,
+          fileType: values. mime_type
+        }
       }
     );
 
