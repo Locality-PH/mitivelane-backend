@@ -221,7 +221,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:5000/api/cert-display/request/data
+GET http://localhost:5000/api/cert-display/request/data?org=62a32a34d42d4982a908d40a&page=1&pageSize=20
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1NDA1MjA5LCJleHAiOjE2NzU1MDUyMDl9.Iwq57hjGhu4FCO4e_h9wTskmrbL1rvNakiO0Ws4i9bg
 
 

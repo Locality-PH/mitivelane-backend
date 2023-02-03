@@ -3,14 +3,22 @@ const CertificateRequest = db.certificates_request;
 const Certificate = db.certificates;
 
 var mongoose = require("mongoose");
+const pageSizeOptions = [10, 20, 50, 100];
 
 exports.getCertificateRequest = async (req, res) => {
   try {
+    let limit = parseInt(req.query.pageSize) || 10;
+    limit = pageSizeOptions.includes(limit) ? limit : pageSizeOptions[0];
+
     const getRequest = await CertificateRequest.find({
-      user_id: req.user.auth_id,
-    });
-    Promise.all([getRequest]).then(() => {
-      return res.json(getRequest);
+      organization_id: req.query.org,
+    })
+      .skip(req.query.page)
+      .limit(limit);
+    const count = await CertificateRequest.countDocuments();
+
+    Promise.all([getRequest, count]).then(() => {
+      return res.json({ getRequest, count });
     });
   } catch (err) {
     return res.json(err);
