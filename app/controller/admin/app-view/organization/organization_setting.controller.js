@@ -8,6 +8,9 @@ const Resident = db.resident;
 const Blotter = db.blotter;
 
 const Transporter = require("../../../../../nodemailerSetup");
+const handlebars = require("handlebars");
+const path = require("path");
+const fs = require("fs");
 
 // Methods for user invitation
 exports.validateEmail = async (req, res) => {
@@ -126,11 +129,23 @@ exports.addMember = async (req, res) => {
   var newMember = [];
 
   try {
+    const filePath = path.join(__dirname, "../../../../templates/emails/email1/index.html");
+    const source = fs.readFileSync(filePath, 'utf-8').toString();
+    const template = handlebars.compile(source);
+
+
     values.new_member.map(async (value, i) => {
       newMember.push(value);
 
       var newMemberId = new mongoose.Types.ObjectId();
       newMember[i]._id = newMemberId;
+
+      const replacements = {
+        current_user_name: values.current_user_name,
+        to: value.email,
+        action_url: `http://${process.env.URL}/auth/organization-invite/${newMemberId}`
+      };
+      const htmlToSend = template(replacements);
 
       var mailOptions = {
         from: "testmitivelane@gmail.com",
@@ -139,10 +154,7 @@ exports.addMember = async (req, res) => {
           value.role == "Administrator"
             ? "You've been invited to join the organization as Administrator"
             : "You've been invited to join the organization as Editor",
-        html: `<p>${values.current_user_name} invited you to his Organization</p>
-				<h1>Invitation Code: ${value.code}</h1>
-				</br>
-				<a href="http://${process.env.URL}/auth/organization-invite/${newMemberId}">Click here to Verify.<a>`,
+        html: htmlToSend,
       };
 
       await Transporter.sendMail(mailOptions, function (error, info) {
@@ -158,6 +170,7 @@ exports.addMember = async (req, res) => {
 
     return res.json("Success");
   } catch (error) {
+    console.log(error)
     return res.json("Error");
   }
 };
@@ -394,7 +407,7 @@ exports.editOrganization = async (req, res) => {
         organization_name: values.organization_name,
         profile: {
           fileUrl: values.profile_url,
-          fileType: values. mime_type
+          fileType: values.mime_type
         }
       }
     );
