@@ -221,9 +221,15 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/api/cert-display/request/data
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzM2ODUzNjEsImV4cCI6MTY3Mzc4NTM2MX0.oD91am5H5ODpXRquqWnoiPW3XoDe0xKHGrGU8V8tdTA
+GET http://localhost:5000/api/cert-display/request/data
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1NDA1MjA5LCJleHAiOjE2NzU1MDUyMDl9.Iwq57hjGhu4FCO4e_h9wTskmrbL1rvNakiO0Ws4i9bg
 
+
+
+###
+GET http://localhost:5000/api/cert-display/request/data/type?org=62a32a34d42d4982a908d40a
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1NDA1MjA5LCJleHAiOjE2NzU1MDUyMDl9.Iwq57hjGhu4FCO4e_h9wTskmrbL1rvNakiO0Ws4i9bg
 
 
 
@@ -234,4 +240,21 @@ Content-Type: application/json
 {"profile_url": "sdadsa"}
 
 
+###
+POST http://localhost:5000/api/cert-display/request/data
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1NDA1MjA5LCJleHAiOjE2NzU1MDUyMDl9.Iwq57hjGhu4FCO4e_h9wTskmrbL1rvNakiO0Ws4i9bg
 
+{    "address": "231312",
+     "address2": "1232131",
+     "certificate_type": "62c3a99aa00fc9aa6a9f59d6",
+     "city": "123213121",
+     "country": "DZ",
+     "description": "2131",
+     "email": "testuser@gmail.com",
+     "issuer": "walk in",
+     "name": "Desmon qweq",
+     "organizationId": "62a32a34d42d4982a908d40a",
+     "phoneNumber": "(123) 213-131",
+     "postcode": "123"
+}

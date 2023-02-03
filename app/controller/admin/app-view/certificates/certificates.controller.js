@@ -3,39 +3,37 @@ const Certificate = db.certificates;
 var mongoose = require("mongoose");
 
 exports.createCertificate = async (req, res) => {
-  const id = new mongoose.Types.ObjectId(req.body.certificate_id);
-  console.log(id);
-
-  const data = {
-    _id: id,
-    organization_id: [req.user.auth_organization],
-    firstLogo: req.body.firstLogo,
-    status: false,
-    secondLogo: req.body.secondLogo,
-    signatures: req.body.signatures,
-    line_height: req.body.line_height,
-    color_picker: req.body.color_picker,
-    title: req.body.title || "Untitled #",
-    country: req.body.country,
-    municipality: req.body.municipality,
-    municipality: req.body.province,
-    or_number: req.body.or_number,
-    issued_at: req.body.issued_at,
-    issued_on: req.body.issued_on,
-    organization: req.body.organization,
-    office: req.body.office,
-    cert_type: req.body.cert_type || "cert",
-    font_family: req.body.font_family || "Tinos",
-    template_type: req.body.template_type || "simple_border",
-    font_size: "S",
-    color: "#000000ff",
-    content: req.body.content || [{ entityMap: {}, blocks: [] }],
-    clearance: req.body.clearance,
-  };
-
-  const cert = new Certificate(data);
-
   try {
+    const id = new mongoose.Types.ObjectId(req.body.certificate_id);
+
+    const data = {
+      _id: id,
+      organization_id: [req.user.auth_organization],
+      firstLogo: req.body.firstLogo,
+      status: false,
+      secondLogo: req.body.secondLogo,
+      signatures: req.body.signatures,
+      line_height: req.body.line_height,
+      color_picker: req.body.color_picker,
+      title: req.body.title || "Untitled #",
+      country: req.body.country,
+      municipality: req.body.municipality,
+      municipality: req.body.province,
+      or_number: req.body.or_number,
+      issued_at: req.body.issued_at,
+      issued_on: req.body.issued_on,
+      organization: req.body.organization,
+      office: req.body.office,
+      cert_type: req.body.cert_type || "cert",
+      font_family: req.body.font_family || "Tinos",
+      template_type: req.body.template_type || "simple_border",
+      font_size: "S",
+      color: "#000000ff",
+      content: req.body.content || [{ entityMap: {}, blocks: [] }],
+      clearance: req.body.clearance,
+    };
+
+    const cert = new Certificate(data);
     await cert.save();
     res.json({ id });
   } catch (error) {

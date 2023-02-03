@@ -6,16 +6,16 @@ module.exports = (mongoose) => {
       user_id: { type: String },
       name: { type: String },
       description: { type: String },
-      certificate_type: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "certificates",
+      certificate_type: { type: String },
+      attach_file: {
+        file_name: { type: String },
+        file_url: { type: String },
       },
+      status: { type: String },
       billing_info: {
-        address1: { type: String },
-        address2: { type: String },
-        mobile: { type: String },
         address: { type: String },
         address2: { type: String },
+        mobile: { type: String },
         city: { type: String },
         postal: { type: String },
         country: { type: String },
