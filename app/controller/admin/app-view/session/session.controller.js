@@ -3,6 +3,7 @@ var mongoose = require("mongoose");
 var moment = require("moment");
 const { query } = require("express");
 const Session = db.session;
+const Account = db.account;
 
 exports.getAuditPage = async (req, res) => {
   try {
@@ -28,12 +29,13 @@ exports.getAuditPage = async (req, res) => {
       .limit(pageSize)
       .collation({ locale: "en" })
       .sort({ createdAt: sortFilter })
+      .populate("account", ["first_name", "last_name", "profileLogo", "profileUrl"]);
     var query2 = Session.countDocuments(filter)
 
     Promise.all([query1, query2])
-    .then(([list, total]) => {
-      res.json({ list, total });
-    })
+      .then(([list, total]) => {
+        res.json({ list, total });
+      })
 
   } catch (error) {
     console.log(error);
@@ -42,16 +44,26 @@ exports.getAuditPage = async (req, res) => {
 };
 
 exports.addSession = async (req, res) => {
-  const newSessionData = req.body.values;
-  newSessionData._id = new mongoose.Types.ObjectId();
-  newSessionData.organization_id = mongoose.Types.ObjectId(
-    req.body.organization_id
-  );
-
   try {
-    const newSession = new Session(newSessionData);
-    console.log(newSession);
-    await newSession.save();
+    const newSessionData = req.body.values
+    newSessionData._id = new mongoose.Types.ObjectId();
+    newSessionData.organization_id = mongoose.Types.ObjectId(
+      req.body.organization_id
+    );
+
+    const userAuthId = req.user.auth_id
+
+    await Account.findOne({ uuid: userAuthId }, "_id")
+      .then(async (res) => {
+        let userId = res._id
+        newSessionData.account = userId
+
+        const newSession = new Session(newSessionData);
+        console.log(newSession);
+        await newSession.save();
+      })
+
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: error });
