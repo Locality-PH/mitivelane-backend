@@ -14,10 +14,16 @@ module.exports = (app) => {
     auth.authenticationToken,
     certificate.createCertificateRequest
   );
+
   router.get(
     "/data/type",
     auth.authenticationToken,
     certificate.createCertificateActive
+  );
+  router.post(
+    "/data/:id",
+    auth.authenticationToken,
+    certificate.updateCertificateRequest
   );
   app.use("/api/cert-display/request", router);
 };

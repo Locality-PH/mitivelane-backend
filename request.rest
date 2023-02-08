@@ -224,12 +224,15 @@ Content-Type: application/json
 GET http://localhost:5000/api/cert-display/request/data?org=62a32a34d42d4982a908d40a&page=1&pageSize=20
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1NDA1MjA5LCJleHAiOjE2NzU1MDUyMDl9.Iwq57hjGhu4FCO4e_h9wTskmrbL1rvNakiO0Ws4i9bg
 
+###
+GET http://localhost:5000/api/app//user/details/list/kwWXpExbfoTAVnQZQVeVqMzCRFP2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1ODE0MzY3LCJleHAiOjE2NzU5MTQzNjd9.8ebPKmzXWDSbhlKzAl2npiZuGPw05a0xEUmItWnTEfk
 
 
 ###
 GET http://localhost:5000/api/cert-display/request/data/type?org=62a32a34d42d4982a908d40a
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1NDA1MjA5LCJleHAiOjE2NzU1MDUyMDl9.Iwq57hjGhu4FCO4e_h9wTskmrbL1rvNakiO0Ws4i9bg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1ODE0MzY3LCJleHAiOjE2NzU5MTQzNjd9.8ebPKmzXWDSbhlKzAl2npiZuGPw05a0xEUmItWnTEfk
 
 
 
@@ -243,7 +246,7 @@ Content-Type: application/json
 ###
 POST http://localhost:5000/api/cert-display/request/data
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1NDA1MjA5LCJleHAiOjE2NzU1MDUyMDl9.Iwq57hjGhu4FCO4e_h9wTskmrbL1rvNakiO0Ws4i9bg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1ODE0MzY3LCJleHAiOjE2NzU5MTQzNjd9.8ebPKmzXWDSbhlKzAl2npiZuGPw05a0xEUmItWnTEfk
 
 {    "address": "231312",
      "address2": "1232131",
@@ -256,5 +259,26 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
      "name": "Desmon qweq",
      "organizationId": "62a32a34d42d4982a908d40a",
      "phoneNumber": "(123) 213-131",
-     "postcode": "123"
+     "postcode": "123",
+     "user_id": "kwWXpExbfoTAVnQZQVeVqMzCRFP2"
+}
+
+###
+POST http://localhost:5000/api/cert-display/request/data/1231
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1ODE0MzY3LCJleHAiOjE2NzU5MTQzNjd9.8ebPKmzXWDSbhlKzAl2npiZuGPw05a0xEUmItWnTEfk
+
+{    "address": "231312",
+     "address2": "1232131",
+     "certificate_type": "62c3a99aa00fc9aa6a9f59d6",
+     "city": "123213121",
+     "country": "DZ",
+     "description": "2131",
+     "email": "testuser@gmail.com",
+     "issuer": "walk in",
+     "name": "Desmon qweq",
+     "organizationId": "62a32a3309e2e4fd143ef932",
+     "phoneNumber": "(123) 213-131",
+     "postcode": "123",
+     "paymentStatus": "walkin"
 }

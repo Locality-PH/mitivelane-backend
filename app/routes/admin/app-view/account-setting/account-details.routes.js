@@ -24,10 +24,15 @@ module.exports = (app) => {
     auth.authenticationToken,
     accountDetails.getDetailsAll
   );
-  router.post(
+  router.get(
     "/user/details",
     auth.authenticationToken,
     accountDetails.getDetails
+  );
+  router.get(
+    "/user/details/list/:id",
+    auth.authenticationToken,
+    accountDetails.getDetailsUser
   );
 
   router.post(

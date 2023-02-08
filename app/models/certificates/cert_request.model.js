@@ -4,6 +4,10 @@ module.exports = (mongoose) => {
       _id: { type: mongoose.Schema.Types.ObjectId },
       email: { type: String },
       user_id: { type: String },
+      organization_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "organizations",
+      },
       name: { type: String },
       description: { type: String },
       certificate_type: { type: String },
@@ -20,7 +24,8 @@ module.exports = (mongoose) => {
         postal: { type: String },
         country: { type: String },
       },
-      note: { type: String },
+      note: { type: Object },
+      issuer: { type: String },
     },
     { timestamps: true }
   );

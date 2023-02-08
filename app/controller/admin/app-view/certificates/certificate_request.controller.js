@@ -15,7 +15,9 @@ exports.getCertificateRequest = async (req, res) => {
     })
       .skip(req.query.page)
       .limit(limit);
-    const count = await CertificateRequest.countDocuments();
+    const count = await CertificateRequest.countDocuments({
+      organization_id: req.query.org,
+    });
 
     Promise.all([getRequest, count]).then(() => {
       return res.json({ getRequest, count });
@@ -59,6 +61,7 @@ exports.createCertificateRequest = async (req, res) => {
         file_name: req.body.fileName,
         file_url: req.body.url,
       },
+      issuer: req.body.issuer,
       billing_info: {
         mobile: req.body.phoneNumber,
         address: req.body.address,
@@ -74,6 +77,16 @@ exports.createCertificateRequest = async (req, res) => {
     return res.json("saved");
   } catch (err) {
     return res.json(err);
+  }
+};
+
+exports.updateCertificateRequest = async (req, res) => {
+  try {
+    console.log("create");
+
+    res.json("create");
+  } catch (e) {
+    res.json(e);
   }
 };
 
