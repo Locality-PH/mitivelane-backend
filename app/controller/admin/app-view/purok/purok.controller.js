@@ -7,7 +7,6 @@ const Purok = db.purok;
 exports.getPuroks = async (req, res) => {
   var organization_id = req.body.organization_id;
   organization_id = mongoose.Types.ObjectId(organization_id);
-  console.log(organization_id);
 
   try {
     const puroks = await Purok.find({ organization_id });
@@ -20,13 +19,13 @@ exports.getPuroks = async (req, res) => {
 
 exports.getPurokPage = async (req, res) => {
   try {
-    console.log("req.body", req.body)
-    var page = parseInt(req.body.page) - 1;
-    var pageSize = parseInt(req.body.pageSize);
-    var organization_id = req.body.organization_id;
+    var values = req.body.values
+    var page = parseInt(values.page) - 1;
+    var pageSize = parseInt(values.pageSize);
+    var organization_id = values.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
 
-    var tableScreen = req.body.tableScreen
+    var tableScreen = values.tableScreen
     var tableScreenLength = Object.keys(tableScreen).length
     var sorter = null
     var filter = { organization_id: organization_id }
@@ -60,7 +59,7 @@ exports.getPurokPage = async (req, res) => {
               }
             }
 
-            filter = { ...filter, ...dateFilter}
+            filter = { ...filter, ...dateFilter }
           }
 
           if (isKeyDate == false && isKeyNumber == false) {
@@ -77,13 +76,17 @@ exports.getPurokPage = async (req, res) => {
       sorter = { [field]: order }
     }
 
-    console.log("filter", filter)
+    if (doesSorterExist != true) {
+      sorter = { ["createdAt"]: "descending" }
+    }
+
+    // console.log("filter", filter)
     // console.log("sorter", sorter)
 
     await Purok.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
-      .collation({locale: "en" })
+      .collation({ locale: "en" })
       .sort(sorter)
       .then(async (result) => {
         var list = result
@@ -102,10 +105,12 @@ exports.getPurokPage = async (req, res) => {
 
 
 exports.addPurok = async (req, res) => {
-  newPurokData = req.body.newArea;
+  var values = req.body.values
+  console.log("values", values)
+  newPurokData = values.newArea;
   newPurokData._id = new mongoose.Types.ObjectId();
   newPurokData.organization_id = mongoose.Types.ObjectId(
-    req.body.organization_id
+    values.organization_id
   );
 
   try {
@@ -119,10 +124,15 @@ exports.addPurok = async (req, res) => {
 };
 
 exports.updatePurok = async (req, res) => {
-  const newAreaData = req.body.newAreaData;
+  var values = req.body.values
+  const newAreaData = values.newAreaData;
 
   try {
-    await Purok.updateOne({ _id: newAreaData.purok_id }, newAreaData);
+    await Purok.updateOne({ _id: newAreaData.purok_id }, newAreaData)
+      .then(() => {
+        res.json("updated");
+      })
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
@@ -130,10 +140,15 @@ exports.updatePurok = async (req, res) => {
 };
 
 exports.deletePurok = async (req, res) => {
-  const selectedArray = req.body.selectedArray;
+  var values = req.body.values
+  const selectedArray = values.selectedArray;
 
   try {
-    await Purok.deleteMany({ _id: selectedArray });
+    await Purok.deleteMany({ _id: selectedArray })
+      .then(() => {
+        res.json("deleted");
+      })
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });

@@ -35,7 +35,7 @@ module.exports = (app) => {
   );
 
   router.post(
-    "/receive/getPage/:organization_id/:page/:pageSize",
+    "/receive/page/:organization_id/:page/:pageSize",
     auth.authenticationToken,
     supplyController.getReceivedSupplyPage
   );
