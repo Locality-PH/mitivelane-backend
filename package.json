@@ -23,6 +23,7 @@
     "firebase": "^9.15.0",
     "firebase-admin": "^10.3.0",
     "firebase-functions": "^4.1.1",
+    "handlebars": "^4.7.7",
     "helmet": "^5.0.1",
     "http-proxy-middleware": "^2.0.1",
     "jsonwebtoken": "^8.5.1",
