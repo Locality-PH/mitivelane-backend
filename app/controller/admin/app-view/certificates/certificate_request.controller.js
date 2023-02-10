@@ -1,22 +1,74 @@
 const db = require("../../../../models");
 const CertificateRequest = db.certificates_request;
 const Certificate = db.certificates;
+const Account = db.account;
 
 var mongoose = require("mongoose");
-const pageSizeOptions = [10, 20, 50, 100];
+
+const pageSizeOptions = [5, 10, 20, 50, 100];
 
 exports.getCertificateRequest = async (req, res) => {
+  console.log(req.query.search);
   try {
     let limit = parseInt(req.query.pageSize) || 10;
     limit = pageSizeOptions.includes(limit) ? limit : pageSizeOptions[0];
+    const search = req.query.search || "";
 
+    const filterSearch = [
+      { email: { $regex: search, $options: "i" } },
+      { status: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+      { certificate_type: { $regex: search, $options: "i" } },
+      { issuer: { $regex: search, $options: "i" } },
+      {
+        "billing_info.mobile": { $regex: search, $options: "i" },
+      },
+      {
+        "billing_info.address": { $regex: search, $options: "i" },
+      },
+      {
+        "billing_info.address2": {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        "billing_info.city": {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        "billing_info.postal": {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        "billing_info.country": {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      { description: { $regex: search, $options: "i" } },
+      { name: { $regex: search, $options: "i" } },
+    ];
+    console.log(limit);
     const getRequest = await CertificateRequest.find({
       organization_id: req.query.org,
+      $or: filterSearch,
     })
       .skip(req.query.page)
-      .limit(limit);
+      .sort({ updatedAt: -1 })
+      .limit(limit)
+      .populate({
+        path: "user_id",
+        model: "accounts_infos",
+        select: ["_id", "profileLogo", "full_name", "profileUrl"],
+      });
     const count = await CertificateRequest.countDocuments({
       organization_id: req.query.org,
+      $or: filterSearch,
     });
 
     Promise.all([getRequest, count]).then(() => {
@@ -26,41 +78,39 @@ exports.getCertificateRequest = async (req, res) => {
     return res.json(err);
   }
 };
-// email: req.body.,
-// user_id: req.body.,
-// name: req.body.,
-// description: req.body.,
-// certificate_type: {
-//   type: mongoose.Schema.Types.ObjectId,
-//   ref: "certificates",
-// },
-// billing_info: {
-//   address1: req.body.,
-//   address2: req.body.,
-//   mobile: req.body.,
-//   address: req.body.,
-//   address2: req.body.,
-//   city: req.body.,
-//   postal: req.body.,
-//   country: req.body.,
-// },
+
+exports.getCertificateRequestLatest = async (req, res) => {
+  try {
+    let limit = parseInt(req.query.pageSize) || 10;
+    limit = pageSizeOptions.includes(limit) ? limit : pageSizeOptions[0];
+
+    const getRequest = await CertificateRequest.find({
+      organization_id: req.query.org,
+      updatedAt: { $gte: new Date() },
+    }).limit(limit);
+
+    Promise.all([getRequest]).then(() => {
+      return res.json(getRequest);
+    });
+  } catch (err) {
+    return res.json(err);
+  }
+};
 exports.createCertificateRequest = async (req, res) => {
   try {
     const id = new mongoose.Types.ObjectId();
+
+    const user = await Account.find({ uuid: req.user.auth_id });
 
     const data = {
       _id: id,
       organization_id: [req.body.organizationId],
       email: req.body.email,
-      user_id: req.user.auth_id,
+      user_id: user[0]._id,
       status: "pending",
       name: req.body.name,
       description: req.body.description,
       certificate_type: req.body.certificate_type,
-      attach_file: {
-        file_name: req.body.fileName,
-        file_url: req.body.url,
-      },
       issuer: req.body.issuer,
       billing_info: {
         mobile: req.body.phoneNumber,
@@ -71,10 +121,12 @@ exports.createCertificateRequest = async (req, res) => {
         country: req.body.country,
       },
     };
-    console.log(data);
+
     const cert = await new CertificateRequest(data);
     cert.save();
-    return res.json("saved");
+    Promise.all([user, cert]).then(() => {
+      return res.json("saved");
+    });
   } catch (err) {
     return res.json(err);
   }
@@ -82,18 +134,32 @@ exports.createCertificateRequest = async (req, res) => {
 
 exports.updateCertificateRequest = async (req, res) => {
   try {
-    console.log("create");
-
-    res.json("create");
-  } catch (e) {
-    res.json(e);
+    if (!req.user) {
+      return res.status(404).send({ Error: "something went wrong" });
+    }
+    const updatedCertificate = await CertificateRequest.findOneAndUpdate(
+      {
+        _id: req.body.certificate_requests_id,
+      },
+      {
+        $set: {
+          status: req.body.status,
+          notes: req.body.notes,
+          issuer: req.body.issuer,
+          attach_file: req.body.attach_file,
+        },
+      }
+    );
+    Promise.all([updatedCertificate]).then(() => {
+      return res.json("success");
+    });
+  } catch (err) {
+    return res.json(err);
   }
 };
 
 exports.createCertificateActive = async (req, res) => {
   try {
-    console.log(req.query.org);
-
     await Certificate.find({
       organization_id: req.query.org,
       status: true,

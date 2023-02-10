@@ -3,7 +3,7 @@ module.exports = (mongoose) => {
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
       email: { type: String },
-      user_id: { type: String },
+      user_id: { type: String, ref: "accounts_infos" },
       organization_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "organizations",
@@ -12,8 +12,10 @@ module.exports = (mongoose) => {
       description: { type: String },
       certificate_type: { type: String },
       attach_file: {
-        file_name: { type: String },
-        file_url: { type: String },
+        uid: { type: mongoose.Schema.Types.ObjectId },
+        name: { type: String },
+        status: { type: String },
+        url: { type: String },
       },
       status: { type: String },
       billing_info: {
@@ -24,7 +26,7 @@ module.exports = (mongoose) => {
         postal: { type: String },
         country: { type: String },
       },
-      note: { type: Object },
+      notes: { type: Object },
       issuer: { type: String },
     },
     { timestamps: true }

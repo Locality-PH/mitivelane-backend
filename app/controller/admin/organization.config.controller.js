@@ -19,10 +19,7 @@ exports.getOrganizationList = (req, res) => {
     })
     .then((organization) => {
       //console.log(organization);
-      return res.json(organization);
-    })
-    .catch((err) => {
-      return res.status(400).json("Error: " + err);
+      console.log(organization);
     });
 };
 exports.getPreOrganizationList = (req, res) => {

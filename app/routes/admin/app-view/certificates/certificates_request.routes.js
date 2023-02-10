@@ -8,7 +8,11 @@ module.exports = (app) => {
     auth.authenticationToken,
     certificate.getCertificateRequest
   );
-
+  router.get(
+    "/data/latest",
+    auth.authenticationToken,
+    certificate.getCertificateRequestLatest
+  );
   router.post(
     "/data",
     auth.authenticationToken,
@@ -25,5 +29,6 @@ module.exports = (app) => {
     auth.authenticationToken,
     certificate.updateCertificateRequest
   );
+
   app.use("/api/cert-display/request", router);
 };
