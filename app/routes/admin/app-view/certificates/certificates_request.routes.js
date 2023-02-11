@@ -25,10 +25,14 @@ module.exports = (app) => {
     certificate.createCertificateActive
   );
   router.post(
-    "/data/:id",
+    "/data/update",
     auth.authenticationToken,
     certificate.updateCertificateRequest
   );
-
+  router.post(
+    "/data/delete",
+    auth.authenticationToken,
+    certificate.deleteCertificateRequest
+  );
   app.use("/api/cert-display/request", router);
 };

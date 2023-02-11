@@ -28,6 +28,7 @@ module.exports = (mongoose) => {
       },
       notes: { type: Object },
       issuer: { type: String },
+      archive: { type: Boolean },
     },
     { timestamps: true }
   );

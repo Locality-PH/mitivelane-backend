@@ -317,5 +317,19 @@ GET http://localhost:5000/api/cert-display/request/data?org=62a32a3309e2e4fd143e
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1OTk3NjYyLCJleHAiOjE2NzYwOTc2NjJ9.9z15FtbdoT-VJQrWqnc3iSZ_yXFgvDC_NHStjaUVO_I
 
 ###
-GET http://localhost:5000/api/cert-display/request/data/latest?org=62a32a3309e2e4fd143ef932&pageSize=10
+GET http://localhost:5000/api/cert-display/request/data?org=62a32a3309e2e4fd143ef932&page=0&pageSize=10&search=&archive=false
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1OTk4MjY4LCJleHAiOjE2NzYwOTgyNjh9.FkayreHBmNicpY6ujKJwKR5KZuw_6ThjjdTIs_OdPuc
+
+###
+POST http://localhost:3000/api/cert-display/request/data/kwWXpExbfoTAVnQZQVeVqMzCRFP2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1OTk3NjYyLCJleHAiOjE2NzYwOTc2NjJ9.9z15FtbdoT-VJQrWqnc3iSZ_yXFgvDC_NHStjaUVO_I
+
+{
+
+     "certificate_requests_id": ["63e645e6f1f32eedc35dc74b","63e64847e69f21149f7aa8d3"],
+     "issuer": "mastercard",
+     "organization_id": "62a32a3309e2e4fd143ef932",
+     "status": "pending"
+  
+}

@@ -56,7 +56,12 @@ exports.getCertificateRequest = async (req, res) => {
     console.log(limit);
     const getRequest = await CertificateRequest.find({
       organization_id: req.query.org,
-      $or: filterSearch,
+      $and: [
+        { archive: req.query.archive },
+        {
+          $or: filterSearch,
+        },
+      ],
     })
       .skip(req.query.page)
       .sort({ updatedAt: -1 })
@@ -68,11 +73,17 @@ exports.getCertificateRequest = async (req, res) => {
       });
     const count = await CertificateRequest.countDocuments({
       organization_id: req.query.org,
-      $or: filterSearch,
+      $and: [
+        { archive: req.query.archive },
+        {
+          $or: filterSearch,
+        },
+      ],
     });
 
     Promise.all([getRequest, count]).then(() => {
-      return res.json({ getRequest, count });
+      res.set("x-total-count", count);
+      return res.json(getRequest);
     });
   } catch (err) {
     return res.json(err);
@@ -112,6 +123,7 @@ exports.createCertificateRequest = async (req, res) => {
       description: req.body.description,
       certificate_type: req.body.certificate_type,
       issuer: req.body.issuer,
+      archive: false,
       billing_info: {
         mobile: req.body.phoneNumber,
         address: req.body.address,
@@ -137,9 +149,11 @@ exports.updateCertificateRequest = async (req, res) => {
     if (!req.user) {
       return res.status(404).send({ Error: "something went wrong" });
     }
-    const updatedCertificate = await CertificateRequest.findOneAndUpdate(
+    console.log(req.body.certificate_requests_id);
+    const updatedCertificate = await CertificateRequest.updateMany(
       {
-        _id: req.body.certificate_requests_id,
+        _id: { $in: req.body.certificate_requests_id },
+        organization_id: req.body.organization_id,
       },
       {
         $set: {
@@ -147,10 +161,29 @@ exports.updateCertificateRequest = async (req, res) => {
           notes: req.body.notes,
           issuer: req.body.issuer,
           attach_file: req.body.attach_file,
+          archive: req.body.archive,
         },
       }
     );
     Promise.all([updatedCertificate]).then(() => {
+      return res.json("success");
+    });
+  } catch (err) {
+    return res.json(err);
+  }
+};
+
+exports.deleteCertificateRequest = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(404).send({ Error: "something went wrong" });
+    }
+    console.log(req.body.certificate_requests_id);
+    const deletedCertificate = await CertificateRequest.deleteMany({
+      _id: { $in: req.body.certificate_requests_id },
+      organization_id: req.body.organization_id,
+    });
+    Promise.all([deletedCertificate]).then(() => {
       return res.json("success");
     });
   } catch (err) {
