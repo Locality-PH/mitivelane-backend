@@ -333,3 +333,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
      "status": "pending"
   
 }
+
+###
+GET http://localhost:5000/api/app/users/kwWXpExbfoTAVnQZQVeVqMzCRFP2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc2MDg5NTYxLCJleHAiOjE2NzYxODk1NjF9.-jGw9jgCsiK7UgYL_ajhPXCrxRKLarEKP0VLPe2StKA

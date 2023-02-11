@@ -20,6 +20,7 @@ exports.getOrganizationList = (req, res) => {
     .then((organization) => {
       //console.log(organization);
       console.log(organization);
+      res.json(organization);
     });
 };
 exports.getPreOrganizationList = (req, res) => {
