@@ -3,7 +3,7 @@ module.exports = (mongoose) => {
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
       email: { type: String },
-      user_id: { type: String, ref: "accounts_infos" },
+      user_id: { type: mongoose.Schema.Types.ObjectId, ref: "accounts_infos" },
       organization_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "organizations",
@@ -29,6 +29,14 @@ module.exports = (mongoose) => {
       notes: { type: Object },
       issuer: { type: String },
       archive: { type: Boolean },
+      paymentSource: [
+        [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "billings",
+          },
+        ],
+      ],
     },
     { timestamps: true }
   );

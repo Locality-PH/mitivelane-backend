@@ -9,6 +9,11 @@ module.exports = (app) => {
     certificate.getCertificateRequest
   );
   router.get(
+    "/data/user",
+    auth.authenticationToken,
+    certificate.getCertificateRequestPrivateData
+  );
+  router.get(
     "/data/latest",
     auth.authenticationToken,
     certificate.getCertificateRequestLatest
