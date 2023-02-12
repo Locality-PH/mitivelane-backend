@@ -22,6 +22,12 @@ module.exports = (app) => {
   );
 
   router.get(
+    "/get-organization-members/:organization_id",
+    auth.authenticationToken,
+    organization.getOrganizationMembers
+  );
+
+  router.get(
     "/get-organization-owner/:organization_id/:uuid",
     auth.authenticationToken,
     organization.getOrganizationOwner
