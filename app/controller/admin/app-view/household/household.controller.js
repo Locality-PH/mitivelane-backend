@@ -6,7 +6,7 @@ const Resident = db.resident;
 const Household = db.household;
 // const HouseholdMember = db.householdMember;
 
-const getSelectedResidentFields = (choosenFields, excludedFields, excludeAvatar) => {
+const getSelectedHouseholdFields = (choosenFields, excludedFields, excludeAvatar) => {
 
   var selectedFields = '' //empty string means all field
 
@@ -70,7 +70,7 @@ exports.getHouseholdPage = async (req, res) => {
     var excludedFields = req.body.excludedFields
     excludeAvatar != undefined ? excludeAvatar : false
 
-    var selectedFields = getSelectedResidentFields(choosenFields, excludedFields, excludeAvatar)
+    var selectedFields = getSelectedHouseholdFields(choosenFields, excludedFields, excludeAvatar)
 
     // console.log("req.body", req.body)
     const organization_id = req.body.organization_id;
@@ -78,7 +78,7 @@ exports.getHouseholdPage = async (req, res) => {
     const pageSize = req.body.pageSize
     var dataFilter = req.body.dataFilter
     var sortFilter = { [dataFilter.field]: dataFilter.sort }
-    var searchFilter = { organization_id }
+    var searchFilter = { organization: organization_id, }
 
     if (dataFilter.value != '' && dataFilter.value != null) {
       if (dataFilter.type == "string") {
