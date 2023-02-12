@@ -61,7 +61,7 @@ exports.getCertificate = async (req, res) => {
 
 exports.getCertificateAll = async (req, res) => {
   try {
-    const result = new Number(req.body.cert_type);
+    const result = new Number(req.query.result);
     const start = new Number(req.query.start);
     console.log(req.query.result);
     if (result || start)

@@ -8,7 +8,6 @@ var mongoose = require("mongoose");
 const pageSizeOptions = [5, 10, 20, 50, 100];
 
 exports.getCertificateRequest = async (req, res) => {
-  console.log(req.query.search);
   try {
     let limit = parseInt(req.query.pageSize) || 10;
     limit = pageSizeOptions.includes(limit) ? limit : pageSizeOptions[0];
@@ -53,7 +52,7 @@ exports.getCertificateRequest = async (req, res) => {
       { description: { $regex: search, $options: "i" } },
       { name: { $regex: search, $options: "i" } },
     ];
-    console.log(limit);
+
     const getRequest = await CertificateRequest.find({
       organization_id: req.query.org,
       $and: [
@@ -90,6 +89,27 @@ exports.getCertificateRequest = async (req, res) => {
   }
 };
 
+exports.getCertificateRequestPrivateData = async (req, res) => {
+  try {
+    const result = new Number(req.query.result);
+    const start = new Number(req.query.start);
+
+    const user = await Account.find({ uuid: req.user.auth_id });
+    const getRequest = await CertificateRequest.find({
+      user_id: user[0]._id,
+      updatedAt: { $gte: new Date() },
+    })
+      .skip(start)
+      .limit(result);
+
+    Promise.all([getRequest]).then(() => {
+      return res.json(getRequest);
+    });
+  } catch (err) {
+    return res.json(err);
+  }
+};
+
 exports.getCertificateRequestLatest = async (req, res) => {
   try {
     let limit = parseInt(req.query.pageSize) || 10;
@@ -107,6 +127,7 @@ exports.getCertificateRequestLatest = async (req, res) => {
     return res.json(err);
   }
 };
+
 exports.createCertificateRequest = async (req, res) => {
   try {
     const id = new mongoose.Types.ObjectId();
@@ -118,6 +139,7 @@ exports.createCertificateRequest = async (req, res) => {
       organization_id: [req.body.organizationId],
       email: req.body.email,
       user_id: user[0]._id,
+      uuid: req.user.auth_id,
       status: "pending",
       name: req.body.name,
       description: req.body.description,
@@ -149,7 +171,6 @@ exports.updateCertificateRequest = async (req, res) => {
     if (!req.user) {
       return res.status(404).send({ Error: "something went wrong" });
     }
-    console.log(req.body.certificate_requests_id);
     const updatedCertificate = await CertificateRequest.updateMany(
       {
         _id: { $in: req.body.certificate_requests_id },
@@ -178,7 +199,6 @@ exports.deleteCertificateRequest = async (req, res) => {
     if (!req.user) {
       return res.status(404).send({ Error: "something went wrong" });
     }
-    console.log(req.body.certificate_requests_id);
     const deletedCertificate = await CertificateRequest.deleteMany({
       _id: { $in: req.body.certificate_requests_id },
       organization_id: req.body.organization_id,
