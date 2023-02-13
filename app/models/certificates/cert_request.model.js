@@ -8,6 +8,7 @@ module.exports = (mongoose) => {
         type: mongoose.Schema.Types.ObjectId,
         ref: "organizations",
       },
+      uuid: { type: String },
       name: { type: String },
       description: { type: String },
       certificate_type: { type: String },

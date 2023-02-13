@@ -93,15 +93,24 @@ exports.getCertificateRequestPrivateData = async (req, res) => {
   try {
     const result = new Number(req.query.result);
     const start = new Number(req.query.start);
-
-    const user = await Account.find({ uuid: req.user.auth_id });
+    console.log(req.user.auth_id);
     const getRequest = await CertificateRequest.find({
-      user_id: user[0]._id,
-      updatedAt: { $gte: new Date() },
+      uuid: req.user.auth_id,
     })
       .skip(start)
-      .limit(result);
-
+      .limit(result)
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "user_id",
+        model: "accounts_infos",
+        select: ["_id", "profileLogo", "full_name", "profileUrl"],
+      })
+      .populate({
+        path: "organization_id",
+        model: "organizations",
+        select: ["_id", "organization_name"],
+      });
+    console.log(getRequest);
     Promise.all([getRequest]).then(() => {
       return res.json(getRequest);
     });
