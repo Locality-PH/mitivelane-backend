@@ -38,19 +38,19 @@ module.exports = (mongoose) => {
       ],
       victimsInvolve: [
         {
-          type: String,
+          type: Object,
           ref: "residents",
         },
       ],
       suspectsInvolve: [
         {
-          type: String,
+          type: Object,
           ref: "residents",
         },
       ],
       respondentsInvolve: [
         {
-          type: String,
+          type: Object,
           ref: "residents",
         },
       ],
