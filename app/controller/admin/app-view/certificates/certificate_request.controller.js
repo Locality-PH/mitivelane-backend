@@ -2,7 +2,13 @@ const db = require("../../../../models");
 const CertificateRequest = db.certificates_request;
 const Certificate = db.certificates;
 const Account = db.account;
-
+const Organization = db.organization;
+const OrganizationRequest = db.organization_request;
+const OrganizationMember = db.organizationMember;
+const Transporter = require("../../../../../nodemailerSetup");
+const handlebars = require("handlebars");
+const path = require("path");
+const fs = require("fs");
 var mongoose = require("mongoose");
 
 const pageSizeOptions = [5, 10, 20, 50, 100];
@@ -108,7 +114,7 @@ exports.getCertificateRequestPrivateData = async (req, res) => {
       .populate({
         path: "organization_id",
         model: "organizations",
-        select: ["_id", "organization_name"],
+        select: ["_id", "organization_name", "profile"],
       });
     console.log(getRequest);
     Promise.all([getRequest]).then(() => {
@@ -180,6 +186,66 @@ exports.updateCertificateRequest = async (req, res) => {
     if (!req.user) {
       return res.status(404).send({ Error: "something went wrong" });
     }
+
+    const organization = await Organization.findOne({
+      _id: req.body.organization_id,
+    });
+    const organizationMemberId = organization.organization_member[0];
+    const organizationMember = await OrganizationMember.findOne({
+      _id: organizationMemberId,
+    });
+    const ownerEmail = organizationMember.email;
+    const checkStatus = await CertificateRequest.find({
+      _id: { $in: req.body.certificate_requests_id },
+      organization_id: req.body.organization_id,
+    })
+      .select("_id, organization_id , cert_type , title , status ")
+      .populate({
+        path: "user_id",
+        model: "accounts_infos",
+        select: ["_id", "profileLogo", "full_name", "profileUrl", "email"],
+      })
+      .populate({
+        path: "organization_id",
+        model: "organizations",
+        select: ["_id", "organization_name", "profile"],
+      });
+
+    // to = user_id.full_name
+    // org organization_id.organization_name:
+    // status = req.body.status
+    // email = user_id.email
+    const filePath = path.join(
+      __dirname,
+      "../../../../templates/status/index.html"
+    );
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+    console.log(checkStatus[0]?.user_id);
+
+    const replacements = {
+      to: checkStatus[0]?.user_id.full_name,
+      status: req.body.status,
+      email: ownerEmail,
+      org: checkStatus[0]?.organization_id.organization_name,
+    };
+    const htmlToSend = template(replacements);
+
+    var mailOptions = {
+      to: req.body.email,
+      from: "testmitive@gmail.com",
+      subject: `You're Document Requested have been ${req.body.status}`,
+      html: htmlToSend,
+    };
+
+    if (checkStatus[0]?.status != req.body.status)
+      await Transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
     const updatedCertificate = await CertificateRequest.updateMany(
       {
         _id: { $in: req.body.certificate_requests_id },
