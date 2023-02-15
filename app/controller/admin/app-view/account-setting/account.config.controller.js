@@ -125,10 +125,11 @@ exports.getDetailsAll = async (req, res) => {
 exports.getDetails = async (req, res) => {
   try {
     const organization = await Account.find({ uuid: req.user.auth_id })
-      .select({ full_name: 2, profileUrl: 1, _id: 0 })
+      .select({ full_name: 3, profileUrl: 2, email: 1, _id: 0 })
       .limit(1);
     return res.json({
       full_name: organization[0].full_name,
+      email: organization[0].email,
       profile_url: organization[0].profileUrl.data,
     });
   } catch (error) {

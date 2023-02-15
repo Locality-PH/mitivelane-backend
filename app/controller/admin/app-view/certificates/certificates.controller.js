@@ -61,7 +61,7 @@ exports.getCertificate = async (req, res) => {
 
 exports.getCertificateAll = async (req, res) => {
   try {
-    const result = new Number(req.body.cert_type);
+    const result = new Number(req.query.result);
     const start = new Number(req.query.start);
     console.log(req.query.result);
     if (result || start)
@@ -78,10 +78,6 @@ exports.getCertificateAll = async (req, res) => {
   } catch (e) {
     res.json(e);
   }
-
-  //   const data = req.param;
-  //   await Certificate.find(data.id);
-  //   return res.json("get");
 };
 
 exports.getCertificateName = async (req, res) => {
@@ -94,8 +90,6 @@ exports.getCertificateName = async (req, res) => {
     })
       .select("_id, organization_id , cert_type , title , status ")
       .then((data) => {
-        //  console.log(data);
-
         return res.json(data);
       })
       .catch((_) => {
@@ -104,10 +98,6 @@ exports.getCertificateName = async (req, res) => {
   } catch (e) {
     res.json(e);
   }
-
-  //   const data = req.param;
-  //   await Certificate.find(data.id);
-  //   return res.json("get");
 };
 
 exports.updateCertificate = async (req, res) => {
@@ -115,7 +105,6 @@ exports.updateCertificate = async (req, res) => {
     if (!req.user) {
       return res.status(404).send({ Error: "something went wrong" });
     }
-
     const updatedCertificate = await Certificate.findOneAndUpdate(
       {
         _id: req.body.certificate_id,

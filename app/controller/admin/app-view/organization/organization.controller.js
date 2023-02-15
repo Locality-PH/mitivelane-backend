@@ -42,6 +42,21 @@ exports.getOrganization = async (req, res) => {
   }
 };
 
+exports.getOrganizationMembers = async (req, res) => {
+  try {
+    const organizationId = req.params.organization_id;
+    const organization = await Organization.findOne({
+      _id: organizationId,
+    }).populate("organization_member");
+
+    const organizationMembers = organization.organization_member
+
+    return res.json(organizationMembers);
+  } catch (error) {
+    return res.json([]);
+  }
+};
+
 exports.getOrganizationOwner = async (req, res) => {
   try {
     const organizationId = req.params.organization_id;

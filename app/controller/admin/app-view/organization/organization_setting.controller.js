@@ -408,7 +408,16 @@ exports.editOrganization = async (req, res) => {
         profile: {
           fileUrl: values.profile_url,
           fileType: values.mime_type
-        }
+        },
+        province: values.province,
+        municipality: values.municipality,
+        address: values.address,
+        country: values.country,
+        phone_number: values.phone_number,
+        website: values.website,
+        about: values.about,
+        mission: values.mission,
+        vision: values.vision,
       }
     );
 

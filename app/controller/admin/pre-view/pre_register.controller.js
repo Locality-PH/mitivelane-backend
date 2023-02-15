@@ -89,6 +89,11 @@ exports.createOrganization = async (req, res) => {
       province: req.body.province,
       municipality: req.body.municipality,
       address: req.body.address,
+      phone_number: req.body.phone_number,
+      website: req.body.website,
+      about: req.body.about,
+      mission: req.body.mission,
+      vision: req.body.vision,
     });
     await organization.save();
 

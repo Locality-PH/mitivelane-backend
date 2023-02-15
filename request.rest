@@ -220,9 +220,7 @@ Content-Type: application/json
      "address2": ""
 }
 
-###
-GET http://localhost:5000/api/cert-display/request/data?org=62a32a34d42d4982a908d40a&page=1&pageSize=20
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1NDA1MjA5LCJleHAiOjE2NzU1MDUyMDl9.Iwq57hjGhu4FCO4e_h9wTskmrbL1rvNakiO0Ws4i9bg
+
 
 ###
 GET http://localhost:5000/api/app//user/details/list/kwWXpExbfoTAVnQZQVeVqMzCRFP2
@@ -232,7 +230,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 ###
 GET http://localhost:5000/api/cert-display/request/data/type?org=62a32a34d42d4982a908d40a
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1ODE0MzY3LCJleHAiOjE2NzU5MTQzNjd9.8ebPKmzXWDSbhlKzAl2npiZuGPw05a0xEUmItWnTEfk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1OTk4MjY4LCJleHAiOjE2NzYwOTgyNjh9.FkayreHBmNicpY6ujKJwKR5KZuw_6ThjjdTIs_OdPuc
+
 
 
 
@@ -246,7 +245,8 @@ Content-Type: application/json
 ###
 POST http://localhost:5000/api/cert-display/request/data
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1ODE0MzY3LCJleHAiOjE2NzU5MTQzNjd9.8ebPKmzXWDSbhlKzAl2npiZuGPw05a0xEUmItWnTEfk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc2MDMxMTg0LCJleHAiOjE2NzYxMzExODR9.pvjCSKS1YUytfMDAzA_Ku-Dtx0hXFV4BI4JY8IJuy_I
+
 
 {    "address": "231312",
      "address2": "1232131",
@@ -264,13 +264,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 }
 
 ###
-POST http://localhost:5000/api/cert-display/request/data/1231
+POST http://localhost:5000/api/cert-display/request/data?org=62a32a3309e2e4fd143ef932
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1ODE0MzY3LCJleHAiOjE2NzU5MTQzNjd9.8ebPKmzXWDSbhlKzAl2npiZuGPw05a0xEUmItWnTEfk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc2MTY5NDcwLCJleHAiOjE2NzYyNjk0NzB9.WnRHftlOJs1d1UbmHTmqRgRnEH0SxI4OJo37117D65I
+
 
 {    "address": "231312",
      "address2": "1232131",
-     "certificate_type": "62c3a99aa00fc9aa6a9f59d6",
+     "certificate_type": "Indulgancy",
      "city": "123213121",
      "country": "DZ",
      "description": "2131",
@@ -281,4 +282,63 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
      "phoneNumber": "(123) 213-131",
      "postcode": "123",
      "paymentStatus": "walkin"
+   
+
+     
 }
+
+###
+POST http://localhost:3000/api/cert-display/request/data/kwWXpExbfoTAVnQZQVeVqMzCRFP2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1OTk3NjYyLCJleHAiOjE2NzYwOTc2NjJ9.9z15FtbdoT-VJQrWqnc3iSZ_yXFgvDC_NHStjaUVO_I
+
+{
+
+     "certificate_requests_id": "63e329607a7794a67e4a42e9",
+     "issuer": "mastercard",
+     "organization_id": "62a32a3309e2e4fd143ef932",
+     "status": "pending",
+     "user_id": "kwWXpExbfoTAVnQZQVeVqMzCRFP2",
+     "attach_file" : [{
+          "name": "5pnpd5.jpg",
+          "status": "done",
+          "uid": 1,
+          "url": "https://firebasestorage.googleapis.com/v0/b/barangay-dev.appspot.com/o/file%2F1675997660793-5pnpd5.jpg?alt=media&token=123f8acc-a4bc-409e-9f82-7ae11a623300"}
+          ,{
+          "name": "5pnpd5.jpg",
+          "status": "done",
+          "uid": 1,
+          "url": "https://firebasestorage.googleapis.com/v0/b/barangay-dev.appspot.com/o/file%2F1675997660793-5pnpd5.jpg?alt=media&token=123f8acc-a4bc-409e-9f82-7ae11a623300"}
+                    ]
+}
+
+###
+GET http://localhost:5000/api/cert-display/request/data?org=62a32a3309e2e4fd143ef932&page=0&pageSize=5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc1OTk3NjYyLCJleHAiOjE2NzYwOTc2NjJ9.9z15FtbdoT-VJQrWqnc3iSZ_yXFgvDC_NHStjaUVO_I
+
+###
+GET http://localhost:5000/api/cert-display/request/data?org=62a32a3309e2e4fd143ef932&page=0&pageSize=10&search=&archive=false
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc2MTY5NDcwLCJleHAiOjE2NzYyNjk0NzB9.WnRHftlOJs1d1UbmHTmqRgRnEH0SxI4OJo37117D65I
+
+###
+POST http://localhost:3000/api/cert-display/request/data/kwWXpExbfoTAVnQZQVeVqMzCRFP2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc2MTY5NDcwLCJleHAiOjE2NzYyNjk0NzB9.WnRHftlOJs1d1UbmHTmqRgRnEH0SxI4OJo37117D65I
+
+{
+
+     "certificate_requests_id": ["63e645e6f1f32eedc35dc74b","63e64847e69f21149f7aa8d3"],
+     "issuer": "mastercard",
+     "organization_id": "62a32a3309e2e4fd143ef932",
+     "status": "pending"
+  
+}
+
+###
+GET http://localhost:5000/api/app/users/kwWXpExbfoTAVnQZQVeVqMzCRFP2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc2MDg5NTYxLCJleHAiOjE2NzYxODk1NjF9.-jGw9jgCsiK7UgYL_ajhPXCrxRKLarEKP0VLPe2StKA
+
+###
+GET http://localhost:5000/api/cert-display/request/data/user?result=6&start=0
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc2MTc1OTA1LCJleHAiOjE2NzYyNzU5MDV9.IrbalWguAal9QUgDzP0fQLAN_rVA4QnKGcyiNNO75vM
