@@ -2,9 +2,9 @@ module.exports = (mongoose) => {
     var campaignSchema = mongoose.Schema(
         {
             _id: { type: mongoose.Schema.Types.ObjectId },
-            name: { type: String },
+            title: { type: String },
             category: { type: String },
-            description: { type: String },
+            description: { type: Object },
             status: { type: String },
             starting_date: { type: Date },
             likes: [{
@@ -15,10 +15,10 @@ module.exports = (mongoose) => {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "accounts_infos",
             }],
-            image_url: {
+            images: [{
                 data: String,
                 contentType: String,
-            },
+            }],
             sender: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "accounts_infos",
