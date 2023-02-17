@@ -17,6 +17,7 @@ module.exports = (mongoose) => {
             }],
             images: [{
                 data: String,
+                name: String,
                 contentType: String,
             }],
             sender: {
