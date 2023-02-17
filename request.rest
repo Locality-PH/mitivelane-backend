@@ -342,3 +342,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 GET http://localhost:5000/api/cert-display/request/data/user?result=6&start=0
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzMwOWUyZTRmZDE0M2VmOTMyIiwiaWF0IjoxNjc2MTc1OTA1LCJleHAiOjE2NzYyNzU5MDV9.IrbalWguAal9QUgDzP0fQLAN_rVA4QnKGcyiNNO75vM
+
+
+###
+GET http://localhost:5000/api/organization/get-all-organizations?q=Barangay%20San%20Juan&start=0&result=4
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzY1MTI3ODcsImV4cCI6MTY3NjYxMjc4N30.h8nK-gj3NSPiErNqdB072Fm1LXVsQD782FUsqX7y_Ho
