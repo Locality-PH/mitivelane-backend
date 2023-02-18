@@ -3,6 +3,7 @@ var mongoose = require("mongoose");
 var moment = require('moment');
 
 const Campaign = db.campaign;
+const Account = db.account;
 
 exports.getCampaigns = async (req, res) => {
   var organization_id = req.body.organization_id;
@@ -26,13 +27,19 @@ exports.getCampaignPage = async (req, res) => {
     var organization_id = values.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
 
-    var sorter = null
+    var sorter = { status: "ascending"}
     var filter = { organization_id: organization_id }
+
+    if (values.hasOwnProperty('status') != false) {
+      filter.status = values.status
+    }
 
     await Campaign.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
+      .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
+      .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
       .sort(sorter)
       .then(async (result) => {
         var list = result
@@ -47,7 +54,6 @@ exports.getCampaignPage = async (req, res) => {
               return temp._doc
             })
 
-            console.log("newList", newList)
             res.json({ list: newList, total });
           });
       })
@@ -78,9 +84,24 @@ exports.addCampaign = async (req, res) => {
   var newCampaignData = req.body.values
   newCampaignData._id = new mongoose.Types.ObjectId();
 
+  var hasPublisher = newCampaignData.hasOwnProperty('suggestor')
+  var hasSuggestor = newCampaignData.hasOwnProperty('publisher')
+
+  if (!hasPublisher || !hasSuggestor) {
+
+    const userAuthId = req.user.auth_id
+    const user = await Account.findOne({ uuid: userAuthId }, "_id")
+    const id = user._id
+
+    if (!hasPublisher) newCampaignData.publisher = id
+    if (!hasSuggestor) newCampaignData.suggestor = id
+
+  }
+
   try {
     const newCampaign = new Campaign(newCampaignData);
     await newCampaign.save();
+    console.log("newCampaign", newCampaign)
     res.json(newCampaign);
   } catch (error) {
     console.log(error);
@@ -90,10 +111,10 @@ exports.addCampaign = async (req, res) => {
 
 exports.updateCampaign = async (req, res) => {
   var values = req.body.values
-  const newAreaData = values.newAreaData;
+  const _id = values.campaign_id;
 
   try {
-    await Campaign.updateOne({ _id: newAreaData.Campaign_id }, newAreaData)
+    await Campaign.updateOne({ _id }, values)
       .then(() => {
         res.json("updated");
       })
@@ -106,10 +127,12 @@ exports.updateCampaign = async (req, res) => {
 
 exports.deleteCampaign = async (req, res) => {
   var values = req.body.values
-  const selectedArray = values.selectedArray;
+  const deleteList = values.deleteList;
+
+  console.log("delete values", values)
 
   try {
-    await Campaign.deleteMany({ _id: selectedArray })
+    await Campaign.deleteMany({ _id: deleteList })
       .then(() => {
         res.json("deleted");
       })

@@ -20,7 +20,7 @@ module.exports = (mongoose) => {
                 name: String,
                 contentType: String,
             }],
-            sender: {
+            suggestor: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "accounts_infos",
             },
