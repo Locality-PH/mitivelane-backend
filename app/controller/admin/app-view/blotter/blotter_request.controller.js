@@ -91,6 +91,9 @@ exports.getPendingBlotterRequest = async (req, res) => {
         suspects_id: value.suspects.map((value) => value._id),
         respondents_id: value.respondents.map((value) => value._id),
 
+        victimsInvolve: value.victimsInvolve,
+        suspectsInvolve: value.suspectsInvolve,
+        respondentsInvolve: value.respondentsInvolve,
         settlement_status: value.settlement_status,
         status: value.status,
         subject: value.subject,
@@ -154,6 +157,9 @@ exports.getBlotterRequest = async (req, res) => {
         suspects_id: value.suspects.map((value) => value._id),
         respondents_id: value.respondents.map((value) => value._id),
 
+        victimsInvolve: value.victimsInvolve,
+        suspectsInvolve: value.suspectsInvolve,
+        respondentsInvolve: value.respondentsInvolve,
         settlement_status: value.settlement_status,
         status: value.status,
         subject: value.subject,
@@ -228,3 +234,21 @@ exports.getLatestBlotterRequests = async (req, res) => {
     return res.json([]);
   }
 };
+
+// client
+exports.getBlotterRequestsClient = async (req, res) => {
+  const uuid = req.params.uuid;
+  const limit = 5;
+
+  try {
+    const blotterRequest = await BlotterRequest.find({
+      uuid: uuid,
+    })
+      .populate("reporters").populate("organization_id").sort({ createdAt: -1 });
+
+    return res.json(blotterRequest);
+  } catch (error) {
+    return res.json([]);
+  }
+};
+

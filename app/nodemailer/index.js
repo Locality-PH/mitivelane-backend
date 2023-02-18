@@ -7,7 +7,7 @@ exports.sendMail = async (data) => {
 	try {
 		const { template, replacements, from, to, subject } = data
 
-		const filePath = path.join(__dirname, template);
+		const filePath = path.join(__dirname, "../" + template);
 		const source = fs.readFileSync(filePath, 'utf-8').toString();
 		const templateCompile = handlebars.compile(source);
 
