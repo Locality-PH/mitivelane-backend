@@ -345,6 +345,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 
 
 ###
-GET http://localhost:5000/api/organization/get-all-organizations?q=Barangay%20San%20Juan&start=0&result=4
+GET http://localhost:5000/api/organization/get-all-organizations?q=Barangay%20San%20Juan&start=0&result=5
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzY1MTI3ODcsImV4cCI6MTY3NjYxMjc4N30.h8nK-gj3NSPiErNqdB072Fm1LXVsQD782FUsqX7y_Ho
+
+###
+GET http://localhost:5000/api/app/notification?start=0&result=100
+Content-Type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRWZ6U2xFUDJYNmNyVmptR3hrSDlSVXJuUzhuMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzY2OTk0ODgsImV4cCI6MTY3Njc5OTQ4OH0.0MLJltLnEfMr8zyKjtb9NtbgKKkPb-TV_8NGfLvh6Nc
+
+###
+POST http://localhost:5000/api/app/notification/update
+Content-Type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRWZ6U2xFUDJYNmNyVmptR3hrSDlSVXJuUzhuMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzY2OTk0ODgsImV4cCI6MTY3Njc5OTQ4OH0.0MLJltLnEfMr8zyKjtb9NtbgKKkPb-TV_8NGfLvh6Nc
+
+{
+     "notification_id": ["63f06c7c8f3090a89bfaee39"]
+}

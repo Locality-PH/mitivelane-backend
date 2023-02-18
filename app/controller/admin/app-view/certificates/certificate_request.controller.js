@@ -3,7 +3,7 @@ const CertificateRequest = db.certificates_request;
 const Certificate = db.certificates;
 const Account = db.account;
 const Organization = db.organization;
-const Notifications = db.notifications;
+const OrganizationNotifications = db.notifications;
 const OrganizationMember = db.organizationMember;
 const Transporter = require("../../../../../nodemailerSetup");
 const handlebars = require("handlebars");
@@ -210,6 +210,7 @@ exports.updateCertificateRequest = async (req, res) => {
         model: "organizations",
         select: ["_id", "organization_name", "profile"],
       });
+    console.log(checkStatus[0]?.organization_id._id);
 
     // to = user_id.full_name
     // org organization_id.organization_name:
@@ -221,7 +222,6 @@ exports.updateCertificateRequest = async (req, res) => {
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
-    console.log(checkStatus[0]?.user_id);
 
     const replacements = {
       to: checkStatus[0]?.user_id.full_name,
@@ -241,7 +241,19 @@ exports.updateCertificateRequest = async (req, res) => {
       html: htmlToSend,
     };
 
-    if (checkStatus[0]?.status != req.body.status)
+    if (checkStatus[0]?.status != req.body.status) {
+      const noti_id = new mongoose.Types.ObjectId();
+
+      const data = {
+        _id: noti_id,
+        organization_id: checkStatus[0]?.organization_id._id,
+        message: `You're Document Requested have been ${req.body.status}`,
+        user_id: req.body.user_id?._id,
+        uuid: req.body?.uuid,
+        is_read: false,
+      };
+      const notificationData = await new OrganizationNotifications(data);
+      notificationData.save();
       await Transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.log(error);
@@ -249,6 +261,7 @@ exports.updateCertificateRequest = async (req, res) => {
           console.log("Email sent: " + info.response);
         }
       });
+    }
     const updatedCertificate = await CertificateRequest.updateMany(
       {
         _id: { $in: req.body.certificate_requests_id },

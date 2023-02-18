@@ -4,6 +4,8 @@ module.exports = (mongoose) => {
       _id: { type: mongoose.Schema.Types.ObjectId },
       message: { type: String },
       user_id: { type: mongoose.Schema.Types.ObjectId, ref: "accounts_infos" },
+      uuid: { type: String },
+      is_read: { type: Boolean },
       organization_id: [
         { type: mongoose.Schema.Types.ObjectId, ref: "organizations" },
       ],

@@ -17,5 +17,7 @@ module.exports = (app) => {
   require("./admin/app-view/organization/organization.routes")(app);
   require("./admin/app-view/organization/organization_setting.routes")(app);
   require("./admin/app-view/session/session.routes")(app);
+  require("./admin/app-view/notifications/notifications.routes")(app);
+
   //   require("./app/routes/exercises.routes")(app);
 };
