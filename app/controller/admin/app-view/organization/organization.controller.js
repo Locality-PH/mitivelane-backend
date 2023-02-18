@@ -34,6 +34,16 @@ exports.getAllOrganizations = async (req, res) => {
   }
 };
 
+exports.getAllOrganizationsClient = async (req, res) => {
+  try {
+    const organization = await Organization.find({});
+
+    return res.json(organization);
+  } catch (error) {
+    return res.json([]);
+  }
+};
+
 exports.getLatestOrganizations = async (req, res) => {
   try {
     const organizations = await Organization.find({})

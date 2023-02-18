@@ -16,6 +16,12 @@ module.exports = (app) => {
   );
 
   router.get(
+    "/get-all-organizations-client",
+    auth.authenticationToken,
+    organization.getAllOrganizationsClient
+  );
+
+  router.get(
     "/get-organization/:organization_id",
     auth.authenticationToken,
     organization.getOrganization

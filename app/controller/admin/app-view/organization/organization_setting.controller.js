@@ -133,7 +133,7 @@ exports.addMember = async (req, res) => {
       newMember[i]._id = newMemberId;
 
       NodeMailer.sendMail({
-        template: "../templates/emails/email1/index.html",
+        template: "templates/emails/email1/index.html",
         replacements: {
           current_user_name: values.current_user_name,
           to: value.email,
