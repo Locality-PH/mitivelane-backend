@@ -53,4 +53,7 @@ db.certificates_request = require("./certificates/cert_request.model.js")(
   mongoose
 );
 
+//notifications
+db.notifications = require("./notification/organization_notification.model.js");
+
 module.exports = db;
