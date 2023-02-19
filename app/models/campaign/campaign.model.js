@@ -28,7 +28,7 @@ module.exports = (mongoose) => {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "accounts_infos",
             },
-            organization_id: {
+            organization: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "organizations",
             },
