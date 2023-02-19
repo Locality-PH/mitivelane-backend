@@ -362,3 +362,12 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiRWZ6U
 {
      "notification_id": ["63f06c7c8f3090a89bfaee39"]
 }
+
+###
+POST http://localhost:5000/api/analytic/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzRkNDJkNDk4MmE5MDhkNDBhIiwiaWF0IjoxNjc2Nzc0MTA1LCJleHAiOjE2NzY4NzQxMDV9.ZSXtRcNw5SHErIb4iP1CfOSM7ZBFzeXZHUuH39VXr8Y
+
+{
+     "duration": ["63f06c7c8f3090a89bfaee39"]
+}

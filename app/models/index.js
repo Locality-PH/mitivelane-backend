@@ -66,5 +66,9 @@ db.certificates_request = require("./certificates/cert_request.model.js")(
 db.notifications = require("./notification/organization_notification.model.js")(
   mongoose
 );
+//Analytic
+db.session_duration = require("./analytic/session_duration.model.js")(mongoose);
+db.visitor = require("./analytic/visitor.model.js")(mongoose);
+db.analytics = require("./analytic/analytic.model.js")(mongoose);
 
 module.exports = db;
