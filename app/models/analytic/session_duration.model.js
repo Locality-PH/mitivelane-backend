@@ -3,12 +3,11 @@ module.exports = (mongoose) => {
     {
       _id: { type: mongoose.Schema.Types.ObjectId },
       duration: { type: Number },
-      organization_id: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "organizations",
-        },
-      ],
+      uuid: { type: String },
+      organization_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "organizations",
+      },
     },
     { timestamps: true }
   );

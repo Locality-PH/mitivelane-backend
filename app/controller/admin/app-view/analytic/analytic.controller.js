@@ -11,30 +11,30 @@ exports.createAnalytic = async (req, res) => {
   const analytic_id = mongoose.Types.ObjectId();
   const visitor_id = mongoose.Types.ObjectId();
   const session_duration_id = mongoose.Types.ObjectId();
-
+  console.log(req.body);
   const sessionDuration = await SessionDuration({
-    duration: req.body.session_duration,
+    duration: req.body.duration,
     _id: session_duration_id,
     organization_id: req.body.organization_id,
+    uuid: req.user.auth_id,
   });
   sessionDuration.save();
-  const visitor = await Visitor({
-    view: req.body.view,
-    _id: visitor_id,
-    organization_id: req.body.organization_id,
-  });
-  visitor.save();
-  const analytic = await Analytic({
-    view: req.body.view,
-    _id: visitor_id,
-    organization_id: req.body.organization_id,
-    session_duration_id: session_duration_id,
-    visitor_id: visitor_id,
-  });
-  analytic.save();
 
-  Promise.all([sessionDuration, visitor, analytic]).then(() => {
+  Promise.all([sessionDuration]).then(() => {
     res.json("success");
+  });
+  //console.log(req.params.organization_id);
+};
+exports.getAnalytic = async (req, res) => {
+  const now = new Date();
+  const twelveDaysAgo = new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000);
+
+  const getData = await SessionDuration.find({
+    organization_id: req.user.auth_organization,
+    createdAt: { $gte: twelveDaysAgo },
+  }).sort({ createdAt: -1 });
+  Promise.all([getData]).then(() => {
+    res.json(getData);
   });
   //console.log(req.params.organization_id);
 };

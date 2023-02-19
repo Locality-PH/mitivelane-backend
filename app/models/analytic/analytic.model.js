@@ -8,12 +8,11 @@ module.exports = (mongoose) => {
           ref: "visitors",
         },
       ],
-      organization_id: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "organizations",
-        },
-      ],
+      organization_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "organizations",
+      },
+
       session_duration_id: [
         {
           type: mongoose.Schema.Types.ObjectId,

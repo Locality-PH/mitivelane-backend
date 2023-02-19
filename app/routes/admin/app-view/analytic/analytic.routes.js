@@ -8,6 +8,6 @@ module.exports = (app) => {
     auth.authenticationToken,
     analyticController.createAnalytic
   );
-
+  router.get("/data", auth.authenticationToken, analyticController.getAnalytic);
   app.use("/api/analytic", router);
 };
