@@ -27,7 +27,7 @@ exports.getCampaignPage = async (req, res) => {
     var organization_id = values.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
 
-    var sorter = { status: "ascending"}
+    var sorter = { status: "ascending" }
     var filter = { organization_id: organization_id }
 
     if (values.hasOwnProperty('status') != false) {
@@ -40,6 +40,7 @@ exports.getCampaignPage = async (req, res) => {
       .collation({ locale: "en" })
       .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
       .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
+      .populate("organization", ["organization_name"])
       .sort(sorter)
       .then(async (result) => {
         var list = result
@@ -64,14 +65,50 @@ exports.getCampaignPage = async (req, res) => {
   }
 };
 
+exports.getLatestCampaigns = async (req, res) => {
+  const page = req.query.page - 1
+  const pageSize = req.query.pageSize
+  const sorter = "-createdAt"
+
+  try {
+    const Campaigns = await Campaign
+      .find({})
+      .skip(page * pageSize)
+      .limit(pageSize)
+      .collation({ locale: "en" })
+      .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
+      .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
+      .populate("organization", ["organization_name"])
+      .sort(sorter)
+    res.json(Campaigns);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
+};
+
+exports.getTrendingCampaigns = async (req, res) => {
+  console.log("connected to trending api")
+  res.json("test")
+};
+
+exports.getSearchCampaigns = async (req, res) => {
+  console.log("connected to search api")
+  res.json("test")
+};
+
 exports.getCampaign = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
     const campaign_id = req.body.campaign_id;
-    const campaign = await Campaign.findOne({
-      organization_id: organization_id,
-      _id: campaign_id,
-    })
+    const campaign = await Campaign
+      .findOne({
+        organization_id: organization_id,
+        _id: campaign_id,
+      })
+      .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
+      .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
+      .populate("organization", ["organization_name"])
     res.json(campaign);
   } catch (error) {
     console.log(error);

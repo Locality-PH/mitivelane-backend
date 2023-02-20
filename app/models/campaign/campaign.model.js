@@ -4,7 +4,7 @@ module.exports = (mongoose) => {
             _id: { type: mongoose.Schema.Types.ObjectId },
             title: { type: String },
             category: { type: String },
-            description: { type: Object },
+            description: { type: String },
             status: { type: String },
             starting_date: { type: Date },
             likes: [{
@@ -28,7 +28,7 @@ module.exports = (mongoose) => {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "accounts_infos",
             },
-            organization_id: {
+            organization: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "organizations",
             },

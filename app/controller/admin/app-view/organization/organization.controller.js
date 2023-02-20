@@ -45,10 +45,11 @@ exports.getAllOrganizationsClient = async (req, res) => {
 };
 
 exports.getLatestOrganizations = async (req, res) => {
+  var length = req.query.length
   try {
     const organizations = await Organization.find({})
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(length);
     // .populate("reporters");
 
     return res.json(organizations);
