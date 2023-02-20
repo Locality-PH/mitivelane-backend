@@ -8,8 +8,6 @@ var mongoose = require("mongoose");
 const Account = db.account;
 
 exports.createAnalytic = async (req, res) => {
-  const analytic_id = mongoose.Types.ObjectId();
-  const visitor_id = mongoose.Types.ObjectId();
   const session_duration_id = mongoose.Types.ObjectId();
   console.log(req.body);
   const sessionDuration = await SessionDuration({

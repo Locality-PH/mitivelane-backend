@@ -379,3 +379,17 @@ Content-Type: application/json
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzRkNDJkNDk4MmE5MDhkNDBhIiwiaWF0IjoxNjc2Nzc3NzA3LCJleHAiOjE2NzY4Nzc3MDd9.0dcQTPqldGViQWgIx-ZXg33djLBq1SIScPZBVCxcXEI
 
 
+###
+GET http://localhost:5000/api/campaign/search?q=&start=0&result=100
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzRkNDJkNDk4MmE5MDhkNDBhIiwiaWF0IjoxNjc2ODk5NzA3LCJleHAiOjE2NzY5OTk3MDd9.kRfVXd-j_5Fwj96pKPLNusElGNWF_sPlBeaA9RaCo_w
+
+
+###
+POST http://localhost:5000/api/campaign/getAll?q=&start=0&result=5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzRkNDJkNDk4MmE5MDhkNDBhIiwiaWF0IjoxNjc2ODk5NzA3LCJleHAiOjE2NzY5OTk3MDd9.kRfVXd-j_5Fwj96pKPLNusElGNWF_sPlBeaA9RaCo_w
+
+{
+     "organization_id": "62a32a3309e2e4fd143ef932"
+}
