@@ -28,6 +28,18 @@ module.exports = (app) => {
   );
 
   router.get(
+    "/get-organization-client/:organization_id/:uuid",
+    auth.authenticationToken,
+    organization.getOrganizationClient
+  );
+
+  router.get(
+    "/get-user-following/:uuid",
+    auth.authenticationToken,
+    organization.getUserFollowing
+  );
+
+  router.get(
     "/get-organization-members/:organization_id",
     auth.authenticationToken,
     organization.getOrganizationMembers
@@ -37,6 +49,18 @@ module.exports = (app) => {
     "/get-organization-owner/:organization_id/:uuid",
     auth.authenticationToken,
     organization.getOrganizationOwner
+  );
+
+  router.post(
+    "/follow",
+    auth.authenticationToken,
+    organization.follow
+  );
+
+  router.post(
+    "/unfollow",
+    auth.authenticationToken,
+    organization.unfollow
   );
 
   app.use("/api/organization", router);
