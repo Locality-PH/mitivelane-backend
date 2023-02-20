@@ -40,7 +40,7 @@ exports.getCampaignPage = async (req, res) => {
       .collation({ locale: "en" })
       .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
       .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
-      .populate("organization", ["organization_name"])
+      .populate("organization", ["organization_name", "profile"])
       .sort(sorter)
       .then(async (result) => {
         var list = result
@@ -70,15 +70,40 @@ exports.getLatestCampaigns = async (req, res) => {
   const pageSize = req.query.pageSize
   const sorter = "-createdAt"
 
+  const landingPage = req.query.landingPage
+  var filter = {}
+
+  console.log("req.query", req.query)
+
+  switch (landingPage) {
+    case "homepage":
+      filter = { status: "Approved" }
+      break;
+
+    case "suggestion":
+      const userAuthId = req.user.auth_id
+      const user = await Account.findOne({ uuid: userAuthId }, "_id")
+      const userId = user._id
+      filter = { suggestor : userId }
+      break;
+
+    case "barangay":
+      var orgId = req.query.orgId
+      filter = { organization: orgId}
+      break;
+    default:
+      break;
+  }
+
   try {
     const Campaigns = await Campaign
-      .find({})
+      .find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
       .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
       .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
-      .populate("organization", ["organization_name"])
+      .populate("organization", ["organization_name", "profile"])
       .sort(sorter)
     res.json(Campaigns);
   } catch (error) {
@@ -108,7 +133,7 @@ exports.getCampaign = async (req, res) => {
       })
       .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
       .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
-      .populate("organization", ["organization_name"])
+      .populate("organization", ["organization_name", "profile"])
     res.json(campaign);
   } catch (error) {
     console.log(error);
@@ -121,8 +146,8 @@ exports.addCampaign = async (req, res) => {
   var newCampaignData = req.body.values
   newCampaignData._id = new mongoose.Types.ObjectId();
 
-  var hasPublisher = newCampaignData.hasOwnProperty('suggestor')
-  var hasSuggestor = newCampaignData.hasOwnProperty('publisher')
+  var hasPublisher = newCampaignData.hasOwnProperty('publisher')
+  var hasSuggestor = newCampaignData.hasOwnProperty('suggestor')
 
   if (!hasPublisher || !hasSuggestor) {
 
@@ -146,9 +171,49 @@ exports.addCampaign = async (req, res) => {
   }
 };
 
+exports.addCampaignSuggestion = async (req, res) => {
+  console.log("req.body", req.body)
+  var newCampaignData = req.body.values
+  newCampaignData._id = new mongoose.Types.ObjectId();
+  newCampaignData.organization = newCampaignData.organization_id
+
+  const userAuthId = req.user.auth_id
+  const user = await Account.findOne({ uuid: userAuthId }, "_id")
+  const userId = user._id
+  newCampaignData.suggestor = userId
+
+  console.log("newCampaignData", newCampaignData)
+
+  try {
+    const newCampaign = new Campaign(newCampaignData);
+    await newCampaign.save();
+    res.json(newCampaign);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
+};
+
 exports.updateCampaign = async (req, res) => {
   var values = req.body.values
   const _id = values.campaign_id;
+
+  var hasPublisher = values.hasOwnProperty('publisher')
+  var hasSuggestor = values.hasOwnProperty('suggestor')
+
+  console.log("hasPublisher", hasPublisher)
+  console.log("hasSuggestor", hasSuggestor)
+
+  if (!hasPublisher || !hasSuggestor) {
+
+    const userAuthId = req.user.auth_id
+    const user = await Account.findOne({ uuid: userAuthId }, "_id")
+    const id = user._id
+
+    if (!hasPublisher) values.publisher = id
+    if (!hasSuggestor) values.suggestor = id
+
+  }
 
   try {
     await Campaign.updateOne({ _id }, values)

@@ -9,6 +9,7 @@ module.exports = (app) => {
     router.get("/latest", auth.authenticationToken, campaignController.getLatestCampaigns);
     router.get("/trending", auth.authenticationToken, campaignController.getTrendingCampaigns);
     router.post("/add", auth.authenticationToken, campaignController.addCampaign);
+    router.post("/add-suggestion", auth.authenticationToken, campaignController.addCampaignSuggestion);
     router.post("/delete", auth.authenticationToken, campaignController.deleteCampaign);
     router.post("/update", auth.authenticationToken, campaignController.updateCampaign);
 
