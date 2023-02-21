@@ -6,15 +6,15 @@ const Campaign = db.campaign;
 const Account = db.account;
 
 exports.getCampaigns = async (req, res) => {
-  var organization_id = req.body.organization_id;
-  organization_id = mongoose.Types.ObjectId(organization_id);
-
   try {
-    const Campaigns = await Campaign.find({ organization_id });
-    res.json(Campaigns);
+    const campaigns = await Campaign.find({status: "Approved"})
+	.populate("publisher")
+	.sort({ likeCounter: -1 })
+
+    res.json(campaigns);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ error: "error" });
+     res.json([]);
   }
 };
 
@@ -130,8 +130,18 @@ exports.getLatestCampaigns = async (req, res) => {
 };
 
 exports.getTrendingCampaigns = async (req, res) => {
-  console.log("connected to trending api");
-  res.json("test");
+  var length = req.query.length
+	
+  try {
+    const campaign = await Campaign.find({status: "Approved"})
+	.populate("publisher")
+	.sort({ likeCounter: -1 })
+	.limit(length)
+	
+    return res.json(campaign);
+  } catch (error) {
+    return res.json([]);
+  }
 };
 
 exports.getSearchCampaigns = async (req, res) => {

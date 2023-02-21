@@ -3,7 +3,7 @@ module.exports = (app) => {
     const auth = require("../../../../auth");
     var router = require("express").Router();
 
-    router.post("/getAll", auth.authenticationToken, campaignController.getCampaigns);
+    router.get("/getAll", auth.authenticationToken, campaignController.getCampaigns);
     router.post("/get", auth.authenticationToken, campaignController.getCampaign);
     router.post("/page", auth.authenticationToken, campaignController.getCampaignPage);
     router.get("/latest", auth.authenticationToken, campaignController.getLatestCampaigns);
