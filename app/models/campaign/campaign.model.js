@@ -7,6 +7,8 @@ module.exports = (mongoose) => {
             description: { type: String },
             status: { type: String },
             starting_date: { type: Date },
+            likeCounter: { type: Number },
+            participantCounter: { type: Number },
             likes: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "accounts_infos",
