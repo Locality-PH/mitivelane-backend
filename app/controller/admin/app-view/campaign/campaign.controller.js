@@ -43,12 +43,14 @@ exports.getCampaignPage = async (req, res) => {
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("publisher", [
         "first_name",
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("organization", ["organization_name", "profile"])
       .sort(sorter)
@@ -81,7 +83,11 @@ exports.getLatestCampaigns = async (req, res) => {
   const landingPage = req.query.landingPage;
   var filter = {};
 
-  console.log("req.query", req.query);
+  var userAuthId = req.user.auth_id
+  var user = await Account.findOne({ uuid: userAuthId }, "_id")
+  var userId = user._id
+
+  console.log("req.query", req.query)
 
   switch (landingPage) {
     case "homepage":
@@ -89,22 +95,20 @@ exports.getLatestCampaigns = async (req, res) => {
       break;
 
     case "suggestion":
-      const userAuthId = req.user.auth_id;
-      const user = await Account.findOne({ uuid: userAuthId }, "_id");
-      const userId = user._id;
-      filter = { suggestor: userId };
+      filter = { suggestor: userId }
       break;
 
     case "barangay":
-      var orgId = req.query.orgId;
-      filter = { organization: orgId };
+      var orgId = req.query.orgId
+      filter = { organization: orgId }
       break;
     default:
       break;
   }
 
   try {
-    const Campaigns = await Campaign.find(filter)
+    await Campaign
+      .find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
@@ -113,16 +117,29 @@ exports.getLatestCampaigns = async (req, res) => {
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("publisher", [
         "first_name",
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("organization", ["organization_name", "profile"])
-      .sort(sorter);
-    res.json(Campaigns);
+      .sort(sorter)
+      .then((result) => {
+        var newResults = result.map((data) => {
+          var temp = Object.assign({}, data);
+          // temp._doc.starting_date = moment(new Date(data.starting_date))
+          temp._doc.isLike = data.likes.includes(userId)
+          temp._doc.isParticipant = data.participants.includes(userId)
+          temp._doc.userId = userId
+          return temp._doc;
+        });
+
+        res.json(newResults)
+      })
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
@@ -143,6 +160,19 @@ exports.getTrendingCampaigns = async (req, res) => {
     return res.json([]);
   }
 };
+
+exports.getCampaignUserId = async (req, res) => {
+  try {
+    const userAuthId = req.user.auth_id
+    const user = await Account.findOne({ uuid: userAuthId }, "_id")
+    const userId = user._id
+    res.json(userId)
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
+};
+
 
 exports.getSearchCampaigns = async (req, res) => {
   const result = new Number(req.query.result);
@@ -194,12 +224,14 @@ exports.getCampaign = async (req, res) => {
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("publisher", [
         "first_name",
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("organization", ["organization_name", "profile"]);
     res.json(campaign);
@@ -283,6 +315,49 @@ exports.updateCampaign = async (req, res) => {
     await Campaign.updateOne({ _id }, values).then(() => {
       res.json("updated");
     });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
+};
+
+exports.updateCampaignStatus = async (req, res) => {
+  var values = req.body.values;
+  var type = req.body.type
+  var operation = req.body.operation
+  var userId = req.body.userId
+  var _id = req.body.campaignId
+  // const _id = values.campaign_id;
+
+  console.log("updateCampaignStatus body", req.body)
+  console.log("userId", userId)
+
+  try {
+    if (type == "like") {
+      if (operation == "increment") {
+        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $addToSet: { likes: userId } })
+      }
+
+      if (operation == "decrement") {
+        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $pullAll: { likes: [userId] } })
+      }
+    }
+
+    if (type == "participant") {
+      if (operation == "increment") {
+        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $addToSet: { participants: userId } })
+      }
+
+      if (operation == "decrement") {
+        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $pullAll: { participants: [userId] } })
+      }
+    }
+
+    Promise.all([UpdateCampaignQuery])
+      .then((result) => {
+        res.json("updated");
+      })
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
