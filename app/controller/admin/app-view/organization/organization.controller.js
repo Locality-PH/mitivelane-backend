@@ -71,6 +71,45 @@ exports.getOrganization = async (req, res) => {
   }
 };
 
+exports.getOrganizationClient = async (req, res) => {
+  try {
+    const organizationId = req.params.organization_id;
+    const uuid = req.params.uuid;
+
+    const organization = await Organization.findOne({
+      _id: organizationId,
+    }).populate("organization_member")
+
+    const account = await Account.findOne({ uuid: uuid });
+
+    organization.followers.map((value, i) => {
+      if (value.toString() == account._id.toString()) {
+        return res.json(true);
+      }
+    })
+
+
+    return res.json(false);
+
+  } catch (error) {
+    console.log(error)
+    return res.json(false);
+  }
+};
+
+exports.getUserFollowing = async (req, res) => {
+  try {
+    const uuid = req.params.uuid;
+    const account = await Account.findOne({
+      uuid: uuid,
+    }).populate("follows");
+
+    return res.json(account);
+  } catch (error) {
+    return res.json([]);
+  }
+};
+
 exports.getOrganizationMembers = async (req, res) => {
   try {
     const organizationId = req.params.organization_id;
@@ -107,5 +146,36 @@ exports.getOrganizationOwner = async (req, res) => {
     }
   } catch (error) {
     return res.json(false);
+  }
+};
+
+exports.follow = async (req, res) => {
+  const values = req.body;
+
+  try {
+
+    const account = await Account.findOne({ uuid: values.uuid });
+
+    await Account.updateOne({ _id: account._id }, { $push: { follows: values.organization_id } })
+    await Organization.updateOne({ _id: values.organization_id }, { $push: { followers: account._id } })
+
+    return res.json("Success");
+  } catch (error) {
+    return res.json("Error");
+  }
+};
+
+exports.unfollow = async (req, res) => {
+  const values = req.body;
+
+  try {
+    const account = await Account.findOne({ uuid: values.uuid });
+
+    await Account.updateOne({ _id: account._id }, { $pull: { follows: values.organization_id } })
+    await Organization.updateOne({ _id: values.organization_id }, { $pull: { followers: account._id } })
+
+    return res.json("Success");
+  } catch (error) {
+    return res.json("Error");
   }
 };

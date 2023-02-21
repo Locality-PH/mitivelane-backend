@@ -16,6 +16,7 @@ module.exports = (mongoose) => {
       organization_status: { type: Boolean },
       organization_supply: { type: Number, default: 0 },
       organization_supply: { type: Number, default: 0 },
+      profile_color: { type: String },
       followers: [
         {
           type: mongoose.Schema.Types.ObjectId,
@@ -29,9 +30,9 @@ module.exports = (mongoose) => {
         },
       ],
       profile: {
-        "fileUrl": String,
-        "fileType": String,
-      }
+        fileUrl: String,
+        fileType: String,
+      },
     },
     { timestamps: true }
   );

@@ -233,10 +233,7 @@ exports.updateCertificateRequest = async (req, res) => {
 
     var mailOptions = {
       to: req.body.email,
-      from: {
-        address: "testmitivelane@gmail.com",
-        name: "Mitivelane Team",
-      },
+      from: "Mitivelane Team<testmitivelane@gmail.com>",
       subject: `You're Document Requested have been ${req.body.status}`,
       html: htmlToSend,
     };
