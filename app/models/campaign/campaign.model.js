@@ -7,15 +7,17 @@ module.exports = (mongoose) => {
             description: { type: String },
             status: { type: String },
             starting_date: { type: Date },
-            likeCounter: { type: Number },
-            participantCounter: { type: Number },
+            likeCounter: { type: Number, default: 0},
+            participantCounter: { type: Number, default: 0 },
             likes: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "accounts_infos",
+                default: []
             }],
             participants: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "accounts_infos",
+                default: []
             }],
             images: [{
                 data: String,
