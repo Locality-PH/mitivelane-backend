@@ -5,6 +5,16 @@ var moment = require("moment");
 const Campaign = db.campaign;
 const Account = db.account;
 
+const populatePeople = [
+  "first_name",
+  "last_name",
+  "profileLogo",
+  "profileUrl",
+  "email",
+]
+
+const populateOrg = ["organization_name", "profile", "address"]
+
 exports.getCampaigns = async (req, res) => {
   try {
     const campaigns = await Campaign.find({status: "Approved"})
@@ -38,21 +48,9 @@ exports.getCampaignPage = async (req, res) => {
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
-      .populate("suggestor", [
-        "first_name",
-        "last_name",
-        "profileLogo",
-        "profileUrl",
-        "email",
-      ])
-      .populate("publisher", [
-        "first_name",
-        "last_name",
-        "profileLogo",
-        "profileUrl",
-        "email",
-      ])
-      .populate("organization", ["organization_name", "profile"])
+      .populate("suggestor", populatePeople)
+      .populate("publisher", populatePeople)
+      .populate("organization", populateOrg)
       .sort(sorter)
       .then(async (result) => {
         var list = result;
@@ -87,7 +85,7 @@ exports.getLatestCampaigns = async (req, res) => {
   var user = await Account.findOne({ uuid: userAuthId }, "_id")
   var userId = user._id
 
-  console.log("req.query", req.query)
+  console.log("latest barangay req.query", req.query)
 
   switch (landingPage) {
     case "homepage":
@@ -112,21 +110,9 @@ exports.getLatestCampaigns = async (req, res) => {
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
-      .populate("suggestor", [
-        "first_name",
-        "last_name",
-        "profileLogo",
-        "profileUrl",
-        "email",
-      ])
-      .populate("publisher", [
-        "first_name",
-        "last_name",
-        "profileLogo",
-        "profileUrl",
-        "email",
-      ])
-      .populate("organization", ["organization_name", "profile"])
+      .populate("suggestor", )
+      .populate("publisher", populatePeople)
+      .populate("organization", populateOrg)
       .sort(sorter)
       .then((result) => {
         var newResults = result.map((data) => {
@@ -219,21 +205,9 @@ exports.getCampaign = async (req, res) => {
       organization_id: organization_id,
       _id: campaign_id,
     })
-      .populate("suggestor", [
-        "first_name",
-        "last_name",
-        "profileLogo",
-        "profileUrl",
-        "email",
-      ])
-      .populate("publisher", [
-        "first_name",
-        "last_name",
-        "profileLogo",
-        "profileUrl",
-        "email",
-      ])
-      .populate("organization", ["organization_name", "profile"]);
+      .populate("suggestor", populatePeople)
+      .populate("publisher", populatePeople)
+      .populate("organization", populateOrg);
     res.json(campaign);
   } catch (error) {
     console.log(error);
@@ -344,7 +318,7 @@ exports.updateCampaignStatus = async (req, res) => {
     }
 
     if (type == "participant") {
-      if (operation == "increment") {
+      if (operation == "increment") {populateOrg
         var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $addToSet: { participants: userId } })
       }
 
