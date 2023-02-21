@@ -38,7 +38,7 @@ exports.getCampaignPage = async (req, res) => {
     organization_id = mongoose.Types.ObjectId(organization_id);
 
     var sorter = { status: "ascending" };
-    var filter = { organization_id: organization_id };
+    var filter = { organization: organization_id };
 
     if (values.hasOwnProperty("status") != false) {
       filter.status = values.status;
@@ -98,7 +98,7 @@ exports.getLatestCampaigns = async (req, res) => {
 
     case "barangay":
       var orgId = req.query.orgId
-      filter = { organization: orgId }
+      filter = { organization: orgId, status: "Approved" }
       break;
     default:
       break;
