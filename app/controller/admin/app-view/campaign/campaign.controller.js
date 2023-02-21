@@ -71,6 +71,10 @@ exports.getLatestCampaigns = async (req, res) => {
   const landingPage = req.query.landingPage
   var filter = {}
 
+  var userAuthId = req.user.auth_id
+  var user = await Account.findOne({ uuid: userAuthId }, "_id")
+  var userId = user._id
+
   console.log("req.query", req.query)
 
   switch (landingPage) {
@@ -79,9 +83,6 @@ exports.getLatestCampaigns = async (req, res) => {
       break;
 
     case "suggestion":
-      const userAuthId = req.user.auth_id
-      const user = await Account.findOne({ uuid: userAuthId }, "_id")
-      const userId = user._id
       filter = { suggestor: userId }
       break;
 
@@ -94,7 +95,7 @@ exports.getLatestCampaigns = async (req, res) => {
   }
 
   try {
-    const Campaigns = await Campaign
+    await Campaign
       .find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
@@ -103,7 +104,18 @@ exports.getLatestCampaigns = async (req, res) => {
       .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
       .populate("organization", ["organization_name", "profile"])
       .sort(sorter)
-    res.json(Campaigns);
+      .then((result) => {
+        var newResults = result.map((data) => {
+          var temp = Object.assign({}, data);
+          temp._doc.starting_date = moment(new Date(data.starting_date))
+          temp._doc.isLike = data.likes.includes(userId)
+          temp._doc.isParticipant = data.participants.includes(userId)
+          temp._doc.userId = userId
+          return temp._doc;
+        });
+
+        res.json(newResults)
+      })
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
@@ -270,34 +282,35 @@ exports.updateCampaignStatus = async (req, res) => {
   var _id = req.body.campaignId
   // const _id = values.campaign_id;
 
-  console.log("updateCampaignStatus body", req.body )
+  console.log("updateCampaignStatus body", req.body)
+  console.log("userId", userId)
 
-  try { 
+  try {
     if (type == "like") {
       if (operation == "increment") {
-        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, {$set: values, $addToSet: {likes: userId}})
+        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $addToSet: { likes: userId } })
       }
 
       if (operation == "decrement") {
-        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, {$set: values, $pullAll: { likes: [userId] }})
+        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $pullAll: { likes: [userId] } })
       }
     }
 
     if (type == "participant") {
       if (operation == "increment") {
-        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, {$set: values, $addToSet: {participants: userId}})
+        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $addToSet: { participants: userId } })
       }
- 
+
       if (operation == "decrement") {
-        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, {$set: values,$pullAll: { participants: [userId] }})
+        var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $pullAll: { participants: [userId] } })
       }
     }
 
     Promise.all([UpdateCampaignQuery])
-    .then((result) => {
-      res.json("updated");
-    })
-    
+      .then((result) => {
+        res.json("updated");
+      })
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
