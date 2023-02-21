@@ -38,8 +38,18 @@ exports.getCampaignPage = async (req, res) => {
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
-      .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
-      .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
+      .populate("suggestor", [
+        "first_name",
+        "last_name",
+        "profileLogo",
+        "profileUrl",
+      ])
+      .populate("publisher", [
+        "first_name",
+        "last_name",
+        "profileLogo",
+        "profileUrl",
+      ])
       .populate("organization", ["organization_name", "profile"])
       .sort(sorter)
       .then(async (result) => {
@@ -68,41 +78,50 @@ exports.getLatestCampaigns = async (req, res) => {
   const pageSize = req.query.pageSize;
   const sorter = "-createdAt";
 
-  const landingPage = req.query.landingPage
-  var filter = {}
+  const landingPage = req.query.landingPage;
+  var filter = {};
 
-  console.log("req.query", req.query)
+  console.log("req.query", req.query);
 
   switch (landingPage) {
     case "homepage":
-      filter = { status: "Approved" }
+      filter = { status: "Approved" };
       break;
 
     case "suggestion":
-      const userAuthId = req.user.auth_id
-      const user = await Account.findOne({ uuid: userAuthId }, "_id")
-      const userId = user._id
-      filter = { suggestor : userId }
+      const userAuthId = req.user.auth_id;
+      const user = await Account.findOne({ uuid: userAuthId }, "_id");
+      const userId = user._id;
+      filter = { suggestor: userId };
       break;
 
     case "barangay":
-      var orgId = req.query.orgId
-      filter = { organization: orgId}
+      var orgId = req.query.orgId;
+      filter = { organization: orgId };
       break;
     default:
       break;
   }
 
   try {
-    const Campaigns = await Campaign
-      .find(filter)
+    const Campaigns = await Campaign.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
-      .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
-      .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
+      .populate("suggestor", [
+        "first_name",
+        "last_name",
+        "profileLogo",
+        "profileUrl",
+      ])
+      .populate("publisher", [
+        "first_name",
+        "last_name",
+        "profileLogo",
+        "profileUrl",
+      ])
       .populate("organization", ["organization_name", "profile"])
-      .sort(sorter)
+      .sort(sorter);
     res.json(Campaigns);
   } catch (error) {
     console.log(error);
@@ -124,9 +143,13 @@ exports.getSearchCampaigns = async (req, res) => {
     { category: { $regex: search, $options: "i" } },
     { description: { $regex: search, $options: "i" } },
     { status: { $regex: search, $options: "i" } },
+    { title: { $regex: search, $options: "i" } },
   ];
   try {
-    const Campaigns = await Campaign.find({ $or: filterSearch })
+    const Campaigns = await Campaign.find({
+      status: "Approved",
+      $or: filterSearch,
+    })
       .skip(start)
       .select(
         "_id, organization , description , starting_date , status , category , images , title"
@@ -136,7 +159,7 @@ exports.getSearchCampaigns = async (req, res) => {
       .populate({
         path: "organization",
         model: "organizations",
-        select: ["_id", "organization_name", "profile"],
+        select: ["_id", "organization_name", "profile", "address"],
       });
     // .then((res) => {
     //   console.log(res);
@@ -152,14 +175,23 @@ exports.getCampaign = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
     const campaign_id = req.body.campaign_id;
-    const campaign = await Campaign
-      .findOne({
-        organization_id: organization_id,
-        _id: campaign_id,
-      })
-      .populate("suggestor", ["first_name", "last_name", "profileLogo", "profileUrl"])
-      .populate("publisher", ["first_name", "last_name", "profileLogo", "profileUrl"])
-      .populate("organization", ["organization_name", "profile"])
+    const campaign = await Campaign.findOne({
+      organization_id: organization_id,
+      _id: campaign_id,
+    })
+      .populate("suggestor", [
+        "first_name",
+        "last_name",
+        "profileLogo",
+        "profileUrl",
+      ])
+      .populate("publisher", [
+        "first_name",
+        "last_name",
+        "profileLogo",
+        "profileUrl",
+      ])
+      .populate("organization", ["organization_name", "profile"]);
     res.json(campaign);
   } catch (error) {
     console.log(error);
@@ -172,8 +204,8 @@ exports.addCampaign = async (req, res) => {
   var newCampaignData = req.body.values;
   newCampaignData._id = new mongoose.Types.ObjectId();
 
-  var hasPublisher = newCampaignData.hasOwnProperty('publisher')
-  var hasSuggestor = newCampaignData.hasOwnProperty('suggestor')
+  var hasPublisher = newCampaignData.hasOwnProperty("publisher");
+  var hasSuggestor = newCampaignData.hasOwnProperty("suggestor");
 
   if (!hasPublisher || !hasSuggestor) {
     const userAuthId = req.user.auth_id;
@@ -196,17 +228,17 @@ exports.addCampaign = async (req, res) => {
 };
 
 exports.addCampaignSuggestion = async (req, res) => {
-  console.log("req.body", req.body)
-  var newCampaignData = req.body.values
+  console.log("req.body", req.body);
+  var newCampaignData = req.body.values;
   newCampaignData._id = new mongoose.Types.ObjectId();
-  newCampaignData.organization = newCampaignData.organization_id
+  newCampaignData.organization = newCampaignData.organization_id;
 
-  const userAuthId = req.user.auth_id
-  const user = await Account.findOne({ uuid: userAuthId }, "_id")
-  const userId = user._id
-  newCampaignData.suggestor = userId
+  const userAuthId = req.user.auth_id;
+  const user = await Account.findOne({ uuid: userAuthId }, "_id");
+  const userId = user._id;
+  newCampaignData.suggestor = userId;
 
-  console.log("newCampaignData", newCampaignData)
+  console.log("newCampaignData", newCampaignData);
 
   try {
     const newCampaign = new Campaign(newCampaignData);
@@ -222,21 +254,19 @@ exports.updateCampaign = async (req, res) => {
   var values = req.body.values;
   const _id = values.campaign_id;
 
-  var hasPublisher = values.hasOwnProperty('publisher')
-  var hasSuggestor = values.hasOwnProperty('suggestor')
+  var hasPublisher = values.hasOwnProperty("publisher");
+  var hasSuggestor = values.hasOwnProperty("suggestor");
 
-  console.log("hasPublisher", hasPublisher)
-  console.log("hasSuggestor", hasSuggestor)
+  console.log("hasPublisher", hasPublisher);
+  console.log("hasSuggestor", hasSuggestor);
 
   if (!hasPublisher || !hasSuggestor) {
+    const userAuthId = req.user.auth_id;
+    const user = await Account.findOne({ uuid: userAuthId }, "_id");
+    const id = user._id;
 
-    const userAuthId = req.user.auth_id
-    const user = await Account.findOne({ uuid: userAuthId }, "_id")
-    const id = user._id
-
-    if (!hasPublisher) values.publisher = id
-    if (!hasSuggestor) values.suggestor = id
-
+    if (!hasPublisher) values.publisher = id;
+    if (!hasSuggestor) values.suggestor = id;
   }
 
   try {
