@@ -43,12 +43,14 @@ exports.getCampaignPage = async (req, res) => {
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("publisher", [
         "first_name",
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("organization", ["organization_name", "profile"])
       .sort(sorter)
@@ -115,19 +117,21 @@ exports.getLatestCampaigns = async (req, res) => {
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("publisher", [
         "first_name",
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("organization", ["organization_name", "profile"])
       .sort(sorter)
       .then((result) => {
         var newResults = result.map((data) => {
           var temp = Object.assign({}, data);
-          temp._doc.starting_date = moment(new Date(data.starting_date))
+          // temp._doc.starting_date = moment(new Date(data.starting_date))
           temp._doc.isLike = data.likes.includes(userId)
           temp._doc.isParticipant = data.participants.includes(userId)
           temp._doc.userId = userId
@@ -210,12 +214,14 @@ exports.getCampaign = async (req, res) => {
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("publisher", [
         "first_name",
         "last_name",
         "profileLogo",
         "profileUrl",
+        "email",
       ])
       .populate("organization", ["organization_name", "profile"]);
     res.json(campaign);
