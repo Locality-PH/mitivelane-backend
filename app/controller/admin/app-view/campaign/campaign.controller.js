@@ -235,7 +235,7 @@ exports.addCampaign = async (req, res) => {
   try {
     const newCampaign = new Campaign(newCampaignData);
     await newCampaign.save();
-    console.log("newCampaign", newCampaign);
+    console.log("render read this: newCampaign", newCampaign);
     res.json(newCampaign);
   } catch (error) {
     console.log(error);
