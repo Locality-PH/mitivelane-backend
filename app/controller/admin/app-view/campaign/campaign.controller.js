@@ -17,14 +17,14 @@ const populateOrg = ["organization_name", "profile", "address"]
 
 exports.getCampaigns = async (req, res) => {
   try {
-    const campaigns = await Campaign.find({status: "Approved"})
-	.populate("publisher")
-	.sort({ likeCounter: -1 })
+    const campaigns = await Campaign.find({ status: "Approved" })
+      .populate("publisher")
+      .sort({ likeCounter: -1 })
 
     res.json(campaigns);
   } catch (error) {
     console.log(error);
-     res.json([]);
+    res.json([]);
   }
 };
 
@@ -100,6 +100,11 @@ exports.getLatestCampaigns = async (req, res) => {
       var orgId = req.query.orgId
       filter = { organization: orgId, status: "Approved" }
       break;
+
+      case "likes":
+        filter = { likes: userId, status: "Approved" }
+        break;
+
     default:
       break;
   }
@@ -110,7 +115,7 @@ exports.getLatestCampaigns = async (req, res) => {
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
-      .populate("suggestor", )
+      .populate("suggestor",)
       .populate("publisher", populatePeople)
       .populate("organization", populateOrg)
       .sort(sorter)
@@ -120,7 +125,6 @@ exports.getLatestCampaigns = async (req, res) => {
           // temp._doc.starting_date = moment(new Date(data.starting_date))
           temp._doc.isLike = data.likes.includes(userId)
           temp._doc.isParticipant = data.participants.includes(userId)
-          temp._doc.userId = userId
           return temp._doc;
         });
 
@@ -134,13 +138,13 @@ exports.getLatestCampaigns = async (req, res) => {
 
 exports.getTrendingCampaigns = async (req, res) => {
   var length = req.query.length
-	
+
   try {
-    const campaign = await Campaign.find({status: "Approved"})
-	.populate("publisher")
-	.sort({ likeCounter: -1 })
-	.limit(length)
-	
+    const campaign = await Campaign.find({ status: "Approved" })
+      .populate("publisher")
+      .sort({ likeCounter: -1 })
+      .limit(length)
+
     return res.json(campaign);
   } catch (error) {
     return res.json([]);
@@ -201,14 +205,27 @@ exports.getCampaign = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
     const campaign_id = req.body.campaign_id;
-    const campaign = await Campaign.findOne({
+
+    var userAuthId = req.user.auth_id
+    var user = await Account.findOne({ uuid: userAuthId }, "_id")
+    var userId = user._id
+
+    await Campaign.findOne({
       organization_id: organization_id,
       _id: campaign_id,
     })
       .populate("suggestor", populatePeople)
       .populate("publisher", populatePeople)
-      .populate("organization", populateOrg);
-    res.json(campaign);
+      .populate("organization", populateOrg)
+      .then((result) => {
+          var temp = Object.assign({}, result);
+          temp._doc.isLike = result.likes.includes(userId)
+          temp._doc.isParticipant = result.participants.includes(userId)
+          var newResult = temp._doc
+
+          res.json(newResult)
+
+      })
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: error });
@@ -273,9 +290,6 @@ exports.updateCampaign = async (req, res) => {
   var hasPublisher = values.hasOwnProperty("publisher");
   var hasSuggestor = values.hasOwnProperty("suggestor");
 
-  console.log("hasPublisher", hasPublisher);
-  console.log("hasSuggestor", hasSuggestor);
-
   if (!hasPublisher || !hasSuggestor) {
     const userAuthId = req.user.auth_id;
     const user = await Account.findOne({ uuid: userAuthId }, "_id");
@@ -299,12 +313,12 @@ exports.updateCampaignStatus = async (req, res) => {
   var values = req.body.values;
   var type = req.body.type
   var operation = req.body.operation
-  var userId = req.body.userId
   var _id = req.body.campaignId
   // const _id = values.campaign_id;
 
-  console.log("updateCampaignStatus body", req.body)
-  console.log("userId", userId)
+  var userAuthId = req.user.auth_id
+  var user = await Account.findOne({ uuid: userAuthId }, "_id")
+  var userId = user._id
 
   try {
     if (type == "like") {
@@ -318,7 +332,8 @@ exports.updateCampaignStatus = async (req, res) => {
     }
 
     if (type == "participant") {
-      if (operation == "increment") {populateOrg
+      if (operation == "increment") {
+        populateOrg
         var UpdateCampaignQuery = await Campaign.updateOne({ _id }, { $set: values, $addToSet: { participants: userId } })
       }
 
