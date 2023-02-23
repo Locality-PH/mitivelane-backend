@@ -63,6 +63,13 @@ module.exports = (app) => {
     organization.unfollow
   );
 
+  router.get(
+    "/get-followers/:organization_id",
+    auth.authenticationToken,
+    organization.getFollowers
+  );
+
+
   app.use("/api/organization", router);
 };
 

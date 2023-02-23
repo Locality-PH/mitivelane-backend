@@ -1,6 +1,7 @@
 const db = require("../../../../models");
 const Blotter = db.blotter;
 const BlotterRequest = db.blotter_request;
+const Account = db.account;
 var mongoose = require("mongoose");
 
 exports.requestBlotter = async (req, res) => {
@@ -65,11 +66,30 @@ exports.getPendingBlotterRequest = async (req, res) => {
 
     if (blotterRequest.length == 0) return res.json(finalValue);
 
+    var uuids = []
+
     blotterRequest.map((value, i) => {
+      uuids.push(value.uuid)
+    })
+
+    const account = await Account.find({ uuid: { $in: uuids } })
+
+    blotterRequest.map(async (value, index) => {
+      var accountData = {}
+
+      for (var i = 0; i < account.length; i++) {
+        if (account[i].uuid == value.uuid) {
+          accountData = account[i]
+          break
+        }
+
+      }
+
       finalValue.push({
         _id: value._id,
         organization_id: value.organization_id,
         blotter_id: value.blotter_id,
+        uuid: accountData,
         createdAt: value.createdAt,
 
         reporter_name:
@@ -106,11 +126,12 @@ exports.getPendingBlotterRequest = async (req, res) => {
         date_schedule: value.date_schedule,
       });
 
-      if (blotterRequest.length == i + 1) {
+      if (blotterRequest.length == index + 1) {
         return res.json(finalValue);
       }
     });
   } catch (error) {
+    console.log(error)
     return res.json([]);
   }
 };
@@ -131,11 +152,30 @@ exports.getBlotterRequest = async (req, res) => {
 
     if (blotterRequest.length == 0) return res.json(finalValue);
 
+    var uuids = []
+
     blotterRequest.map((value, i) => {
+      uuids.push(value.uuid)
+    })
+
+    const account = await Account.find({ uuid: { $in: uuids } })
+
+    blotterRequest.map((value, i) => {
+      var accountData = {}
+
+      for (var i = 0; i < account.length; i++) {
+        if (account[i].uuid == value.uuid) {
+          accountData = account[i]
+          break
+        }
+
+      }
+
       finalValue.push({
         _id: value._id,
         organization_id: value.organization_id,
         blotter_id: value.blotter_id,
+        uuid: accountData,
         createdAt: value.createdAt,
 
         reporter_name:

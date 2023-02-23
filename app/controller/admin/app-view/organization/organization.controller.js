@@ -179,3 +179,16 @@ exports.unfollow = async (req, res) => {
     return res.json("Error");
   }
 };
+
+exports.getFollowers = async (req, res) => {
+  const organizationId = req.params.organization_id;
+
+  try {
+    const organization = await Organization.findOne({ _id: organizationId })
+      .populate("followers");
+
+    return res.json(organization);
+  } catch (error) {
+    return res.json("Error");
+  }
+};
