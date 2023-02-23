@@ -11,6 +11,7 @@ const populatePeople = [
   "profileLogo",
   "profileUrl",
   "email",
+  "auth_id"
 ]
 
 const populateOrg = ["organization_name", "profile", "address"]
@@ -25,7 +26,7 @@ exports.getCampaigns = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json([]);
-  }
+  }populatePeople
 };
 
 exports.getCampaignPage = async (req, res) => {
@@ -145,7 +146,6 @@ exports.getTrendingCampaigns = async (req, res) => {
       .sort({ participantCounter: -1 })
       .limit(length)
 
-      console.log("campaign", campaign)
     return res.json(campaign);
   } catch (error) {
     return res.json([]);
