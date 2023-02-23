@@ -320,6 +320,7 @@ exports.updateCampaignStatus = async (req, res) => {
   var user = await Account.findOne({ uuid: userAuthId }, "_id")
   var userId = user._id
 
+  console.log("userId", userId)
   try {
     if (type == "like") {
       if (operation == "increment") {
@@ -344,6 +345,7 @@ exports.updateCampaignStatus = async (req, res) => {
 
     Promise.all([UpdateCampaignQuery])
       .then((result) => {
+        console.log("result", result)
         res.json("updated");
       })
 
