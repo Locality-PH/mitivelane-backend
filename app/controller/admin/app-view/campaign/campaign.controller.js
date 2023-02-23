@@ -19,7 +19,7 @@ exports.getCampaigns = async (req, res) => {
   try {
     const campaigns = await Campaign.find({ status: "Approved" })
       .populate("publisher")
-      .sort({ likeCounter: -1 })
+      .sort({ participantCounter: -1 })
 
     res.json(campaigns);
   } catch (error) {
@@ -142,9 +142,10 @@ exports.getTrendingCampaigns = async (req, res) => {
   try {
     const campaign = await Campaign.find({ status: "Approved" })
       .populate("publisher")
-      .sort({ likeCounter: -1 })
+      .sort({ participantCounter: -1 })
       .limit(length)
 
+      console.log("campaign", campaign)
     return res.json(campaign);
   } catch (error) {
     return res.json([]);
