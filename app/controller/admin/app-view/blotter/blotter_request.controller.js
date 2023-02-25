@@ -89,7 +89,8 @@ exports.getPendingBlotterRequest = async (req, res) => {
         _id: value._id,
         organization_id: value.organization_id,
         blotter_id: value.blotter_id,
-        uuid: accountData,
+        uuid: value.uuid,
+		user_data: accountData,
         createdAt: value.createdAt,
 
         reporter_name:
@@ -175,7 +176,8 @@ exports.getBlotterRequest = async (req, res) => {
         _id: value._id,
         organization_id: value.organization_id,
         blotter_id: value.blotter_id,
-        uuid: accountData,
+        uuid: value.uuid,
+		user_data: accountData,
         createdAt: value.createdAt,
 
         reporter_name:
