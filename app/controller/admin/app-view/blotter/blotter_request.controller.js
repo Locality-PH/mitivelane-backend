@@ -160,7 +160,7 @@ exports.getBlotterRequest = async (req, res) => {
 
     const account = await Account.find({ uuid: { $in: uuids } })
 
-    blotterRequest.map((value, i) => {
+    blotterRequest.map((value, index) => {
       var accountData = {}
 
       for (var i = 0; i < account.length; i++) {
@@ -212,7 +212,7 @@ exports.getBlotterRequest = async (req, res) => {
         date_schedule: value.date_schedule,
       });
 
-      if (blotterRequest.length == i + 1) {
+      if (blotterRequest.length == index + 1) {
         return res.json(finalValue);
       }
     });
