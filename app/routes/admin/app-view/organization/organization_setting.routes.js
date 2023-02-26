@@ -56,11 +56,17 @@ module.exports = (app) => {
     auth.authenticationToken,
     organizationSetting.getOrganizationRequest
   );
-  
+
   router.post(
     "/edit-organization",
     auth.authenticationToken,
     organizationSetting.editOrganization
+  );
+
+  router.post(
+    "/edit-member-role",
+    auth.authenticationToken,
+    organizationSetting.editMemberRole
   );
 
   // router.post(

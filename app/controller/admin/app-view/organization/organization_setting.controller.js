@@ -409,6 +409,23 @@ exports.editOrganization = async (req, res) => {
   }
 };
 
+exports.editMemberRole = async (req, res) => {
+  const values = req.body;
+
+  try {
+    await OrganizationRequest.updateOne(
+      { _id: values._id },
+      {
+        role: values.role
+      }
+    );
+
+    return res.json("Success");
+  } catch (error) {
+    return res.json("Error");
+  }
+};
+
 // exports.deleteOrganizationRequest = async (req, res) => {
 // 	const _id = req.body._id;
 
