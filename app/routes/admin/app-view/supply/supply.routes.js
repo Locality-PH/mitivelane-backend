@@ -62,5 +62,11 @@ module.exports = (app) => {
     supplyController.getSupplyInventory
   );
 
+  router.get(
+    "/getAll/:organization_id/:year",
+    auth.authenticationToken,
+    supplyController.getAllSupplyPerYear
+  );
+
   app.use("/api/supply", router);
 };

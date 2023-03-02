@@ -94,6 +94,10 @@ exports.getHouseholdPage = async (req, res) => {
         }
       }
 
+      if (dataFilter.type == "array_string") {
+        searchFilter = { ...searchFilter, [dataFilter.field]: { "$in" : dataFilter.value}}
+      }
+
     }
 
     //console.log("dataFilter", dataFilter)

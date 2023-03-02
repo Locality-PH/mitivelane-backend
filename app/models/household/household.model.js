@@ -7,7 +7,7 @@ module.exports = (mongoose) => {
       address: { type: String },
       purok: { type: String },
       house_status: { type: String },
-      family_planning: { type: String },
+      family_planning: [{ type: String }],
       ayuda: { type: String },
       water_source: { type: String },
       toilet_type: { type: String },
