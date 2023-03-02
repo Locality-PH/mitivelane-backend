@@ -3,7 +3,7 @@ module.exports = (app) => {
   const auth = require("../../../../auth");
   var router = require("express").Router();
   router.get(
-    "/:campaign_id/:organization_id",
+    "/:general_id/:organization_id",
     auth.authenticationToken,
     commentController.getComments
   );
@@ -16,6 +16,16 @@ module.exports = (app) => {
     "/delete",
     auth.authenticationToken,
     commentController.deleteComment
+  );
+  router.post(
+    "/reply",
+    auth.authenticationToken,
+    commentController.replyComment
+  );
+  router.post(
+    "/update",
+    auth.authenticationToken,
+    commentController.updateComment
   );
   app.use("/api/comment", router);
 };

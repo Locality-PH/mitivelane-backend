@@ -12,7 +12,7 @@ exports.getNotificationPrivateData = async (req, res) => {
     console.log(start, result);
     const getRequest = await Notifications.find({
       uuid: req.user.auth_id,
-      $and: [{ is_read: false }],
+      // $and: [{ is_read: false }],
     })
       .skip(start)
       .limit(result)

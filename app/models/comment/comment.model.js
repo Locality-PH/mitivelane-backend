@@ -4,8 +4,8 @@ module.exports = (mongoose) => {
       _id: { type: mongoose.Schema.Types.ObjectId },
       comId: { type: String },
       organization_id: { type: mongoose.Schema.Types.ObjectId },
-      campaign_id: { type: mongoose.Schema.Types.ObjectId },
-
+      general_id: { type: mongoose.Schema.Types.ObjectId },
+      parentOfRepliedCommentId: { type: String },
       text: { type: String },
       account: {
         type: mongoose.Schema.Types.ObjectId,

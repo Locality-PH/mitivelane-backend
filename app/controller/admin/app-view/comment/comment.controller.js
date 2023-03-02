@@ -7,10 +7,11 @@ const Account = db.account;
 exports.getComments = async (req, res) => {
   const result = new Number(req.query.result);
   const start = new Number(req.query.start);
-  console.log(req.params.campaign_id);
+  console.log(req.params.genera_id);
   const commentData = await Comment.find({
-    campaign_id: req.params.campaign_id,
+    general_id: req.params.general_id,
     organization_id: req.params.organization_id,
+    parentOfRepliedCommentId: { $exists: false },
   })
     .skip(start)
     .limit(result)
@@ -36,7 +37,7 @@ exports.getComments = async (req, res) => {
 exports.createComment = async (req, res) => {
   try {
     const id = new mongoose.Types.ObjectId();
-    const campaignId = new mongoose.Types.ObjectId(req.body.campaignId);
+    const generalId = new mongoose.Types.ObjectId(req.body.generalId);
     const orgId = new mongoose.Types.ObjectId(req.body.organizationId);
 
     const user = await Account.findOne({ uuid: req.user.auth_id }).select({
@@ -48,7 +49,7 @@ exports.createComment = async (req, res) => {
 
     const data = {
       _id: id,
-      campaign_id: campaignId,
+      general_id: generalId,
       replies: [],
       comId: req.body.comId,
       account: user?._id,
@@ -65,8 +66,54 @@ exports.createComment = async (req, res) => {
     return res.json(err);
   }
 };
-exports.replyComment = (req, res) => {
-  res.json("succes");
+exports.replyComment = async (req, res) => {
+  try {
+    const id = new mongoose.Types.ObjectId();
+    const generalId = new mongoose.Types.ObjectId(req.body.generalId);
+    const orgId = new mongoose.Types.ObjectId(req.body.organizationId);
+
+    const user = await Account.findOne({ uuid: req.user.auth_id }).select({
+      profileLogo: 1,
+      _id: 1, // include _id in the query results
+    });
+
+    console.log(user?._id);
+
+    const data = {
+      _id: id,
+      campaign_id: generalId,
+      replies: [],
+      comId: req.body.comId,
+      account: user?._id,
+      text: req.body.text,
+      organization_id: orgId,
+      parentOfRepliedCommentId:
+        req.body.parentOfRepliedCommentId || req.body.repliedToCommentId,
+    };
+    const comment = await new Comment(data);
+
+    comment.save();
+    const comment2 = await Comment.findOneAndUpdate(
+      {
+        comId: req.body.parentOfRepliedCommentId || req.body.repliedToCommentId,
+      },
+      {
+        $push: {
+          replies: {
+            _id: id,
+            comId: req.body.comId,
+          },
+        },
+      },
+      { new: true, multi: true }
+    );
+    comment2.save();
+    Promise.all([comment, comment2]).then(() => {
+      return res.json(req.body);
+    });
+  } catch (error) {
+    return res.json("Error: " + error);
+  }
 };
 
 exports.deleteComment = async (req, res) => {
@@ -95,6 +142,25 @@ exports.deleteComment = async (req, res) => {
         comId: comId,
       });
     });
+  } catch (err) {
+    return res.json(err);
+  }
+};
+
+exports.updateComment = async (req, res) => {
+  try {
+    const updateComment = await Comment.findOneAndUpdate(
+      {
+        comId: req.body.comId,
+      },
+      {
+        $set: {
+          text: req.body.text,
+        },
+      }
+    );
+
+    return res.json(updateComment);
   } catch (err) {
     return res.json(err);
   }
