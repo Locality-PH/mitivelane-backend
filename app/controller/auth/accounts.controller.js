@@ -304,7 +304,7 @@ async function registerNewUser(req, res) {
         last_name: join_last_name,
         profileUrl: {
           contentType: mimeType,
-          data: base64data,
+          data: req.body.profile_url,
         },
         profileLogo: colortag[random],
       });
@@ -372,7 +372,10 @@ async function registerNewUser(req, res) {
                 return res.status(400).json("Error: " + err);
               }
               if (base64data) {
-                return res.json({ accessToken, profileUrl: base64data });
+                return res.json({
+                  accessToken,
+                  profileUrl: req.body?.profile_url,
+                });
               } else {
                 return res.json({ accessToken, profileUrl: "" });
               }
@@ -519,7 +522,7 @@ async function loginNewUser(req, res) {
         profileLogo: colortag[random],
         profileUrl: {
           contentType: mimeType,
-          data: base64data,
+          data: req.body?.profile_url,
         },
       });
     } else {
@@ -584,7 +587,10 @@ async function loginNewUser(req, res) {
                 return res.status(400).json("Error: " + err);
               }
               if (base64data) {
-                return res.json({ accessToken, profileUrl: base64data });
+                return res.json({
+                  accessToken,
+                  profileUrl: req.body?.profile_url,
+                });
               } else {
                 return res.json({ accessToken, profileUrl: "" });
               }

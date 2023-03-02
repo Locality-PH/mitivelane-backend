@@ -14,7 +14,7 @@ exports.getComments = async (req, res) => {
   })
     .skip(start)
     .limit(result)
-    .sort({ createdAt: -1 })
+
     .populate({
       path: "account",
       model: "accounts_infos",
