@@ -382,13 +382,13 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 ###
 GET http://localhost:5000/api/campaign/search?q=&start=0&result=100
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzRkNDJkNDk4MmE5MDhkNDBhIiwiaWF0IjoxNjc2ODk5NzA3LCJleHAiOjE2NzY5OTk3MDd9.kRfVXd-j_5Fwj96pKPLNusElGNWF_sPlBeaA9RaCo_w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiZUY2T0FNc2QxWVpvQ3hwVzRmd3BCRTZSRTVQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoibnVsbCIsImlhdCI6MTY3NzY2MTgxMiwiZXhwIjoxNjc3NzYxODEyfQ.OYaskSYr4SQjqE2OVPsAITVDklu-CDQ6UYWG4iz36eY
 
 
 ###
 POST http://localhost:5000/api/campaign/getAll?q=&start=0&result=5
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzRkNDJkNDk4MmE5MDhkNDBhIiwiaWF0IjoxNjc2ODk5NzA3LCJleHAiOjE2NzY5OTk3MDd9.kRfVXd-j_5Fwj96pKPLNusElGNWF_sPlBeaA9RaCo_w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiZUY2T0FNc2QxWVpvQ3hwVzRmd3BCRTZSRTVQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoibnVsbCIsImlhdCI6MTY3NzY2MTgxMiwiZXhwIjoxNjc3NzYxODEyfQ.OYaskSYr4SQjqE2OVPsAITVDklu-CDQ6UYWG4iz36eY
 
 {
      "organization_id": "62a32a3309e2e4fd143ef932"
@@ -397,11 +397,36 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXW
 ###
 POST http://localhost:5000/api/campaign/get
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoia3dXWHBFeGJmb1RBVm5RWlFWZVZxTXpDUkZQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjJhMzJhMzRkNDJkNDk4MmE5MDhkNDBhIiwiaWF0IjoxNjc2ODk5NzA3LCJleHAiOjE2NzY5OTk3MDd9.kRfVXd-j_5Fwj96pKPLNusElGNWF_sPlBeaA9RaCo_w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiZUY2T0FNc2QxWVpvQ3hwVzRmd3BCRTZSRTVQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoibnVsbCIsImlhdCI6MTY3NzY2MTgxMiwiZXhwIjoxNjc3NzYxODEyfQ.OYaskSYr4SQjqE2OVPsAITVDklu-CDQ6UYWG4iz36eY
 
 {
-     "organization_id": "63e842e6a45b45364f7eaedd",
-     "campaign_id": "63f3a4d32e1581cbf9f3b413"
+     "organization_id": "63f5600f25f745935c4d53e3",
+     "campaign_id": "63f708ed31c222fa2f4a2885"
+
+     
+}
+###
+GET http://localhost:5000/api/comment/campaign_id/:organization_id
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiZUY2T0FNc2QxWVpvQ3hwVzRmd3BCRTZSRTVQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoibnVsbCIsImlhdCI6MTY3NzY2MTgxMiwiZXhwIjoxNjc3NzYxODEyfQ.OYaskSYr4SQjqE2OVPsAITVDklu-CDQ6UYWG4iz36eY
+
+###
+GET http://localhost:5000/api/comment/63f6c25b70cb2a5d76d3dadb/63f5600f25f745935c4d53e3?start=0&result=5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiZUY2T0FNc2QxWVpvQ3hwVzRmd3BCRTZSRTVQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoibnVsbCIsImlhdCI6MTY3NzY2MTgxMiwiZXhwIjoxNjc3NzYxODEyfQ.OYaskSYr4SQjqE2OVPsAITVDklu-CDQ6UYWG4iz36eY
+
+
+###
+POST http://localhost:5000/api/comment/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiZUY2T0FNc2QxWVpvQ3hwVzRmd3BCRTZSRTVQMiIsImF1dGhfb3JnYW5pemF0aW9uIjoibnVsbCIsImlhdCI6MTY3NzY2MTgxMiwiZXhwIjoxNjc3NzYxODEyfQ.OYaskSYr4SQjqE2OVPsAITVDklu-CDQ6UYWG4iz36eY
+
+{
+    "campaignId": "63f6c25b70cb2a5d76d3dadb",
+     "comId": "2422c97f-fe9e-4f85-9541-6f0c4baea9d1",
+     "organizationId": "63f5600f25f745935c4d53e3",
+     "replies": [],
+     "text": "123"
 
      
 }
