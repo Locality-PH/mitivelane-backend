@@ -5,7 +5,10 @@ module.exports = (mongoose) => {
       name: { type: String },
       house_number: { type: Number },
       address: { type: String },
-      purok: { type: String },
+      purok: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "puroks",
+      },
       house_status: { type: String },
       family_planning: [{ type: String }],
       ayuda: { type: String },

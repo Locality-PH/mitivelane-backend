@@ -38,6 +38,7 @@ exports.getResident = async (req, res) => {
     const resident = await Resident
       .findOne({ organization_id, _id: resident_id})
       .select(selectedFields)
+      .populate("area", "name")
     res.json(resident);
   } catch (error) {
     console.log(error);
@@ -58,6 +59,7 @@ exports.getResidents = async (req, res) => {
     const resident = await Resident
       .find({ organization_id })
       .select(selectedFields)
+      .populate("area", "name")
     res.json(resident);
   } catch (error) {
     console.log(error);
@@ -138,6 +140,7 @@ exports.getResidentPage = async (req, res) => {
       .collation({ locale: "en" })
       .sort(sorter)
       .select(selectedFields)
+      .populate("area", "name")
       .then(async (result) => {
         var residentList = result
         await Resident.countDocuments(filter)

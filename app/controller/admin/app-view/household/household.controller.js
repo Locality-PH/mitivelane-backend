@@ -54,7 +54,8 @@ exports.getHouseholds = async (req, res) => {
     const households = await Household.find({
       organization: organization_id,
     })
-      .populate("household_members");
+      .populate("household_members")
+      .populate("purok", "name")
     res.json(households);
   } catch (error) {
     console.log(error);
@@ -110,6 +111,7 @@ exports.getHouseholdPage = async (req, res) => {
       .collation({ locale: "en" })
       .sort(sortFilter)
       .populate("household_members", selectedFields)
+      .populate("purok", "name")
 
     const query2 = Household.countDocuments(searchFilter)
 
@@ -133,11 +135,12 @@ exports.getHousehold = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
     const household_id = req.body.household_id;
+    
     const households = await Household.findOne({
       organization: organization_id,
       _id: household_id,
     })
-      .populate("household_members");
+      .populate("household_members")
     res.json(households);
   } catch (error) {
     console.log(error);
