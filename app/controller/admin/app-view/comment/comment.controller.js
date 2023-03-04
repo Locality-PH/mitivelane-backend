@@ -1,6 +1,7 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
 const NotificationMiddleware = require("../../../../helper/notification");
+const NodeMailer = require("../../../../nodemailer/index.js");
 
 const Comment = db.comment;
 const Account = db.account;
@@ -74,11 +75,11 @@ exports.replyComment = async (req, res) => {
     const orgId = new mongoose.Types.ObjectId(req.body.organizationId);
 
     const user = await Account.findOne({ uuid: req.user.auth_id }).select({
+      full_name: 3,
+      profileUrl: 2,
       profileLogo: 1,
       _id: 1, // include _id in the query results
     });
-
-    console.log(user?._id);
 
     const data = {
       _id: id,
@@ -120,7 +121,7 @@ exports.replyComment = async (req, res) => {
       .populate({
         path: "account",
         model: "accounts_infos",
-        select: ["_id", "uuid"],
+        select: ["_id", "uuid", "email"],
       });
     console.log(comment3);
 
@@ -133,7 +134,19 @@ exports.replyComment = async (req, res) => {
       type: "user",
       link: `/home/posts/${orgId}/${generalId}/single/data`,
     });
-    generalId;
+    console.log(user?.profileUrl?.data);
+    NodeMailer.sendMail({
+      template: "templates/status/comment/index.html",
+      replacements: {
+        link: `/home/posts/${orgId}/${generalId}/single/data`,
+        profile: user?.profileUrl?.data,
+        name: user?.full_name,
+        content: `has message you, check the message in the comment section by clicking this button below`,
+      },
+      to: comment3.account.email,
+      from: "Mitivelane<testmitivelane@gmail.com>",
+      subject: `Someone has replied to your comment`,
+    });
 
     Promise.all([comment, comment2]).then(() => {
       return res.json(req.body);
