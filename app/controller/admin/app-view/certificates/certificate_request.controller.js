@@ -312,7 +312,7 @@ exports.updateCertificateRequest = async (req, res) => {
         model: "organizations",
         select: ["_id", "organization_name", "profile"],
       });
-
+    console.log(req.body?.uuid);
     if (checkStatus[0]?.status != req.body.status) {
       NotificationMiddleware.notificationDocument({
         organization_id: checkStatus[0]?.organization_id._id,
@@ -321,6 +321,7 @@ exports.updateCertificateRequest = async (req, res) => {
         uuid: req.body?.uuid,
         is_read: false,
         type: "organization",
+        link: `/home/account/settings/profile/${req.body?.uuid}`,
       });
       NodeMailer.sendMail({
         template: "templates/status/certificate/index.html",

@@ -127,11 +127,14 @@ exports.replyComment = async (req, res) => {
     NotificationMiddleware.notificationDocument({
       organization_id: comment3.organization_id,
       message: "has replied to your comment",
-      user_id: comment3.account._id,
+      user_id: user?._id,
       uuid: comment3.account.uuid,
       is_read: false,
       type: "user",
+      link: `/home/posts/${orgId}/${generalId}/single/data`,
     });
+    generalId;
+
     Promise.all([comment, comment2]).then(() => {
       return res.json(req.body);
     });

@@ -8,7 +8,7 @@ var mongoose = require("mongoose");
 const NodeMailer = require("../../nodemailer/index.js");
 
 exports.notificationDocument = async (props) => {
-  const { organization_id, user_id, message, uuid, type } = props;
+  const { organization_id, user_id, message, uuid, type, link } = props;
   try {
     const noti_id = new mongoose.Types.ObjectId();
 
@@ -20,6 +20,7 @@ exports.notificationDocument = async (props) => {
       user_id: user_id,
       uuid: uuid,
       is_read: false,
+      link: link,
     };
     const notificationData = await new OrganizationNotifications(data);
     notificationData.save();

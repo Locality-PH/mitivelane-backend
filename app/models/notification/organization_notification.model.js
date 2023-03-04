@@ -7,6 +7,7 @@ module.exports = (mongoose) => {
       uuid: { type: String },
       type: { type: String },
       is_read: { type: Boolean },
+      link: { type: String },
       organization_id: [
         { type: mongoose.Schema.Types.ObjectId, ref: "organizations" },
       ],

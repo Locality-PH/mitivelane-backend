@@ -24,7 +24,7 @@ exports.getNotificationPrivateData = async (req, res) => {
       })
       .populate({
         path: "user_id",
-        model: "account_infos",
+        model: "accounts_infos",
         select: ["_id", "full_name", "profileLogo", "profileUrl"],
       });
 
