@@ -1,5 +1,6 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
+const NotificationMiddleware = require("../../../../helper/notification");
 
 const Comment = db.comment;
 const Account = db.account;
@@ -108,6 +109,29 @@ exports.replyComment = async (req, res) => {
       { new: true, multi: true }
     );
     comment2.save();
+    const comment3 = await Comment.findOne({
+      comId: req.body.repliedToCommentId || req.body.parentOfRepliedCommentId,
+    })
+      .select({
+        organization_id: 3,
+        account: 2,
+        _id: 1, // include _id in the query results
+      })
+      .populate({
+        path: "account",
+        model: "accounts_infos",
+        select: ["_id", "uuid"],
+      });
+    console.log(comment3);
+
+    NotificationMiddleware.notificationDocument({
+      organization_id: comment3.organization_id,
+      message: "has replied to your comment",
+      user_id: comment3.account._id,
+      uuid: comment3.account.uuid,
+      is_read: false,
+      type: "user",
+    });
     Promise.all([comment, comment2]).then(() => {
       return res.json(req.body);
     });

@@ -10,6 +10,8 @@ const handlebars = require("handlebars");
 const path = require("path");
 const fs = require("fs");
 var mongoose = require("mongoose");
+const NodeMailer = require("../../../../nodemailer/index.js");
+const NotificationMiddleware = require("../../../../helper/notification");
 
 const pageSizeOptions = [5, 10, 20, 50, 100];
 
@@ -181,7 +183,7 @@ exports.createCertificateRequest = async (req, res) => {
   }
 };
 
-exports.updateCertificateRequest = async (req, res) => {
+exports.updateCertificateRequest2 = async (req, res) => {
   try {
     if (!req.user) {
       return res.status(404).send({ Error: "something went wrong" });
@@ -257,6 +259,80 @@ exports.updateCertificateRequest = async (req, res) => {
         } else {
           console.log("Email sent: " + info.response);
         }
+      });
+    }
+    const updatedCertificate = await CertificateRequest.updateMany(
+      {
+        _id: { $in: req.body.certificate_requests_id },
+        organization_id: req.body.organization_id,
+      },
+      {
+        $set: {
+          status: req.body.status,
+          notes: req.body.notes,
+          issuer: req.body.issuer,
+          attach_file: req.body.attach_file,
+          archive: req.body.archive,
+        },
+      }
+    );
+    Promise.all([updatedCertificate]).then(() => {
+      return res.json("success");
+    });
+  } catch (err) {
+    return res.json(err);
+  }
+};
+
+exports.updateCertificateRequest = async (req, res) => {
+  try {
+    const organization = await Organization.findOne({
+      _id: req.body.organization_id,
+    }).select({
+      organization_member: 1,
+      _id: 1, // include _id in the query results
+    });
+    const organizationMemberId = organization.organization_member[0];
+    const organizationMember = await OrganizationMember.findOne({
+      _id: organizationMemberId,
+    });
+    const ownerEmail = organizationMember.email;
+    const checkStatus = await CertificateRequest.find({
+      _id: { $in: req.body.certificate_requests_id },
+      organization_id: req.body.organization_id,
+    })
+      .select("_id, organization_id , cert_type , title , status ")
+      .populate({
+        path: "user_id",
+        model: "accounts_infos",
+        select: ["_id", "profileLogo", "full_name", "profileUrl", "email"],
+      })
+      .populate({
+        path: "organization_id",
+        model: "organizations",
+        select: ["_id", "organization_name", "profile"],
+      });
+
+    if (checkStatus[0]?.status != req.body.status) {
+      NotificationMiddleware.notificationDocument({
+        organization_id: checkStatus[0]?.organization_id._id,
+        message: `You're Document Requested have been ${req.body.status}`,
+        user_id: req.body.user_id?._id,
+        uuid: req.body?.uuid,
+        is_read: false,
+        type: "organization",
+      });
+      NodeMailer.sendMail({
+        template: "templates/status/certificate/index.html",
+        replacements: {
+          to: checkStatus[0]?.user_id.full_name,
+          status: req.body.status,
+          email: ownerEmail,
+          org: checkStatus[0]?.organization_id.organization_name,
+        },
+        to: req.body.email,
+        from: "Mitivelane Team<testmitivelane@gmail.com>",
+        subject: `You're Document Requested have been ${req.body.status}`,
       });
     }
     const updatedCertificate = await CertificateRequest.updateMany(

@@ -20,8 +20,14 @@ exports.getNotificationPrivateData = async (req, res) => {
       .populate({
         path: "organization_id",
         model: "organizations",
-        select: ["_id", "organization_name", "profile"],
+        select: ["_id", "organization_name", "profile", "profile_color"],
+      })
+      .populate({
+        path: "user_id",
+        model: "account_infos",
+        select: ["_id", "full_name", "profileLogo", "profileUrl"],
       });
+
     const count = await Notifications.countDocuments({
       uuid: req.user.auth_id,
       $and: [{ is_read: false }],
