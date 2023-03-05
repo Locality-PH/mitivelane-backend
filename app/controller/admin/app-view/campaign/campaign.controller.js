@@ -38,18 +38,75 @@ exports.getCampaignPage = async (req, res) => {
     var organization_id = values.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
 
+    var tableScreen = values.tableScreen
+    var tableScreenLength = Object.keys(tableScreen).length
     var sorter = { status: "ascending" };
     var filter = { organization: organization_id };
+    var doesFilterExist = tableScreen.hasOwnProperty("filter")
+    var doesSorterExist = tableScreen.hasOwnProperty("sorter")
+    var numberKeys = [] // put here keys that are number fields
+    var dateKeys = ["starting_date"] // put here keys that are date fields
+    var suggestorKeys = ["first_name", "email"] // put here keys that are date fields
 
     if (values.hasOwnProperty("status") != false) {
       filter.status = values.status;
     }
 
+    if (doesFilterExist != false) {
+      var tempFilter = tableScreen.filter
+      var isKeyNumber = false
+      var isKeyDate = false
+
+      for (const [key, value] of Object.entries(tempFilter)) {
+        if (value != null) {
+          isKeyNumber = numberKeys.includes(key)
+          isKeyDate = dateKeys.includes(key)
+          isKeySuggestor = suggestorKeys.includes(key)
+
+          if (isKeyNumber == true) {
+            filter = { ...filter, [key]: value }
+          }
+
+          if (isKeyDate == true) {
+            var today = moment(value[0]).startOf('day')
+            var endDate = moment(value[0]).endOf('day')
+
+            var dateFilter = {
+              [key]: {
+                $gte: today,
+                $lte: endDate
+              }
+            }
+
+            filter = { ...filter, ...dateFilter }
+          }
+
+          if (isKeyDate == false && isKeyNumber == false) {
+            filter = { ...filter, [key]: { $regex: value.join("|"), $options: "i" } }
+          }
+        }
+      }
+    }
+
+    if (doesSorterExist != false) {
+      var tempSorter = tableScreen.sorter
+      var field = tempSorter.field
+      var order = tempSorter.order + 'ing'
+      sorter = { [field]: order }
+    }
+
+    if (doesSorterExist != true) {
+      sorter = { ["createdAt"]: "descending" }
+    }
+
+    //console.log("filter", filter)
+    // console.log("sorter", sorter)
+
     await Campaign.find(filter)
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
-      .populate("suggestor", populatePeople)
+      .populate({path: "suggestor", select: populatePeople})
       .populate("publisher", populatePeople)
       .populate("organization", populateOrg)
       .sort(sorter)

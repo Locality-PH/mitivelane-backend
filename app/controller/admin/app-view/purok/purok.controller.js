@@ -80,7 +80,7 @@ exports.getPurokPage = async (req, res) => {
       sorter = { ["createdAt"]: "descending" }
     }
 
-    // console.log("filter", filter)
+    //console.log("filter", filter)
     // console.log("sorter", sorter)
 
     await Purok.find(filter)

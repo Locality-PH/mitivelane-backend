@@ -648,3 +648,21 @@ exports.getSupplyInventory = async (req, res) => {
     res.status(500).send({ error: error });
   }
 }
+
+exports.getAllSupplyPerYear = async (req, res) => {
+  const organization_id = req.params.organization_id;
+  const year = req.params.year;
+
+  try {
+    const query1 = await SupplyGiven.find({organization_id, year})
+    const query2 = await SupplyReceived.find({organization_id, year})
+
+    Promise.all([query1, query2])
+    .then(([givenList, receivedList]) => {
+      res.json({ givenList, receivedList });
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: error });
+  }
+}
