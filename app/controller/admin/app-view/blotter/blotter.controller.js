@@ -69,7 +69,9 @@ exports.getBlotters = async (req, res) => {
           value.reporters.length != 0
             ? value.reporters[0].avatarColor
             : "#04d182",
-
+        reporterData: value.reporters.length != 0
+          ? value.reporters[0]
+          : "#04d182",
         reporters: value.reporters,
         victims: value.victims,
         suspects: value.suspects,
@@ -95,6 +97,17 @@ exports.getBlotters = async (req, res) => {
         return res.json(finalValue);
       }
     });
+  } catch (error) {
+    return res.json([]);
+  }
+};
+
+exports.getResidentBlotters = async (req, res) => {
+  const residentId = req.params.resident_id;
+
+  try {
+    const blotter = await Blotter.find({ reporters: { $in: residentId } })
+    return res.json(blotter)
   } catch (error) {
     return res.json([]);
   }

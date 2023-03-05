@@ -14,6 +14,12 @@ module.exports = (app) => {
     blotter.getBlotters
   );
 
+  router.get(
+    "/get-resident-blotters/:resident_id",
+    auth.authenticationToken,
+    blotter.getResidentBlotters
+  );
+
   // router.get("/get-blotter-initial-value/:_id", auth.authenticationToken,
   // blotter.getBlotterInitialValue);
   router.post(
