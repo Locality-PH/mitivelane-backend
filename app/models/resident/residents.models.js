@@ -11,7 +11,7 @@ module.exports = (mongoose) => {
       middlename: { type: String },
       fullname: { type: String },
       alias: { type: String },
-      birthday: { type: String },
+      birthday: { type: Date },
       age: { type: Number },
       birth_of_place: { type: String },
       gender: { type: String },

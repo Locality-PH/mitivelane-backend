@@ -1,5 +1,6 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
+var moment = require('moment');
 
 const Resident = db.resident;
 
@@ -36,7 +37,7 @@ exports.getResident = async (req, res) => {
 
   try {
     const resident = await Resident
-      .findOne({ organization_id, _id: resident_id})
+      .findOne({ organization_id, _id: resident_id })
       .select(selectedFields)
       .populate("area", "name")
     res.json(resident);
@@ -103,21 +104,29 @@ exports.getResidentPage = async (req, res) => {
     var filter = { organization_id: organization_id }
     var doesFilterExist = tableScreen.hasOwnProperty("filter")
     var doesSorterExist = tableScreen.hasOwnProperty("sorter")
-    var numberKeys = ["age"] // put here keys that are number fields
+    var numberKeys = [] // put here keys that are number fields
+    var dateKeys = ["birthday"] // put here keys that are date fields
 
     if (doesFilterExist != false) {
       var tempFilter = tableScreen.filter
       var isKeyNumber = false
+      var isKeyDate = false
 
       for (const [key, value] of Object.entries(tempFilter)) {
         if (value != null) {
           isKeyNumber = numberKeys.includes(key)
+          isKeyDate = dateKeys.includes(key)
 
           if (isKeyNumber == true) {
             filter = { ...filter, [key]: value }
           }
 
-          if (isKeyNumber == false) {
+          if (isKeyDate == true) {
+
+            filter = { ...filter, [key]: value}
+          }
+
+          if (isKeyNumber == false && isKeyDate == false) {
             filter = { ...filter, [key]: { $regex: value.join("|"), $options: "i" } }
           }
         }
@@ -131,7 +140,7 @@ exports.getResidentPage = async (req, res) => {
       sorter = { [field]: order }
     }
 
-    //console.log("filter", filter)
+    console.log("filter", filter)
     // console.log("sorter", sorter)
 
     await Resident.find(filter)
