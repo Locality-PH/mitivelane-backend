@@ -58,59 +58,26 @@ exports.aggregate = async (req, res) => {
     { description: { $regex: search, $options: "i" } },
     { certificate_type: { $regex: search, $options: "i" } },
     { issuer: { $regex: search, $options: "i" } },
-    {
-      "billing_info.mobile": { $regex: search, $options: "i" },
-    },
-    {
-      "billing_info.address": { $regex: search, $options: "i" },
-    },
-    {
-      "billing_info.address2": {
-        $regex: search,
-        $options: "i",
-      },
-    },
-    {
-      "billing_info.city": {
-        $regex: search,
-        $options: "i",
-      },
-    },
-    {
-      "billing_info.postal": {
-        $regex: search,
-        $options: "i",
-      },
-    },
-    {
-      "billing_info.country": {
-        $regex: search,
-        $options: "i",
-      },
-    },
     { description: { $regex: search, $options: "i" } },
     { name: { $regex: search, $options: "i" } },
+    { full_name: { $regex: search, $options: "i" } },
+    { profileLogo: { $regex: search, $options: "i" } },
+    {
+      "account_details.full_name": { $regex: search, $options: "i" },
+    },
+    {
+      "account_details.profileLogo": { $regex: search, $options: "i" },
+    },
   ];
 
   const org = req.query.org; // example organization id
-  const id = new mongoose.Types.ObjectId(org.toString());
+  const id = new mongoose.Types.ObjectId(req.query.org);
   let archiveCondition = false;
 
   if (req.query.archive === "true") {
     archiveCondition = true;
   }
   const data = await CertificateRequest.aggregate([
-    {
-      $match: {
-        $and: [
-          { archive: archiveCondition },
-          { organization_id: id },
-          {
-            $or: filterSearch,
-          },
-        ],
-      },
-    },
     {
       $lookup: {
         from: "accounts_infos",
@@ -119,6 +86,7 @@ exports.aggregate = async (req, res) => {
           {
             $match: {
               $expr: { $eq: ["$_id", "$$user_id"] },
+              $or: filterSearch,
             },
           },
           {
@@ -143,8 +111,10 @@ exports.aggregate = async (req, res) => {
     {
       // parent array
       $project: {
-        sessions: 0,
-        //   "account_details.sessions": 0,
+        full_name: "$account_details.full_name",
+        profileLogo: "$account_details.profileLogo",
+        organization_id: 1,
+        archive: 1,
       },
     },
     {
@@ -152,6 +122,17 @@ exports.aggregate = async (req, res) => {
     },
     {
       $limit: limit,
+    },
+    {
+      $match: {
+        $and: [
+          { archive: archiveCondition }, // false
+          { organization_id: id }, // manoks
+          {
+            $or: filterSearch,
+          },
+        ],
+      },
     },
   ]);
   console.log(data);
