@@ -7,6 +7,7 @@ module.exports = (app) => {
   require("./admin/app-view/resident/residents.routes")(app);
   require("./admin/app-view/household/household.routes")(app);
   require("./admin/app-view/purok/purok.routes")(app);
+  require("./admin/app-view/campaign/campaign.routes")(app);
   require("./admin/app-view/blotter/blotter.routes")(app);
   require("./admin/app-view/blotter/blotter_request.routes")(app);
   require("./admin/app-view/blotter/settlement.routes")(app);
@@ -17,5 +18,9 @@ module.exports = (app) => {
   require("./admin/app-view/organization/organization.routes")(app);
   require("./admin/app-view/organization/organization_setting.routes")(app);
   require("./admin/app-view/session/session.routes")(app);
+  require("./admin/app-view/notifications/notifications.routes")(app);
+  require("./admin/app-view/analytic/analytic.routes")(app);
+  require("./admin/app-view/comment/comment.routes")(app);
+
   //   require("./app/routes/exercises.routes")(app);
 };

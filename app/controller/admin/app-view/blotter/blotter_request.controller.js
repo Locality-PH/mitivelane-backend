@@ -1,7 +1,11 @@
 const db = require("../../../../models");
 const Blotter = db.blotter;
 const BlotterRequest = db.blotter_request;
+const Account = db.account;
+const Organization = db.organization;
 var mongoose = require("mongoose");
+
+const NodeMailer = require("../../../../nodemailer/index.js");
 
 exports.requestBlotter = async (req, res) => {
   const values = req.body;
@@ -24,11 +28,31 @@ exports.approveBlotterRequest = async (req, res) => {
   const data = req.body.data;
 
   try {
+    let organizationId = data[0].organization_id
+
+    const organization = await Organization.findOne({ _id: organizationId })
+
     await BlotterRequest.updateMany(
       { _id: { $in: _ids } },
       { status: "Approved" }
     );
     await Blotter.insertMany(data);
+
+    data.map((value, i) => {
+      NodeMailer.sendMail({
+        template: "templates/status/index.html",
+        replacements: {
+          to: value.user_data.full_name,
+          status: "approved",
+          email: value.user_data.email,
+          org: organization.organization_name
+        },
+        from: "Mitivelane Team<testmitivelane@gmail.com>",
+        to: value.user_data.email,
+        subject: "You're Blotter Requested have been approved"
+      })
+    })
+
     return res.json("Success");
   } catch (error) {
     return res.json("Error");
@@ -37,12 +61,33 @@ exports.approveBlotterRequest = async (req, res) => {
 
 exports.rejectBlotterRequest = async (req, res) => {
   const _ids = req.body._ids;
+  const data = req.body.data;
 
   try {
+    let organizationId = data[0].organization_id
+
+    const organization = await Organization.findOne({ _id: organizationId })
+
     await BlotterRequest.updateMany(
       { _id: { $in: _ids } },
       { status: "Rejected" }
     );
+
+    data.map((value, i) => {
+      NodeMailer.sendMail({
+        template: "templates/status/index.html",
+        replacements: {
+          to: value.user_data.full_name,
+          status: "rejected",
+          email: value.user_data.email,
+          org: organization.organization_name
+        },
+        from: "Mitivelane Team<testmitivelane@gmail.com>",
+        to: value.user_data.email,
+        subject: "You're Blotter Requested have been rejected"
+      })
+    })
+
     return res.json("Success");
   } catch (error) {
     return res.json("Error");
@@ -65,11 +110,31 @@ exports.getPendingBlotterRequest = async (req, res) => {
 
     if (blotterRequest.length == 0) return res.json(finalValue);
 
+    var uuids = []
+
     blotterRequest.map((value, i) => {
+      uuids.push(value.uuid)
+    })
+
+    const account = await Account.find({ uuid: { $in: uuids } })
+
+    blotterRequest.map(async (value, index) => {
+      var accountData = {}
+
+      for (var i = 0; i < account.length; i++) {
+        if (account[i].uuid == value.uuid) {
+          accountData = account[i]
+          break
+        }
+
+      }
+
       finalValue.push({
         _id: value._id,
         organization_id: value.organization_id,
         blotter_id: value.blotter_id,
+        uuid: value.uuid,
+        user_data: accountData,
         createdAt: value.createdAt,
 
         reporter_name:
@@ -91,6 +156,9 @@ exports.getPendingBlotterRequest = async (req, res) => {
         suspects_id: value.suspects.map((value) => value._id),
         respondents_id: value.respondents.map((value) => value._id),
 
+        victimsInvolve: value.victimsInvolve,
+        suspectsInvolve: value.suspectsInvolve,
+        respondentsInvolve: value.respondentsInvolve,
         settlement_status: value.settlement_status,
         status: value.status,
         subject: value.subject,
@@ -103,11 +171,12 @@ exports.getPendingBlotterRequest = async (req, res) => {
         date_schedule: value.date_schedule,
       });
 
-      if (blotterRequest.length == i + 1) {
+      if (blotterRequest.length == index + 1) {
         return res.json(finalValue);
       }
     });
   } catch (error) {
+    console.log(error)
     return res.json([]);
   }
 };
@@ -128,11 +197,31 @@ exports.getBlotterRequest = async (req, res) => {
 
     if (blotterRequest.length == 0) return res.json(finalValue);
 
+    var uuids = []
+
     blotterRequest.map((value, i) => {
+      uuids.push(value.uuid)
+    })
+
+    const account = await Account.find({ uuid: { $in: uuids } })
+
+    blotterRequest.map((value, index) => {
+      var accountData = {}
+
+      for (var i = 0; i < account.length; i++) {
+        if (account[i].uuid == value.uuid) {
+          accountData = account[i]
+          break
+        }
+
+      }
+
       finalValue.push({
         _id: value._id,
         organization_id: value.organization_id,
         blotter_id: value.blotter_id,
+        uuid: value.uuid,
+        user_data: accountData,
         createdAt: value.createdAt,
 
         reporter_name:
@@ -154,6 +243,9 @@ exports.getBlotterRequest = async (req, res) => {
         suspects_id: value.suspects.map((value) => value._id),
         respondents_id: value.respondents.map((value) => value._id),
 
+        victimsInvolve: value.victimsInvolve,
+        suspectsInvolve: value.suspectsInvolve,
+        respondentsInvolve: value.respondentsInvolve,
         settlement_status: value.settlement_status,
         status: value.status,
         subject: value.subject,
@@ -166,7 +258,7 @@ exports.getBlotterRequest = async (req, res) => {
         date_schedule: value.date_schedule,
       });
 
-      if (blotterRequest.length == i + 1) {
+      if (blotterRequest.length == index + 1) {
         return res.json(finalValue);
       }
     });
@@ -177,9 +269,28 @@ exports.getBlotterRequest = async (req, res) => {
 
 exports.deleteBlotterRequest = async (req, res) => {
   const _ids = req.body._ids;
+  const data = req.body.data;
 
   try {
+    let organizationId = data[0].organization_id
+
+    const organization = await Organization.findOne({ _id: organizationId })
     await BlotterRequest.deleteMany({ _id: { $in: _ids } });
+
+    data.map((value, i) => {
+      NodeMailer.sendMail({
+        template: "templates/status/index.html",
+        replacements: {
+          to: value.user_data.full_name,
+          status: "deleted",
+          email: value.user_data.email,
+          org: organization.organization_name
+        },
+        from: "Mitivelane Team<testmitivelane@gmail.com>",
+        to: value.user_data.email,
+        subject: "You're Blotter Requested have been deleted"
+      })
+    })
     return res.json("Success");
   } catch (error) {
     return res.json("Error");
@@ -228,3 +339,21 @@ exports.getLatestBlotterRequests = async (req, res) => {
     return res.json([]);
   }
 };
+
+// client
+exports.getBlotterRequestsClient = async (req, res) => {
+  const uuid = req.params.uuid;
+  const limit = 5;
+
+  try {
+    const blotterRequest = await BlotterRequest.find({
+      uuid: uuid,
+    })
+      .populate("reporters").populate("organization_id").sort({ createdAt: -1 });
+
+    return res.json(blotterRequest);
+  } catch (error) {
+    return res.json([]);
+  }
+};
+

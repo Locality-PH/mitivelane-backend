@@ -3,33 +3,37 @@ const Certificate = db.certificates;
 var mongoose = require("mongoose");
 
 exports.createCertificate = async (req, res) => {
-  const id = new mongoose.Types.ObjectId(req.body.certificate_id);
-  console.log(id);
-
-  const data = {
-    _id: id,
-    organization_id: [req.user.auth_organization],
-    firstLogo: req.body.firstLogo,
-    status: false,
-    secondLogo: req.body.secondLogo,
-    signatures: req.body.signatures,
-    line_height: req.body.line_height,
-    color_picker: req.body.color_picker,
-    title: req.body.title || "Untitled #",
-    country: req.body.country,
-    municipality: req.body.municipality,
-    organization: req.body.organization,
-    office: req.body.office,
-    cert_type: req.body.cert_type || "cert",
-    font_family: req.body.font_family || "Tinos",
-    template_type: req.body.template_type || "simple_border",
-    content: req.body.content || [{ entityMap: {}, blocks: [] }],
-    clearance: req.body.clearance,
-  };
-
-  const cert = new Certificate(data);
-
   try {
+    const id = new mongoose.Types.ObjectId(req.body.certificate_id);
+
+    const data = {
+      _id: id,
+      organization_id: [req.user.auth_organization],
+      firstLogo: req.body.firstLogo,
+      status: false,
+      secondLogo: req.body.secondLogo,
+      signatures: req.body.signatures,
+      line_height: req.body.line_height,
+      color_picker: req.body.color_picker,
+      title: req.body.title || "Untitled #",
+      country: req.body.country,
+      municipality: req.body.municipality,
+      municipality: req.body.province,
+      or_number: req.body.or_number,
+      issued_at: req.body.issued_at,
+      issued_on: req.body.issued_on,
+      organization: req.body.organization,
+      office: req.body.office,
+      cert_type: req.body.cert_type || "cert",
+      font_family: req.body.font_family || "Tinos",
+      template_type: req.body.template_type || "simple_border",
+      font_size: "S",
+      color: "#000000ff",
+      content: req.body.content || [{ entityMap: {}, blocks: [] }],
+      clearance: req.body.clearance,
+    };
+
+    const cert = new Certificate(data);
     await cert.save();
     res.json({ id });
   } catch (error) {
@@ -57,7 +61,7 @@ exports.getCertificate = async (req, res) => {
 
 exports.getCertificateAll = async (req, res) => {
   try {
-    const result = new Number(req.body.cert_type);
+    const result = new Number(req.query.result);
     const start = new Number(req.query.start);
     console.log(req.query.result);
     if (result || start)
@@ -74,10 +78,6 @@ exports.getCertificateAll = async (req, res) => {
   } catch (e) {
     res.json(e);
   }
-
-  //   const data = req.param;
-  //   await Certificate.find(data.id);
-  //   return res.json("get");
 };
 
 exports.getCertificateName = async (req, res) => {
@@ -90,8 +90,6 @@ exports.getCertificateName = async (req, res) => {
     })
       .select("_id, organization_id , cert_type , title , status ")
       .then((data) => {
-        //  console.log(data);
-
         return res.json(data);
       })
       .catch((_) => {
@@ -100,10 +98,6 @@ exports.getCertificateName = async (req, res) => {
   } catch (e) {
     res.json(e);
   }
-
-  //   const data = req.param;
-  //   await Certificate.find(data.id);
-  //   return res.json("get");
 };
 
 exports.updateCertificate = async (req, res) => {
@@ -111,7 +105,6 @@ exports.updateCertificate = async (req, res) => {
     if (!req.user) {
       return res.status(404).send({ Error: "something went wrong" });
     }
-
     const updatedCertificate = await Certificate.findOneAndUpdate(
       {
         _id: req.body.certificate_id,
@@ -121,12 +114,18 @@ exports.updateCertificate = async (req, res) => {
           organization_id: req.user.auth_organization,
           firstLogo: req.body.firstLogo,
           secondLogo: req.body.secondLogo,
+          color: req.body.color,
+          font_size: req.body.font_size,
           signatures: req.body.signatures,
           title: req.body.title,
           is_active: req.body.is_active,
           line_height: req.body.line_height,
           color_picker: req.body.color_picker,
+          province: req.body.province,
           country: req.body.country,
+          or_number: req.body.or_number,
+          issued_at: req.body.issued_at,
+          issued_on: req.body.issued_on,
           municipality: req.body.municipality,
           status: req.body.status,
           organization: req.body.organization,

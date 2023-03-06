@@ -26,8 +26,20 @@ app.use(helmet.hsts());
 // app.use(bodyParser.json());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(
+  bodyParser.json({
+    limit: "50mb",
+  })
+);
 
-const constantData = require("./app/constant/constant");
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb",
+    parameterLimit: 100000,
+    extended: true,
+  })
+);
+
 //Firebase
 const fb = require("./app/config/firebase.config");
 

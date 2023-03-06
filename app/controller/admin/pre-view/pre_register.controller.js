@@ -4,7 +4,16 @@ var mongoose = require("mongoose");
 const Organization = db.organization;
 const OrganizationMember = db.organizationMember;
 const Account = db.account;
-
+let colortag = [
+  "#0085c3",
+  "#7ab800",
+  "#f2af00",
+  "#dc5034",
+  "#ce1126",
+  "#0085c3",
+  "#FF1493",
+  "#AA47BC",
+];
 //Test Create Organization
 exports.registerOrganization = (req, res) => {
   var organizationId = new mongoose.Types.ObjectId();
@@ -78,6 +87,7 @@ exports.list = (req, res) => {
 
 //Create Finalized Organization
 exports.createOrganization = async (req, res) => {
+  random = Math.floor(Math.random() * colortag.length);
   const organizationId = new mongoose.Types.ObjectId();
   const organizationMemberId = new mongoose.Types.ObjectId();
   try {
@@ -89,6 +99,12 @@ exports.createOrganization = async (req, res) => {
       province: req.body.province,
       municipality: req.body.municipality,
       address: req.body.address,
+      phone_number: req.body.phone_number,
+      website: req.body.website,
+      about: req.body.about,
+      mission: req.body.mission,
+      vision: req.body.vision,
+      profile_color: colortag[random],
     });
     await organization.save();
 

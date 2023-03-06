@@ -16,9 +16,33 @@ module.exports = (app) => {
   );
 
   router.get(
+    "/get-all-organizations-client",
+    auth.authenticationToken,
+    organization.getAllOrganizationsClient
+  );
+
+  router.get(
     "/get-organization/:organization_id",
     auth.authenticationToken,
     organization.getOrganization
+  );
+
+  router.get(
+    "/get-organization-client/:organization_id/:uuid",
+    auth.authenticationToken,
+    organization.getOrganizationClient
+  );
+
+  router.get(
+    "/get-user-following/:uuid",
+    auth.authenticationToken,
+    organization.getUserFollowing
+  );
+
+  router.get(
+    "/get-organization-members/:organization_id",
+    auth.authenticationToken,
+    organization.getOrganizationMembers
   );
 
   router.get(
@@ -26,6 +50,25 @@ module.exports = (app) => {
     auth.authenticationToken,
     organization.getOrganizationOwner
   );
+
+  router.post(
+    "/follow",
+    auth.authenticationToken,
+    organization.follow
+  );
+
+  router.post(
+    "/unfollow",
+    auth.authenticationToken,
+    organization.unfollow
+  );
+
+  router.get(
+    "/get-followers/:organization_id",
+    auth.authenticationToken,
+    organization.getFollowers
+  );
+
 
   app.use("/api/organization", router);
 };

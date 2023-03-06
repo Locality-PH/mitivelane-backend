@@ -1,11 +1,12 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
+var moment = require('moment');
 
 const Resident = db.resident;
 const Household = db.household;
 // const HouseholdMember = db.householdMember;
 
-const getSelectedResidentFields = (choosenFields, excludedFields, excludeAvatar) => {
+const getSelectedHouseholdFields = (choosenFields, excludedFields, excludeAvatar) => {
 
   var selectedFields = '' //empty string means all field
 
@@ -53,7 +54,8 @@ exports.getHouseholds = async (req, res) => {
     const households = await Household.find({
       organization: organization_id,
     })
-      .populate("household_members");
+      .populate("household_members")
+      .populate("purok", "name")
     res.json(households);
   } catch (error) {
     console.log(error);
@@ -69,7 +71,7 @@ exports.getHouseholdPage = async (req, res) => {
     var excludedFields = req.body.excludedFields
     excludeAvatar != undefined ? excludeAvatar : false
 
-    var selectedFields = getSelectedResidentFields(choosenFields, excludedFields, excludeAvatar)
+    var selectedFields = getSelectedHouseholdFields(choosenFields, excludedFields, excludeAvatar)
 
     // console.log("req.body", req.body)
     const organization_id = req.body.organization_id;
@@ -77,13 +79,29 @@ exports.getHouseholdPage = async (req, res) => {
     const pageSize = req.body.pageSize
     var dataFilter = req.body.dataFilter
     var sortFilter = { [dataFilter.field]: dataFilter.sort }
-    var searchFilter = { organization_id }
+    var searchFilter = { organization: organization_id, }
 
-    if (dataFilter.value != '') {
-      searchFilter = { ...searchFilter, [dataFilter.field]: { $regex: dataFilter.value, $options: "i" } }
+    if (dataFilter.value != '' && dataFilter.value != null) {
+      if (dataFilter.type == "string") {
+        searchFilter = { ...searchFilter, [dataFilter.field]: { $regex: dataFilter.value, $options: "i" } }
+      }
+
+      if (dataFilter.type == "date") {
+        var today = moment(dataFilter.value).startOf('day')
+        var endDate = moment(dataFilter.value).endOf('day')
+
+        searchFilter = {
+          ...searchFilter, [dataFilter.field]: { $gte: today, $lte: endDate }
+        }
+      }
+
+      if (dataFilter.type == "array_string") {
+        searchFilter = { ...searchFilter, [dataFilter.field]: { "$in" : dataFilter.value}}
+      }
+
     }
 
-    // console.log("dataFilter", dataFilter)
+    //console.log("dataFilter", dataFilter)
     // console.log("searchFilter", searchFilter)
     // console.log("sortFilter", sortFilter)
 
@@ -93,6 +111,7 @@ exports.getHouseholdPage = async (req, res) => {
       .collation({ locale: "en" })
       .sort(sortFilter)
       .populate("household_members", selectedFields)
+      .populate("purok", "name")
 
     const query2 = Household.countDocuments(searchFilter)
 
@@ -116,11 +135,12 @@ exports.getHousehold = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
     const household_id = req.body.household_id;
+    
     const households = await Household.findOne({
       organization: organization_id,
       _id: household_id,
     })
-      .populate("household_members");
+      .populate("household_members")
     res.json(households);
   } catch (error) {
     console.log(error);

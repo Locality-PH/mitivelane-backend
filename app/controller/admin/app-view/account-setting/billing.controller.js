@@ -158,20 +158,23 @@ exports.updateBillingCard = async (req, res) => {
         },
       }
     );
-
-    const billingDataPrev = await Billing.findOneAndUpdate(
-      {
-        user_id: req.user.auth_id,
-        _id: req.body.card_id_prev,
-      },
-      {
-        $set: {
-          active_card: false,
+    if (req.body.card_id_prev !== "none") {
+      const billingDataPrev = await Billing.findOneAndUpdate(
+        {
+          user_id: req.user.auth_id,
+          _id: req.body.card_id_prev,
         },
-      }
-    );
-    Promise.all([billingDataNew, billingDataPrev]);
-    res.status(200).json("update successful");
+        {
+          $set: {
+            active_card: false,
+          },
+        }
+      );
+      Promise.all([billingDataNew, billingDataPrev]);
+      return res.status(200).json("update successful");
+    }
+    Promise.all([billingDataNew]);
+    return res.status(200).json("update successful");
   } catch (error) {
     return res.status(400).json("Error: " + error);
   }

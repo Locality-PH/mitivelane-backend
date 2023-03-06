@@ -7,7 +7,7 @@ var mongoose = require("mongoose");
 const Resident = db.resident;
 const Blotter = db.blotter;
 
-const Transporter = require("../../../../../nodemailerSetup");
+const NodeMailer = require("../../../../nodemailer/index.js");
 
 // Methods for user invitation
 exports.validateEmail = async (req, res) => {
@@ -132,32 +132,27 @@ exports.addMember = async (req, res) => {
       var newMemberId = new mongoose.Types.ObjectId();
       newMember[i]._id = newMemberId;
 
-      var mailOptions = {
-        from: "testmitivelane@gmail.com",
+      NodeMailer.sendMail({
+        template: "templates/emails/email1/index.html",
+        replacements: {
+          current_user_name: values.current_user_name,
+          to: value.email,
+          action_url: `http://${process.env.URL}/auth/organization-invite/${newMemberId}`
+        },
+        from: "Mitivelane Team<testmitivelane@gmail.com>",
         to: value.email,
         subject:
           value.role == "Administrator"
             ? "You've been invited to join the organization as Administrator"
-            : "You've been invited to join the organization as Editor",
-        html: `<p>${values.current_user_name} invited you to his Organization</p>
-				<h1>Invitation Code: ${value.code}</h1>
-				</br>
-				<a href="http://${process.env.URL}/auth/organization-invite/${newMemberId}">Click here to Verify.<a>`,
-      };
-
-      await Transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log("Email sent: " + info.response);
-        }
-      });
+            : "You've been invited to join the organization as Editor"
+      })
     });
 
     await OrganizationRequest.insertMany(newMember);
 
     return res.json("Success");
   } catch (error) {
+    console.log(error)
     return res.json("Error");
   }
 };
@@ -392,6 +387,36 @@ exports.editOrganization = async (req, res) => {
       { _id: values.organization_id },
       {
         organization_name: values.organization_name,
+        profile: {
+          fileUrl: values.profile_url,
+          fileType: values.mime_type
+        },
+        province: values.province,
+        municipality: values.municipality,
+        address: values.address,
+        country: values.country,
+        phone_number: values.phone_number,
+        website: values.website,
+        about: values.about,
+        mission: values.mission,
+        vision: values.vision,
+      }
+    );
+
+    return res.json("Success");
+  } catch (error) {
+    return res.json("Error");
+  }
+};
+
+exports.editMemberRole = async (req, res) => {
+  const values = req.body;
+
+  try {
+    await OrganizationRequest.updateOne(
+      { _id: values._id },
+      {
+        role: values.role
       }
     );
 

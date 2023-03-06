@@ -48,5 +48,11 @@ module.exports = (app) => {
     blotterRequest.getLatestBlotterRequests
   );
 
+  router.get(
+    "/get-blotter-request-client/:uuid",
+    auth.authenticationToken,
+    blotterRequest.getBlotterRequestsClient
+  );
+
   app.use("/api/blotter_request", router);
 };

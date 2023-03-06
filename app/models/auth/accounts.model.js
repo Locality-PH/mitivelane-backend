@@ -7,6 +7,7 @@ module.exports = (mongoose) => {
       profileUrl: {
         data: String,
         contentType: String,
+        default: {}
       },
       first_name: { type: String },
       last_name: { type: String },

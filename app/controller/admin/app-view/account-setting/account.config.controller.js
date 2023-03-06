@@ -124,18 +124,32 @@ exports.getDetailsAll = async (req, res) => {
 };
 exports.getDetails = async (req, res) => {
   try {
-    const organization = await Account.find({ uuid: req.body.auth_id })
-      .select({ full_name: 1, _id: 0 })
+    const organization = await Account.find({ uuid: req.user.auth_id })
+      .select({ full_name: 3, profileUrl: 2, email: 1, _id: 0 })
       .limit(1);
-
     return res.json({
       full_name: organization[0].full_name,
+      email: organization[0].email,
+      profile_url: organization[0].profileUrl.data,
     });
   } catch (error) {
     return res.json("Error: " + error);
   }
 };
 
+exports.getDetailsUser = async (req, res) => {
+  try {
+    const organization = await Account.find({ uuid: req.params.id })
+      .select({ profileLogo: 2, profileUrl: 1, _id: 0 })
+      .limit(1);
+    return res.json({
+      profile_url: organization[0].profileUrl.data,
+      profile_color: organization[0].profileLogo,
+    });
+  } catch (error) {
+    return res.json("Error: " + error);
+  }
+};
 exports.getSession = async (req, res) => {
   try {
     const organization = await Account.find({ uuid: req.body.auth_id })

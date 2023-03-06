@@ -8,9 +8,15 @@ module.exports = (mongoose) => {
       province: { type: String },
       country: { type: String },
       address: { type: String },
+      phone_number: { type: String },
+      website: { type: String },
+      about: { type: String },
+      mission: { type: String },
+      vision: { type: String },
       organization_status: { type: Boolean },
       organization_supply: { type: Number, default: 0 },
       organization_supply: { type: Number, default: 0 },
+      profile_color: { type: String },
       followers: [
         {
           type: mongoose.Schema.Types.ObjectId,
@@ -23,6 +29,10 @@ module.exports = (mongoose) => {
           ref: "organization_members",
         },
       ],
+      profile: {
+        fileUrl: String,
+        fileType: String,
+      },
     },
     { timestamps: true }
   );

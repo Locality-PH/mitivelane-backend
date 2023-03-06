@@ -35,7 +35,7 @@ module.exports = (app) => {
   );
 
   router.post(
-    "/receive/getPage/:organization_id/:page/:pageSize",
+    "/receive/page/:organization_id/:page/:pageSize",
     auth.authenticationToken,
     supplyController.getReceivedSupplyPage
   );
@@ -60,6 +60,12 @@ module.exports = (app) => {
     "/inventory/:organization_id/:year",
     auth.authenticationToken,
     supplyController.getSupplyInventory
+  );
+
+  router.get(
+    "/getAll/:organization_id/:year",
+    auth.authenticationToken,
+    supplyController.getAllSupplyPerYear
   );
 
   app.use("/api/supply", router);
