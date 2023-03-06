@@ -26,7 +26,7 @@ exports.getCampaigns = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json([]);
-  }populatePeople
+  } populatePeople
 };
 
 exports.getCampaignPage = async (req, res) => {
@@ -37,6 +37,17 @@ exports.getCampaignPage = async (req, res) => {
     var pageSize = parseInt(values.pageSize);
     var organization_id = values.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
+
+    var search = ""
+    var filterSearchPopulate = {
+      first_name: { $regex: search, $options: "i" },
+      last_name: { $regex: search, $options: "i" },
+      email: { $regex: search, $options: "i" }
+    }
+
+    var filterSearch = {
+      title: { $regex: search, $options: "i" }
+    }
 
     var tableScreen = values.tableScreen
     var tableScreenLength = Object.keys(tableScreen).length
@@ -99,14 +110,17 @@ exports.getCampaignPage = async (req, res) => {
       sorter = { ["createdAt"]: "descending" }
     }
 
-    //console.log("filter", filter)
+    // console.log("filterSearch", filterSearch)
+    // console.log("filter", filter)
     // console.log("sorter", sorter)
 
-    await Campaign.find(filter)
+    console.log("all filter", { ...filterSearch, ...filter})
+
+    await Campaign.find({filter})
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
-      .populate({path: "suggestor", select: populatePeople})
+      .populate({ path: "suggestor", select: populatePeople })
       .populate("publisher", populatePeople)
       .populate("organization", populateOrg)
       .sort(sorter)
@@ -159,9 +173,9 @@ exports.getLatestCampaigns = async (req, res) => {
       filter = { organization: orgId, status: "Approved" }
       break;
 
-      case "likes":
-        filter = { likes: userId, status: "Approved" }
-        break;
+    case "likes":
+      filter = { likes: userId, status: "Approved" }
+      break;
 
     default:
       break;
@@ -276,12 +290,12 @@ exports.getCampaign = async (req, res) => {
       .populate("publisher", populatePeople)
       .populate("organization", populateOrg)
       .then((result) => {
-          var temp = Object.assign({}, result);
-          temp._doc.isLike = result.likes.includes(userId)
-          temp._doc.isParticipant = result.participants.includes(userId)
-          var newResult = temp._doc
+        var temp = Object.assign({}, result);
+        temp._doc.isLike = result.likes.includes(userId)
+        temp._doc.isParticipant = result.participants.includes(userId)
+        var newResult = temp._doc
 
-          res.json(newResult)
+        res.json(newResult)
 
       })
   } catch (error) {

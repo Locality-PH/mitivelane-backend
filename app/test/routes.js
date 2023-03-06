@@ -16,6 +16,13 @@ module.exports = (app) => {
     //authenticateToken,
     testApi.testUploadFirebase
   );
+
+  router.get(
+    "/campaign/test",
+    testApi.getCampaignPage
+  );
+
+
   app.use("/api/", router);
 };
 

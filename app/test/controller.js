@@ -3,6 +3,13 @@ const { uuid } = require("uuidv4");
 const fs = require("fs");
 const storage = fb.admin.storage();
 const functions = require("firebase-functions");
+const mongoose = require("mongoose")
+
+const db = require("../models");
+const Campaign = db.campaign;
+const Account = db.account;
+
+
 
 exports.testApi = (req, res) => {
   res.json({ profile_url: req.body.profile_url });
@@ -83,3 +90,37 @@ exports.publish = functions.https.onRequest((req, res) => {
     }
   );
 });
+
+exports.getCampaignPage = async (req, res) => {
+  try {
+    var organization_id = req.query.orgId
+    const search = req.query.search || "";
+    organization_id = mongoose.Types.ObjectId(organization_id);
+
+    const filterSearch = [
+      {
+        "suggestor_docs.full_name": { $regex: search, $options: "i" },
+      },
+    ];
+
+    const query = await Campaign.aggregate([
+      {
+        $match: {organization: organization_id},
+      },
+      {
+        $lookup: {
+          from:'accounts_infos',
+          localField:'suggestor',
+          foreignField:'_id',
+          as:'suggestor_docs',
+        },
+      },
+    ]);
+    res.json(query)
+
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
+};
