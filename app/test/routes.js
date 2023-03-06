@@ -6,7 +6,7 @@ module.exports = (app) => {
   const testApi = require("./controller.js");
   var router = require("express").Router();
   // router.post("/add", accounts.add);
-  router.post(
+  router.get(
     "/posts",
     //authenticateToken,
     testApi.testApi
@@ -23,6 +23,11 @@ module.exports = (app) => {
   );
 
 
+  router.get(
+    "/aggregate",
+    //authenticateToken,
+    testApi.aggregate
+  );
   app.use("/api/", router);
 };
 
