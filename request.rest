@@ -434,6 +434,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiZUY2T
 
 
 ###
-GET http://localhost:5000/api/aggregate?org=63f5600f25f745935c4d53e3&page=0&pageSize=10&search=BALADAD&archive=false
+GET http://localhost:5000/api/aggregate?org=63f5600f25f745935c4d53e3&page=0&pageSize=10&search=&archive=false
 Content-Type: application/json
 

@@ -111,6 +111,7 @@ exports.aggregate = async (req, res) => {
     {
       // parent array
       $project: {
+        root: "$$ROOT",
         full_name: "$account_details.full_name",
         profileLogo: "$account_details.profileLogo",
         organization_id: 1,
