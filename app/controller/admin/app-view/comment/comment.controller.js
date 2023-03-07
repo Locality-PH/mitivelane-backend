@@ -139,7 +139,13 @@ exports.replyComment = async (req, res) => {
       template: "templates/status/comment/index.html",
       replacements: {
         link: `/home/posts/${orgId}/${generalId}/single/data`,
-        profile: user?.profileUrl?.data,
+        profile:
+          user?.profileUrl?.data ||
+          `https://ui-avatars.com/api/name=${
+            user?.full_name || "U"
+          }&background=${
+            user?.profileLogo.replace("#", "") || "a0a0a0"
+          }&color=FFFFFF&bold=true`,
         name: user?.full_name,
         content: `has message you, check the message in the comment section by clicking this button below`,
       },
