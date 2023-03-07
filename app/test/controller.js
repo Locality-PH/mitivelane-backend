@@ -136,7 +136,7 @@ exports.aggregate = async (req, res) => {
         ],
       },
     },
-  ]);
+  ])
   console.log(data);
   res.json(data);
 };
@@ -220,31 +220,114 @@ exports.publish = functions.https.onRequest((req, res) => {
 
 exports.getCampaignPage = async (req, res) => {
   try {
+    console.log("req.query", req.query)
     var organization_id = req.query.orgId
     const search = req.query.search || "";
+    const searchRegex = new RegExp(search, "si");
     organization_id = mongoose.Types.ObjectId(organization_id);
 
     const filterSearch = [
-      {
-        "suggestor_docs.full_name": { $regex: search, $options: "i" },
-      },
+      { suggestor_full_name: { $regex: search, $options: "i" } },
+      { title: { $regex: search, $options: "i" } },
     ];
 
+    const sorter = { title: 1 }
     const query = await Campaign.aggregate([
       {
-        $match: {organization: organization_id},
+        $lookup: {
+          from: "accounts_infos",
+          localField: "suggestor",
+          foreignField: "_id",
+          as: "suggestor_docs"
+        }
       },
       {
-        $lookup: {
-          from:'accounts_infos',
-          localField:'suggestor',
-          foreignField:'_id',
-          as:'suggestor_docs',
+        $unwind: "$suggestor_docs"
+      },
+      {
+        $project: {
+          "suggestor_docs.first_name": 1,
+          "suggestor_docs.last_name": 1,
+          "suggestor_docs.full_name": { $concat: ["$suggestor_docs.first_name", "$suggestor_docs.last_name"] },
+          "suggestor_docs.full_name_no_space": {
+            $replaceAll: {
+              input: { $concat: ["$suggestor_docs.first_name", "$suggestor_docs.last_name"] },
+              find: " ",
+              replacement: ""
+            }
+          },
+          "suggestor_docs.profileLogo": 1,
+          "suggestor_docs.profileUrl": 1,
+          "suggestor_docs.email": 1,
+          title: 1,
+          organization: 1,
+          category: 1,
+          description: 1,
+          status: 1,
+          starting_date: 1,
+          participantCounter: 1,
+          likeCounter: 1,
         },
       },
-    ]);
+      {
+        $match: {
+          $and: [
+            { organization: organization_id }, // manoks
+            {
+              $or: [
+                {
+                  "suggestor_docs.first_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "suggestor_docs.last_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "suggestor_docs.full_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "suggestor_docs.full_name_no_space": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  title: {
+                    $regex: searchRegex
+                  }
+                }
+              ],
+            },
+          ],
+        }
+      },
+      {
+        $sort: {
+          title: 1
+        }
+      },
+      {
+        $facet: {
+          total: [
+            {
+              $group: {
+                _id: null,
+                total: { $sum: 1 }
+              }
+            }
+          ],
+          groups: [
+            { $skip: 0 },
+            { $limit: 5 },
+          ]
+        }
+      }
+    ], { collation: { locale: "en_US", strength: 2 } })
     res.json(query)
-
 
   } catch (error) {
     console.log(error);

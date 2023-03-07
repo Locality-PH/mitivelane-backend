@@ -32,36 +32,23 @@ exports.getCampaigns = async (req, res) => {
 exports.getCampaignPage = async (req, res) => {
   try {
     var values = req.body.values;
-    console.log("values", values);
     var page = parseInt(values.page) - 1;
     var pageSize = parseInt(values.pageSize);
     var organization_id = values.organization_id;
     organization_id = mongoose.Types.ObjectId(organization_id);
 
-    var search = ""
-    var filterSearchPopulate = {
-      first_name: { $regex: search, $options: "i" },
-      last_name: { $regex: search, $options: "i" },
-      email: { $regex: search, $options: "i" }
-    }
-
-    var filterSearch = {
-      title: { $regex: search, $options: "i" }
-    }
-
     var tableScreen = values.tableScreen
+    console.log("tableScreen", tableScreen)
     var tableScreenLength = Object.keys(tableScreen).length
-    var sorter = { status: "ascending" };
+    var sorter = {}
     var filter = { organization: organization_id };
     var doesFilterExist = tableScreen.hasOwnProperty("filter")
     var doesSorterExist = tableScreen.hasOwnProperty("sorter")
     var numberKeys = [] // put here keys that are number fields
     var dateKeys = ["starting_date"] // put here keys that are date fields
-    var suggestorKeys = ["first_name", "email"] // put here keys that are date fields
 
-    if (values.hasOwnProperty("status") != false) {
-      filter.status = values.status;
-    }
+    var search = tableScreen.search || ""
+    const searchRegex = new RegExp(search, "si");
 
     if (doesFilterExist != false) {
       var tempFilter = tableScreen.filter
@@ -72,15 +59,14 @@ exports.getCampaignPage = async (req, res) => {
         if (value != null) {
           isKeyNumber = numberKeys.includes(key)
           isKeyDate = dateKeys.includes(key)
-          isKeySuggestor = suggestorKeys.includes(key)
 
           if (isKeyNumber == true) {
             filter = { ...filter, [key]: value }
           }
 
           if (isKeyDate == true) {
-            var today = moment(value[0]).startOf('day')
-            var endDate = moment(value[0]).endOf('day')
+            var today = moment(value[0]).startOf('day').toDate()
+            var endDate = moment(value[0]).endOf('day').toDate()
 
             var dateFilter = {
               [key]: {
@@ -103,41 +89,122 @@ exports.getCampaignPage = async (req, res) => {
       var tempSorter = tableScreen.sorter
       var field = tempSorter.field
       var order = tempSorter.order + 'ing'
+
+      if (order == 'ascending') {
+        order = 1
+      } else {
+        order = -1
+      }
+
       sorter = { [field]: order }
     }
 
     if (doesSorterExist != true) {
-      sorter = { ["createdAt"]: "descending" }
+      sorter = { ["status"]: 1 }
     }
 
-    // console.log("filterSearch", filterSearch)
-    // console.log("filter", filter)
-    // console.log("sorter", sorter)
+    console.log("filter", filter)
+    console.log("sorter", sorter)
 
-    console.log("all filter", { ...filterSearch, ...filter})
-
-    await Campaign.find({filter})
-      .skip(page * pageSize)
-      .limit(pageSize)
-      .collation({ locale: "en" })
-      .populate({ path: "suggestor", select: populatePeople })
-      .populate("publisher", populatePeople)
-      .populate("organization", populateOrg)
-      .sort(sorter)
+    await Campaign.aggregate([
+      {
+        $lookup: {
+          from: "accounts_infos",
+          localField: "suggestor",
+          foreignField: "_id",
+          as: "suggestor_docs"
+        }
+      },
+      {
+        $unwind: "$suggestor_docs"
+      },
+      {
+        $project: {
+          "suggestor_docs.first_name": 1,
+          "suggestor_docs.last_name": 1,
+          "suggestor_docs.full_name": { $concat: ["$suggestor_docs.first_name", "$suggestor_docs.last_name"] },
+          "suggestor_docs.full_name_no_space": {
+            $replaceAll: {
+              input: { $concat: ["$suggestor_docs.first_name", "$suggestor_docs.last_name"] },
+              find: " ",
+              replacement: ""
+            }
+          },
+          "suggestor_docs.profileLogo": 1,
+          "suggestor_docs.profileUrl": 1,
+          "suggestor_docs.email": 1,
+          title: 1,
+          organization: 1,
+          category: 1,
+          description: 1,
+          status: 1,
+          starting_date: 1,
+          participantCounter: 1,
+          likeCounter: 1,
+          images: 1
+        },
+      }, 
+      {
+        $match: {
+          $and: [
+            filter,
+            {
+              $or: [
+                {
+                  "suggestor_docs.first_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "suggestor_docs.last_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "suggestor_docs.full_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "suggestor_docs.full_name_no_space": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  title: {
+                    $regex: searchRegex
+                  }
+                }
+              ],
+            },
+          ]
+        }
+      },
+      {
+        $sort: sorter
+      },
+      {
+        $facet: {
+          summary: [
+            {
+              $group: {
+                _id: null,
+                total: { $sum: 1 }
+              }
+            }
+          ],
+          groups: [
+            { $skip: page * pageSize },
+            { $limit: pageSize },
+          ]
+        }
+      }
+    ], { collation: { locale: "en_US", strength: 2 } })
       .then(async (result) => {
-        var list = result;
-        await Campaign.countDocuments(filter).then((result) => {
-          var total = result;
+        var list = result[0]?.groups;
+        var total = result[0]?.summary[0]?.total;
 
-          var newList = list.map((list) => {
-            var temp = Object.assign({}, list);
-            temp._doc.participants = list.participants.length;
-            temp._doc.likes = list.likes.length;
-            return temp._doc;
-          });
-
-          res.json({ list: newList, total });
-        });
+        res.json({ list, total });
       });
   } catch (error) {
     console.log(error);
