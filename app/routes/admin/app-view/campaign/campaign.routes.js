@@ -5,7 +5,8 @@ module.exports = (app) => {
 
     router.get("/getAll", auth.authenticationToken, campaignController.getCampaigns);
     router.post("/get", auth.authenticationToken, campaignController.getCampaign);
-    router.post("/page", auth.authenticationToken, campaignController.getCampaignPage);
+    router.post("/suggested/page", auth.authenticationToken, campaignController.getSuggestedPage);
+    router.post("/published/page", auth.authenticationToken, campaignController.getPublishedPage);
     router.get("/latest", auth.authenticationToken, campaignController.getLatestCampaigns);
     router.get("/trending", auth.authenticationToken, campaignController.getTrendingCampaigns);
     router.get("/get-user", auth.authenticationToken, campaignController.getCampaignUserId);

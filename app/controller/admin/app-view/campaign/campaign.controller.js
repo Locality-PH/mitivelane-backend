@@ -29,7 +29,7 @@ exports.getCampaigns = async (req, res) => {
   } populatePeople
 };
 
-exports.getCampaignPage = async (req, res) => {
+exports.getSuggestedPage = async (req, res) => {
   try {
     var values = req.body.values;
     var page = parseInt(values.page) - 1;
@@ -122,7 +122,7 @@ exports.getCampaignPage = async (req, res) => {
         $project: {
           "suggestor_docs.first_name": 1,
           "suggestor_docs.last_name": 1,
-          "suggestor_docs.full_name": { $concat: ["$suggestor_docs.first_name", "$suggestor_docs.last_name"] },
+          "suggestor_docs.full_name": { $concat: ["$suggestor_docs.first_name", " " ,"$suggestor_docs.last_name"] },
           "suggestor_docs.full_name_no_space": {
             $replaceAll: {
               input: { $concat: ["$suggestor_docs.first_name", "$suggestor_docs.last_name"] },
@@ -143,7 +143,7 @@ exports.getCampaignPage = async (req, res) => {
           likeCounter: 1,
           images: 1
         },
-      }, 
+      },
       {
         $match: {
           $and: [
@@ -162,6 +162,11 @@ exports.getCampaignPage = async (req, res) => {
                 },
                 {
                   "suggestor_docs.full_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "suggestor_docs.email": {
                     $regex: searchRegex
                   }
                 },
@@ -211,6 +216,195 @@ exports.getCampaignPage = async (req, res) => {
     res.status(500).send({ error: "error" });
   }
 };
+
+exports.getPublishedPage = async (req, res) => {
+  try {
+    var values = req.body.values;
+    var page = parseInt(values.page) - 1;
+    var pageSize = parseInt(values.pageSize);
+    var organization_id = values.organization_id;
+    organization_id = mongoose.Types.ObjectId(organization_id);
+
+    var tableScreen = values.tableScreen
+    console.log("tableScreen", tableScreen)
+    var tableScreenLength = Object.keys(tableScreen).length
+    var sorter = {}
+    var filter = { organization: organization_id };
+    var doesFilterExist = tableScreen.hasOwnProperty("filter")
+    var doesSorterExist = tableScreen.hasOwnProperty("sorter")
+    var numberKeys = ["participantCounter", "likeCounter"] // put here keys that are number fields
+    var dateKeys = ["starting_date"] // put here keys that are date fields
+
+    var search = tableScreen.search || ""
+    const searchRegex = new RegExp(search, "si");
+
+    if (doesFilterExist != false) {
+      var tempFilter = tableScreen.filter
+      var isKeyNumber = false
+      var isKeyDate = false
+
+      for (const [key, value] of Object.entries(tempFilter)) {
+        if (value != null) {
+          isKeyNumber = numberKeys.includes(key)
+          isKeyDate = dateKeys.includes(key)
+
+          if (isKeyNumber == true) {
+            filter = { ...filter, [key]: value[0] }
+          }
+
+          if (isKeyDate == true) {
+            var today = moment(value[0]).startOf('day').toDate()
+            var endDate = moment(value[0]).endOf('day').toDate()
+
+            var dateFilter = {
+              [key]: {
+                $gte: today,
+                $lte: endDate
+              }
+            }
+
+            filter = { ...filter, ...dateFilter }
+          }
+
+          if (isKeyDate == false && isKeyNumber == false) {
+            filter = { ...filter, [key]: { $regex: value.join("|"), $options: "i" } }
+          }
+        }
+      }
+    }
+
+    if (doesSorterExist != false) {
+      var tempSorter = tableScreen.sorter
+      var field = tempSorter.field
+      var order = tempSorter.order + 'ing'
+
+      if (order == 'ascending') {
+        order = 1
+      } else {
+        order = -1
+      }
+
+      sorter = { [field]: order }
+    }
+
+    if (doesSorterExist != true) {
+      sorter = { ["status"]: 1 }
+    }
+
+    console.log("filter", filter)
+    console.log("sorter", sorter)
+
+    await Campaign.aggregate([
+      {
+        $lookup: {
+          from: "accounts_infos",
+          localField: "publisher",
+          foreignField: "_id",
+          as: "publisher_docs"
+        }
+      },
+      {
+        $unwind: "$publisher_docs"
+      },
+      {
+        $project: {
+          "publisher_docs.first_name": 1,
+          "publisher_docs.last_name": 1,
+          "publisher_docs.full_name": { $concat: ["$publisher_docs.first_name", " " ,"$publisher_docs.last_name"] },
+          "publisher_docs.full_name_no_space": {
+            $replaceAll: {
+              input: { $concat: ["$publisher_docs.first_name", "$publisher_docs.last_name"] },
+              find: " ",
+              replacement: ""
+            }
+          },
+          "publisher_docs.profileLogo": 1,
+          "publisher_docs.profileUrl": 1,
+          "publisher_docs.email": 1,
+          title: 1,
+          organization: 1,
+          category: 1,
+          description: 1,
+          status: 1,
+          starting_date: 1,
+          participantCounter: 1,
+          likeCounter: 1,
+          images: 1
+        },
+      },
+      {
+        $match: {
+          $and: [
+            filter,
+            {
+              $or: [
+                {
+                  "publisher_docs.first_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "publisher_docs.last_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "publisher_docs.full_name": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "publisher_docs.full_name_no_space": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  "publisher_docs.email": {
+                    $regex: searchRegex
+                  }
+                },
+                {
+                  title: {
+                    $regex: searchRegex
+                  }
+                }
+              ],
+            },
+          ]
+        }
+      },
+      {
+        $sort: sorter
+      },
+      {
+        $facet: {
+          summary: [
+            {
+              $group: {
+                _id: null,
+                total: { $sum: 1 }
+              }
+            }
+          ],
+          groups: [
+            { $skip: page * pageSize },
+            { $limit: pageSize },
+          ]
+        }
+      }
+    ], { collation: { locale: "en_US", strength: 2 } })
+      .then(async (result) => {
+        var list = result[0]?.groups;
+        var total = result[0]?.summary[0]?.total;
+
+        res.json({ list, total });
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "error" });
+  }
+};
+
 
 exports.getLatestCampaigns = async (req, res) => {
   const page = req.query.page - 1;
@@ -279,7 +473,10 @@ exports.getTrendingCampaigns = async (req, res) => {
   var length = req.query.length
 
   try {
-    const campaign = await Campaign.find({ status: "Approved" })
+    const campaign = await Campaign.find({
+      status: "Approved",
+      starting_date: {$gte: moment().startOf("day").toDate()}
+    })
       .populate("publisher")
       .sort({ participantCounter: -1 })
       .limit(length)
@@ -455,11 +652,12 @@ exports.updateCampaignStatus = async (req, res) => {
   var _id = req.body.campaignId
   // const _id = values.campaign_id;
 
+  console.log("values", values)
+
   var userAuthId = req.user.auth_id
   var user = await Account.findOne({ uuid: userAuthId }, "_id")
   var userId = user._id
 
-  console.log("userId", userId)
   try {
     if (type == "like") {
       if (operation == "increment") {
@@ -484,7 +682,7 @@ exports.updateCampaignStatus = async (req, res) => {
 
     Promise.all([UpdateCampaignQuery])
       .then((result) => {
-        console.log("result", result)
+        // console.log("result", result)
         res.json("updated");
       })
 
