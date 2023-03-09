@@ -319,7 +319,7 @@ exports.updateCertificateRequest = async (req, res) => {
         message: `You're Document Requested have been ${req.body.status}`,
         user_id: req.body.user_id?._id,
         uuid: req.body?.uuid,
-        is_read: false,
+        is_read: false, // default
         type: "organization",
         link: `/home/account/settings/profile/${req.body?.uuid}`,
       });
