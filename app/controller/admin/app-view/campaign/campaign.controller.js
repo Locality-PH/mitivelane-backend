@@ -3,6 +3,7 @@ var mongoose = require("mongoose");
 var moment = require("moment");
 const NotificationMiddleware = require("../../../../helper/notification");
 const NodeMailer = require("../../../../nodemailer/index");
+const { RecordSession } = require("../../../../helper/session");
 
 const Campaign = db.campaign;
 const Organization = db.organization;
@@ -588,8 +589,22 @@ exports.addCampaign = async (req, res) => {
 
   try {
     const newCampaign = new Campaign(newCampaignData);
-    await newCampaign.save();
-    res.json(newCampaign);
+    const query = await newCampaign.save();
+
+    const session = await RecordSession({
+      organization_id: newCampaignData.organization,
+      userAuthId: req.user.auth_id,
+      message: "Created a campaign.",
+      action: "Create",
+      module: "Campaign",
+    })
+
+    Promise.all([query, session])
+    .then((values) => {
+      res.json(values[0]);
+    });
+
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
@@ -627,7 +642,6 @@ exports.updateCampaign = async (req, res) => {
 
   values.publisher = id;
 
-
   try {
     await Campaign.updateOne({ _id }, values).then(async () => {
       if (oldStatus != values.status) {
@@ -641,6 +655,14 @@ exports.updateCampaign = async (req, res) => {
           sendEmail(values)
         }
       }
+
+      await RecordSession({
+        organization_id: values.organization,
+        userAuthId: req.user.auth_id,
+        message: "Edited a campaign.",
+        action: "Edit",
+        module: "Campaign",
+      })
       res.json("updated");
     });
   } catch (error) {
@@ -742,11 +764,22 @@ exports.updateCampaignStatus = async (req, res) => {
 exports.deleteCampaign = async (req, res) => {
   var values = req.body.values;
   const deleteList = values.deleteList;
+  const total = deleteList.length
 
   try {
-    await Campaign.deleteMany({ _id: deleteList }).then(() => {
-      res.json("deleted");
-    });
+    await Campaign.deleteMany({ _id: deleteList })
+      .then(async () => {
+        await RecordSession({
+          organization_id: values.organization_id,
+          userAuthId: req.user.auth_id,
+          message: `Deleted ${total} campaign/s.`,
+          action: "Delete",
+          module: "Campaign"
+        })
+
+        res.json("deleted");
+      });
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
