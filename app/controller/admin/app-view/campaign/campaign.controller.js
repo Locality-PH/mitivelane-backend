@@ -1,8 +1,11 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
 var moment = require("moment");
+const NotificationMiddleware = require("../../../../helper/notification");
+const NodeMailer = require("../../../../nodemailer/index");
 
 const Campaign = db.campaign;
+const Organization = db.organization;
 const Account = db.account;
 
 const populatePeople = [
@@ -122,7 +125,7 @@ exports.getSuggestedPage = async (req, res) => {
         $project: {
           "suggestor_docs.first_name": 1,
           "suggestor_docs.last_name": 1,
-          "suggestor_docs.full_name": { $concat: ["$suggestor_docs.first_name", " " ,"$suggestor_docs.last_name"] },
+          "suggestor_docs.full_name": { $concat: ["$suggestor_docs.first_name", " ", "$suggestor_docs.last_name"] },
           "suggestor_docs.full_name_no_space": {
             $replaceAll: {
               input: { $concat: ["$suggestor_docs.first_name", "$suggestor_docs.last_name"] },
@@ -311,7 +314,7 @@ exports.getPublishedPage = async (req, res) => {
         $project: {
           "publisher_docs.first_name": 1,
           "publisher_docs.last_name": 1,
-          "publisher_docs.full_name": { $concat: ["$publisher_docs.first_name", " " ,"$publisher_docs.last_name"] },
+          "publisher_docs.full_name": { $concat: ["$publisher_docs.first_name", " ", "$publisher_docs.last_name"] },
           "publisher_docs.full_name_no_space": {
             $replaceAll: {
               input: { $concat: ["$publisher_docs.first_name", "$publisher_docs.last_name"] },
@@ -474,7 +477,7 @@ exports.getTrendingCampaigns = async (req, res) => {
   try {
     const campaign = await Campaign.find({
       status: "Approved",
-      starting_date: {$gte: moment().startOf("day").toDate()}
+      starting_date: { $gte: moment().startOf("day").toDate() }
     })
       .populate("publisher")
       .sort({ participantCounter: -1 })
@@ -614,23 +617,30 @@ exports.addCampaignSuggestion = async (req, res) => {
 };
 
 exports.updateCampaign = async (req, res) => {
+  var oldStatus = req.body.oldStatus;
   var values = req.body.values;
   const _id = values.campaign_id;
 
-  var hasPublisher = values.hasOwnProperty("publisher");
-  var hasSuggestor = values.hasOwnProperty("suggestor");
+  const publisherUuid = req.user.auth_id
+  const user = await Account.findOne({ uuid: publisherUuid }, "_id");
+  const id = user._id;
 
-  if (!hasPublisher || !hasSuggestor) {
-    const userAuthId = req.user.auth_id;
-    const user = await Account.findOne({ uuid: userAuthId }, "_id");
-    const id = user._id;
+  values.publisher = id;
 
-    if (!hasPublisher) values.publisher = id;
-    if (!hasSuggestor) values.suggestor = id;
-  }
 
   try {
-    await Campaign.updateOne({ _id }, values).then(() => {
+    await Campaign.updateOne({ _id }, values).then(async () => {
+      if (oldStatus != values.status) {
+
+        const suggestor = await Account.findOne({ _id: values.suggestor }, "uuid");
+        var userAuthId = suggestor.uuid
+
+        await sendNotif(values, userAuthId)
+
+        if (values.suggestor != values.publisher) {
+          sendEmail(values)
+        }
+      }
       res.json("updated");
     });
   } catch (error) {
@@ -638,6 +648,51 @@ exports.updateCampaign = async (req, res) => {
     res.status(500).send({ error: "error" });
   }
 };
+
+const sendNotif = async (values, userAuthId) => {
+  try {
+    await NotificationMiddleware.notificationDocument({
+      organization_id: values.organization,
+      message: `Your suggested camapaign status has been change to "${values.status}"`,
+      user_id: values.suggestor,
+      uuid: userAuthId,
+      is_read: false, // default
+      type: "campaign",
+      link: `/home/posts/${values.organization}/${values.campaign_id}/single/data`,
+    });
+  } catch (error) {
+    throw error
+  }
+}
+
+const sendEmail = async (values) => {
+  try {
+    const getSender = await Account.findOne({ _id: values.publisher }, "_id first_name last_name email");
+    const getReceiver = await Account.findOne({ _id: values.suggestor }, "_id first_name last_name email");
+    const getOrg = await Organization.findOne({ _id: values.organization }, "_id organization_name");
+
+    Promise.all([getSender, getReceiver, getOrg])
+      .then(async ([sender, receiver, org]) => {
+
+        await NodeMailer.sendMail({
+          template: "templates/status/campaign/index.html",
+          replacements: {
+            receiver: `${receiver.first_name} ${receiver.last_name}`,
+            sender_email: sender.email,
+            sender: `${sender.first_name} ${sender.last_name}`,
+            status: values.status,
+            orgName: org.organization_name,
+            link: `https://mitivelane-test.online/home/posts/${values.organization}/${values.campaign_id}/single/data`
+          },
+          from: "Mitivelane Team<testmitivelane@gmail.com>",
+          to: "gcmediavillo@gmail.com",
+          subject: "Your Suggested Campaign status has been changed"
+        })
+      })
+  } catch (error) {
+    throw error
+  }
+}
 
 exports.updateCampaignStatus = async (req, res) => {
   var values = req.body.values;
