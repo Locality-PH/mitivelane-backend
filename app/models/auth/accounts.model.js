@@ -4,10 +4,11 @@ module.exports = (mongoose) => {
       _id: { type: mongoose.Schema.Types.ObjectId },
       email: { type: String },
       uuid: { type: String, unique: true },
+      customer_id: { type: String, unique: true },
       profileUrl: {
         data: String,
         contentType: String,
-        default: {}
+        default: {},
       },
       first_name: { type: String },
       last_name: { type: String },

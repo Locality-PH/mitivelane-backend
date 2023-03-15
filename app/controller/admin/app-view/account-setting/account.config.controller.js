@@ -98,7 +98,7 @@ exports.updateAccountTest = async (req, res) => {
 };
 exports.getDetailsAll = async (req, res) => {
   try {
-    const organization = await Account.find({ uuid: req.body.auth_id })
+    const organization = await Account.find({ uuid: req.user.auth_id })
       .select({
         address: 6,
         address2: 5,
@@ -111,12 +111,12 @@ exports.getDetailsAll = async (req, res) => {
       .limit(1);
 
     return res.json({
-      country: organization[0].country,
-      address: organization[0].address,
+      country: organization[0]?.country,
+      address: organization[0]?.address,
       address2: organization[0].address2,
-      phone_number: organization[0].mobile,
-      city: organization[0].city,
-      postal: organization[0].postal,
+      phone_number: organization[0]?.mobile,
+      city: organization[0]?.city,
+      postal: organization[0]?.postal,
     });
   } catch (error) {
     return res.json("Error: " + error);

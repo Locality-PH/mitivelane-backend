@@ -25,5 +25,11 @@ module.exports = (app) => {
     auth.authenticationToken,
     billingDetails.updateBillingCard
   );
-  app.use("/api/app", router);
+
+  router.post(
+    "/user/billing/document/intent",
+    auth.authenticationToken,
+    billingDetails.payDocumentIntent
+  );
+  app.use("/api/app/", router);
 };

@@ -8,6 +8,8 @@ module.exports = (mongoose) => {
       cvc: { type: String },
       active_card: { type: Boolean },
       user_id: { type: String, required: true },
+      customer_id: { type: String },
+      token_id: { type: String },
     },
     { timestamps: true }
   );

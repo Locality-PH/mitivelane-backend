@@ -12,6 +12,9 @@ const fs = require("fs");
 var mongoose = require("mongoose");
 const NodeMailer = require("../../../../nodemailer/index.js");
 const NotificationMiddleware = require("../../../../helper/notification");
+const stripe = require("stripe")(
+  "sk_test_51MlMs3HCtdNtuz3POOfVyMPNhZPnOmAmfZAsVORA6CPEACEBTmM9Q2IX6zjJ69XLztPKfOWPDTYIxEgB4FaNugQQ00ygZloaMq"
+);
 
 const pageSizeOptions = [5, 10, 20, 50, 100];
 
@@ -144,7 +147,7 @@ exports.getCertificateRequestLatest = async (req, res) => {
     return res.json(err);
   }
 };
-
+// acct_1MlMs3HCtdNtuz3P
 exports.createCertificateRequest = async (req, res) => {
   try {
     const id = new mongoose.Types.ObjectId();
@@ -175,6 +178,7 @@ exports.createCertificateRequest = async (req, res) => {
 
     const cert = await new CertificateRequest(data);
     cert.save();
+
     Promise.all([user, cert]).then(() => {
       return res.json("saved");
     });
