@@ -38,7 +38,6 @@ exports.getSuggestedPage = async (req, res) => {
     organization_id = mongoose.Types.ObjectId(organization_id);
 
     var tableScreen = values.tableScreen
-    console.log("tableScreen", tableScreen)
     var tableScreenLength = Object.keys(tableScreen).length
     var sorter = {}
     var filter = { organization: organization_id };
@@ -49,6 +48,7 @@ exports.getSuggestedPage = async (req, res) => {
 
     var search = tableScreen.search || ""
     const searchRegex = new RegExp(search, "si");
+    const searchRegexNoSpace = new RegExp(search.replace(/\s/g, ''), "si");
 
     if (doesFilterExist != false) {
       var tempFilter = tableScreen.filter
@@ -103,8 +103,8 @@ exports.getSuggestedPage = async (req, res) => {
       sorter = { ["status"]: 1 }
     }
 
-    console.log("filter", filter)
-    console.log("sorter", sorter)
+    // console.log("filter", filter)
+    // console.log("sorter", sorter)
 
     await Campaign.aggregate([
       {
@@ -167,7 +167,7 @@ exports.getSuggestedPage = async (req, res) => {
                 },
                 {
                   "suggestor_docs.email": {
-                    $regex: searchRegex
+                    $regex: searchRegexNoSpace
                   }
                 },
                 {
@@ -226,7 +226,7 @@ exports.getPublishedPage = async (req, res) => {
     organization_id = mongoose.Types.ObjectId(organization_id);
 
     var tableScreen = values.tableScreen
-    console.log("tableScreen", tableScreen)
+
     var tableScreenLength = Object.keys(tableScreen).length
     var sorter = {}
     var filter = { organization: organization_id };
@@ -237,6 +237,7 @@ exports.getPublishedPage = async (req, res) => {
 
     var search = tableScreen.search || ""
     const searchRegex = new RegExp(search, "si");
+    const searchRegexNoSpace = new RegExp(search.replace(/\s/g, ''), "si");
 
     if (doesFilterExist != false) {
       var tempFilter = tableScreen.filter
@@ -291,8 +292,8 @@ exports.getPublishedPage = async (req, res) => {
       sorter = { ["status"]: 1 }
     }
 
-    console.log("filter", filter)
-    console.log("sorter", sorter)
+    // console.log("filter", filter)
+    // console.log("sorter", sorter)
 
     await Campaign.aggregate([
       {
@@ -355,7 +356,7 @@ exports.getPublishedPage = async (req, res) => {
                 },
                 {
                   "publisher_docs.full_name_no_space": {
-                    $regex: searchRegex
+                    $regex: searchRegexNoSpace
                   }
                 },
                 {
@@ -417,8 +418,6 @@ exports.getLatestCampaigns = async (req, res) => {
   var userAuthId = req.user.auth_id
   var user = await Account.findOne({ uuid: userAuthId }, "_id")
   var userId = user._id
-
-  console.log("latest barangay req.query", req.query)
 
   switch (landingPage) {
     case "homepage":
@@ -569,7 +568,6 @@ exports.getCampaign = async (req, res) => {
 };
 
 exports.addCampaign = async (req, res) => {
-  console.log("req.body", req.body);
   var newCampaignData = req.body.values;
   newCampaignData._id = new mongoose.Types.ObjectId();
 
@@ -588,7 +586,6 @@ exports.addCampaign = async (req, res) => {
   try {
     const newCampaign = new Campaign(newCampaignData);
     await newCampaign.save();
-    console.log("render read this: newCampaign", newCampaign);
     res.json(newCampaign);
   } catch (error) {
     console.log(error);
@@ -597,7 +594,6 @@ exports.addCampaign = async (req, res) => {
 };
 
 exports.addCampaignSuggestion = async (req, res) => {
-  console.log("req.body", req.body);
   var newCampaignData = req.body.values;
   newCampaignData._id = new mongoose.Types.ObjectId();
   newCampaignData.organization = newCampaignData.organization_id;
@@ -606,8 +602,6 @@ exports.addCampaignSuggestion = async (req, res) => {
   const user = await Account.findOne({ uuid: userAuthId }, "_id");
   const userId = user._id;
   newCampaignData.suggestor = userId;
-
-  console.log("newCampaignData", newCampaignData);
 
   try {
     const newCampaign = new Campaign(newCampaignData);
@@ -652,8 +646,6 @@ exports.updateCampaignStatus = async (req, res) => {
   var _id = req.body.campaignId
   // const _id = values.campaign_id;
 
-  console.log("values", values)
-
   var userAuthId = req.user.auth_id
   var user = await Account.findOne({ uuid: userAuthId }, "_id")
   var userId = user._id
@@ -695,8 +687,6 @@ exports.updateCampaignStatus = async (req, res) => {
 exports.deleteCampaign = async (req, res) => {
   var values = req.body.values;
   const deleteList = values.deleteList;
-
-  console.log("delete values", values);
 
   try {
     await Campaign.deleteMany({ _id: deleteList }).then(() => {

@@ -6,6 +6,7 @@ module.exports = (mongoose) => {
       role: { type: String },
       organization_id: { type: String },
       account: { type: mongoose.Schema.Types.ObjectId, ref: "accounts_infos" },
+      active_email: { type: Boolean, default: false },
       // organization: [{ type: mongoose.Schema.Types.ObjectId, ref: "organizations" }],
     },
     { timestamps: true }
