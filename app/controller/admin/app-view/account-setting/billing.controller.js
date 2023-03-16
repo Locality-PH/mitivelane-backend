@@ -576,7 +576,7 @@ exports.payDocumentIntent = async (req, res) => {
         name: account?.full_name,
         content: `has paid you of " + req.body.paymentData + " credit`,
       },
-      to: comment3.account.email,
+      to: account?.email,
       from: "Mitivelane<testmitivelane@gmail.com>",
       subject: `Someone has replied to your comment`,
     });
