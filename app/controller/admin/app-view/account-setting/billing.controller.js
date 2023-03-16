@@ -331,8 +331,9 @@ exports.getBilling = async (req, res) => {
             res.set("customer-balance", balance / 100);
             res.status(200).json(organization);
           })
-          .catch((error) => {
-            return res.status(400).json("Error: " + error);
+          .catch(() => {
+            res.set("customer-balance", 0);
+            res.status(200).json(organization);
           });
       })
       .catch((err) => {
