@@ -451,7 +451,8 @@ exports.getLatestCampaigns = async (req, res) => {
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
-      .populate("suggestor",)
+      .populate("suggestor", populatePeople)
+      .populate("participants", populatePeople)
       .populate("publisher", populatePeople)
       .populate("organization", populateOrg)
       .sort(sorter)
@@ -460,7 +461,7 @@ exports.getLatestCampaigns = async (req, res) => {
           var temp = Object.assign({}, data);
           // temp._doc.starting_date = moment(new Date(data.starting_date))
           temp._doc.isLike = data.likes.includes(userId)
-          temp._doc.isParticipant = data.participants.includes(userId)
+          temp._doc.isParticipant = data.participants.some(user => user._id.toString() === userId.toString())
           return temp._doc;
         });
 
@@ -555,11 +556,12 @@ exports.getCampaign = async (req, res) => {
     })
       .populate("suggestor", populatePeople)
       .populate("publisher", populatePeople)
+      .populate("participants", populatePeople)
       .populate("organization", populateOrg)
       .then((result) => {
         var temp = Object.assign({}, result);
         temp._doc.isLike = result.likes.includes(userId)
-        temp._doc.isParticipant = result.participants.includes(userId)
+        temp._doc.isParticipant = result.participants.some(user => user._id.toString() === userId.toString())
         var newResult = temp._doc
 
         res.json(newResult)
@@ -600,9 +602,9 @@ exports.addCampaign = async (req, res) => {
     })
 
     Promise.all([query, session])
-    .then((values) => {
-      res.json(values[0]);
-    });
+      .then((values) => {
+        res.json(values[0]);
+      });
 
 
   } catch (error) {
