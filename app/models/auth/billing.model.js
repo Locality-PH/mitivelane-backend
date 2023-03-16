@@ -10,6 +10,7 @@ module.exports = (mongoose) => {
       user_id: { type: String, required: true },
       customer_id: { type: String },
       token_id: { type: String },
+      src_id: { type: String },
     },
     { timestamps: true }
   );

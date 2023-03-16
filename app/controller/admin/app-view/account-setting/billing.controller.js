@@ -37,6 +37,22 @@ exports.createBilling2 = async (req, res) => {
                 .catch((error) => {
                   return res.json(error.message);
                 });
+              const source = await stripe.sources.create({
+                type: "card",
+                card: {
+                  number: req.body.card_number.replace(" ", ""),
+                  exp_month: splitCvc[0],
+                  exp_year: splitCvc[1],
+                  cvc: req.body.cvc,
+                },
+              });
+              console.log(source.id);
+              const customer = await stripe.customers.update(
+                customers.data[0].id,
+                {
+                  default_source: source.id,
+                }
+              );
               // Attach the payment method to the source
               await stripe.paymentMethods
                 .attach(token.id, {
@@ -154,6 +170,7 @@ exports.createBilling2 = async (req, res) => {
 exports.createBilling = async (req, res) => {
   let customer = [];
   let token_id = null;
+  let src_id = null;
   const billingId = new mongoose.Types.ObjectId();
   const info = req.body?.info;
   let errorOccurred = false;
@@ -176,6 +193,28 @@ exports.createBilling = async (req, res) => {
         await stripe.paymentMethods.attach(token.id, {
           customer: customers.data[0].id,
         });
+        const source = await stripe.sources
+          .create({
+            type: "card",
+            card: {
+              number: req.body.card_number.replace(" ", ""),
+              exp_month: splitCvc[0],
+              exp_year: splitCvc[1],
+              cvc: req.body.cvc,
+            },
+          })
+          .then(async (source) => {
+            console.log(source.id);
+            const customer = await stripe.customers.update(
+              customers.data[0].id,
+              {
+                source: source.id,
+              }
+            );
+            console.log(source.id);
+            return source;
+          });
+        src_id = source.id;
         token_id = token.id;
         customer = customers.data[0].id;
       } else {
@@ -204,6 +243,7 @@ exports.createBilling = async (req, res) => {
         customer = customer.id;
       }
     }
+
     const account = await Account.findOneAndUpdate(
       { uuid: req.user.auth_id },
       { $set: { customer_id: customer } },
@@ -222,6 +262,7 @@ exports.createBilling = async (req, res) => {
       active_card: false,
       customer_id: customer,
       token_id: token_id,
+      src_id: src_id,
     });
     await billing.save();
 
@@ -400,19 +441,30 @@ exports.updateBillingCard = async (req, res) => {
       _id: req.body.card_id_new,
     });
     console.log(billingData);
-    if (req.body.card_id_new !== "N/A")
+    if (req.body.card_id_new !== "N/A") {
       await stripe.customers
         .update(billingData.customer_id, {
+          default_source: billingData.src_id,
           invoice_settings: {
             default_payment_method: billingData.token_id,
           },
         })
-        .then((customer) => {
+        .then(async (customer) => {
           console.log("Default payment method set for customer:", customer);
         })
         .catch((err) => {
           console.log("Error:", err);
         });
+      const customer2 = await stripe.customers.retrieve(
+        billingData.customer_id
+      );
+
+      console.log("org", customer2);
+      // const customer = await stripe.customers.retrieve(billingData.customer_id);
+      // await stripe.customers.update(billingData.customer_id, {
+      //   default_source: billingData.token_id,
+      // });
+    }
     if (req.body.card_id_prev !== "none") {
       const billingDataPrev = await Billing.findOneAndUpdate(
         {
@@ -448,14 +500,14 @@ exports.payDocumentIntent = async (req, res) => {
       organization_id: req.body.organizationId,
       active_email: true,
     });
-    console.log(organizationData);
+    //  console.log(organizationData);
     if (!organizationData) {
       return res.status(400).json("Organization billing email not set");
     }
     if (!organizationData?.email) {
       return res.status(400).json("Organization billing email not set");
     }
-    console.log(organizationData.email);
+    //  console.log(organizationData.email);
     const account = await Account.findOne({
       email: organizationData.email,
     }).select({
@@ -466,7 +518,7 @@ exports.payDocumentIntent = async (req, res) => {
       customer_id: 1,
       _id: 1,
     });
-    console.log("User ", account);
+    //  console.log("User ", account);
     if (!account?.customer_id) {
       return res.status(400).json("Organization billing user email not set");
     }
@@ -479,7 +531,11 @@ exports.payDocumentIntent = async (req, res) => {
       description: "Example payment intent",
       confirm: true,
     });
-
+    // console.log(account?.customer_id, req.body.customer_id);
+    const customer2 = await stripe.customers.retrieve(req.body.customer_id);
+    const customer3 = await stripe.customers.retrieve(account?.customer_id);
+    console.log("user", customer2);
+    console.log("org", customer3);
     const balanceTransaction = await stripe.charges.create({
       amount: Number(req.body.paymentData) * 100, // amount in cents
       currency: "usd",
@@ -506,7 +562,25 @@ exports.payDocumentIntent = async (req, res) => {
       type: "user",
       link: `#`,
     });
-    console.log("Transfer successfully created:", balanceTransaction);
+    NodeMailer.sendMail({
+      template: "templates/status/payment/index.html",
+      replacements: {
+        link: `#`,
+        profile:
+          account?.profileUrl?.data ||
+          `https://ui-avatars.com/api/name=${
+            account?.full_name || "U"
+          }&background=${
+            account?.profileLogo.replace("#", "") || "a0a0a0"
+          }&color=FFFFFF&bold=true`,
+        name: account?.full_name,
+        content: `has paid you of " + req.body.paymentData + " credit`,
+      },
+      to: comment3.account.email,
+      from: "Mitivelane<testmitivelane@gmail.com>",
+      subject: `Someone has replied to your comment`,
+    });
+    //  console.log("Transfer successfully created:", balanceTransaction);
 
     return res.status(200).json("payment successful");
   } catch (error) {
