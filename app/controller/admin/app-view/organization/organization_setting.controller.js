@@ -462,8 +462,12 @@ exports.getActiveEmail = async (req, res) => {
     const organizationMember = await OrganizationMember.findOne({
       organization_id: organizationId, active_email: true
     })
+	
+	const account = await Account.findOne({
+      email: organizationMember.email
+    })
 
-    return res.json(organizationMember);
+    return res.json(account);
   } catch (error) {
     return res.json([]);
   }
