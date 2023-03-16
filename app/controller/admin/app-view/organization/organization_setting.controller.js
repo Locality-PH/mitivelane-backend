@@ -137,22 +137,22 @@ exports.addMember = async (req, res) => {
         replacements: {
           current_user_name: values.current_user_name,
           to: value.email,
-          action_url: `http://${process.env.URL}/auth/organization-invite/${newMemberId}`
+          action_url: `http://${process.env.URL}/auth/organization-invite/${newMemberId}`,
         },
         from: "Mitivelane Team<testmitivelane@gmail.com>",
         to: value.email,
         subject:
           value.role == "Administrator"
             ? "You've been invited to join the organization as Administrator"
-            : "You've been invited to join the organization as Editor"
-      })
+            : "You've been invited to join the organization as Editor",
+      });
     });
 
     await OrganizationRequest.insertMany(newMember);
 
     return res.json("Success");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.json("Error");
   }
 };
@@ -389,7 +389,7 @@ exports.editOrganization = async (req, res) => {
         organization_name: values.organization_name,
         profile: {
           fileUrl: values.profile_url,
-          fileType: values.mime_type
+          fileType: values.mime_type,
         },
         province: values.province,
         municipality: values.municipality,
@@ -416,7 +416,7 @@ exports.editMemberRole = async (req, res) => {
     await OrganizationRequest.updateOne(
       { _id: values._id },
       {
-        role: values.role
+        role: values.role,
       }
     );
 
@@ -440,14 +440,13 @@ exports.editMemberRole = async (req, res) => {
 // 	}
 // };
 
-
 exports.getOrganizationEmails = async (req, res) => {
   const organizationId = req.params.organization_id;
 
   try {
     const organizationMember = await OrganizationMember.find({
       organization_id: organizationId,
-    }).sort({ active_email: -1 })
+    }).sort({ active_email: -1 });
 
     return res.json(organizationMember);
   } catch (error) {
@@ -460,12 +459,16 @@ exports.getActiveEmail = async (req, res) => {
 
   try {
     const organizationMember = await OrganizationMember.findOne({
-      organization_id: organizationId, active_email: true
-    })
-	
-	const account = await Account.findOne({
-      email: organizationMember.email
-    })
+      organization_id: organizationId,
+      active_email: true,
+    });
+
+    const account = await Account.findOne({
+      email: organizationMember.email,
+    }).select({
+      customer_id: 1,
+      _id: 1,
+    });
 
     return res.json(account);
   } catch (error) {
@@ -475,14 +478,20 @@ exports.getActiveEmail = async (req, res) => {
 
 exports.setActiveEmail = async (req, res) => {
   const values = req.body;
-  const organizationId = values.organization_id
+  const organizationId = values.organization_id;
 
   try {
     if (values.old_active_email != null) {
-      await OrganizationMember.updateOne({ organization_id: organizationId, email: values.old_active_email }, { active_email: false })
+      await OrganizationMember.updateOne(
+        { organization_id: organizationId, email: values.old_active_email },
+        { active_email: false }
+      );
     }
 
-    await OrganizationMember.updateOne({ organization_id: organizationId, email: values.new_active_email }, { active_email: true })
+    await OrganizationMember.updateOne(
+      { organization_id: organizationId, email: values.new_active_email },
+      { active_email: true }
+    );
 
     return res.json("Success");
   } catch (error) {

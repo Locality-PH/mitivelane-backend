@@ -1,6 +1,8 @@
 const db = require("../../../../models");
 const Account = db.account;
 const Billing = db.billing;
+const OrganizationMember = db.organizationMember;
+
 const stripe = require("stripe")(
   "sk_test_51MlMs3HCtdNtuz3POOfVyMPNhZPnOmAmfZAsVORA6CPEACEBTmM9Q2IX6zjJ69XLztPKfOWPDTYIxEgB4FaNugQQ00ygZloaMq"
 );
@@ -442,9 +444,34 @@ exports.payDocumentIntent = async (req, res) => {
     //   payment_method: req.body.token_id,
     //   description: "Charge for " + req.body.certificate_type,
     // });
-
+    const organizationData = await OrganizationMember.findOne({
+      organization_id: req.body.organizationId,
+      active_email: true,
+    });
+    console.log(organizationData);
+    if (!organizationData) {
+      return res.status(400).json("Organization billing email not set");
+    }
+    if (!organizationData?.email) {
+      return res.status(400).json("Organization billing email not set");
+    }
+    console.log(organizationData.email);
+    const account = await Account.findOne({
+      email: organizationData.email,
+    }).select({
+      full_name: 1,
+      profileUrl: 1,
+      profileLogo: 1,
+      uuid: 1,
+      customer_id: 1,
+      _id: 1,
+    });
+    console.log("User ", account);
+    if (!account?.customer_id) {
+      return res.status(400).json("Organization billing user email not set");
+    }
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 500,
+      amount: Number(req.body.paymentData) * 100,
       currency: "usd",
       payment_method_types: ["card"],
       payment_method: req.body.token_id,
@@ -453,44 +480,32 @@ exports.payDocumentIntent = async (req, res) => {
       confirm: true,
     });
 
-    // const paymentIntent = await stripe.paymentIntents.create({
-    //   amount: 500,
-    //   currency: 'usd',
-    //   payment_method_types: ['card'],
-    //   customer: 'cus_FIRST_CUSTOMER_ID',
-    //   description: 'Charge for first customer',
-    // });
-
-    // Capture the PaymentIntent to complete the charge
-    // Create a transfer to send $5 USD to the second customer
-
-    // const chargeId = paymentIntent.latest_charge;
     const balanceTransaction = await stripe.charges.create({
-      amount: 500, // amount in cents
+      amount: Number(req.body.paymentData) * 100, // amount in cents
       currency: "usd",
-      customer: "cus_NWSK3Ps0MlzINU",
+      customer: account?.customer_id,
       description: "Adding $10 to customer balance",
     });
 
-    console.log("Balance transaction created:", balanceTransaction);
-    // const transfer = await stripe.transfers.create({
-    //   amount: 500,
-    //   currency: "usd",
-    //   source_transaction: chargeId,
-    //   destination: "cus_NWSK3Ps0MlzINU","cus_NWSK3Ps0MlzINU"
-    // });
-    // Retrieve the customer's current balance
     // change cus_NWSK3Ps0MlzINU to customer 2
-    const customer = await stripe.customers.retrieve("cus_NWSK3Ps0MlzINU");
+    const customer = await stripe.customers.retrieve(account?.customer_id);
     const currentBalance = customer.balance;
 
     // Calculate the new balance amount
-    const newBalance = currentBalance + 500;
+    const newBalance = currentBalance + Number(req.body.paymentData) * 100;
 
-    await stripe.customers.update("cus_NWSK3Ps0MlzINU", {
+    await stripe.customers.update(account?.customer_id, {
       balance: newBalance,
     });
-
+    NotificationMiddleware.notificationDocument({
+      organization_id: req.body.organizationId,
+      message: "has paid you of " + req.body.paymentData + " credit",
+      user_id: account?._id,
+      uuid: account?.uuid,
+      is_read: false,
+      type: "user",
+      link: `#`,
+    });
     console.log("Transfer successfully created:", balanceTransaction);
 
     return res.status(200).json("payment successful");
@@ -498,3 +513,40 @@ exports.payDocumentIntent = async (req, res) => {
     return res.status(400).json("Error: " + error);
   }
 };
+
+// NotificationMiddleware.notificationDocument({
+//   organization_id: comment3.organization_id,
+//   message: "has replied to your comment",
+//   user_id: user?._id,
+//   uuid: comment3.account.uuid,
+//   is_read: false,
+//   type: "user",
+//   link: `/home/posts/${orgId}/${generalId}/single/data`,
+// });
+// console.log(user?.profileUrl?.data);
+// NodeMailer.sendMail({
+//   template: "templates/status/comment/index.html",
+//   replacements: {
+//     link: `/home/posts/${orgId}/${generalId}/single/data`,
+//     profile:
+//       user?.profileUrl?.data ||
+//       `https://ui-avatars.com/api/name=${
+//         user?.full_name || "U"
+//       }&background=${
+//         user?.profileLogo.replace("#", "") || "a0a0a0"
+//       }&color=FFFFFF&bold=true`,
+//     name: user?.full_name,
+//     content: `has message you, check the message in the comment section by clicking this button below`,
+//   },
+//   to: comment3.account.email,
+//   from: "Mitivelane<testmitivelane@gmail.com>",
+//   subject: `Someone has replied to your comment`,
+// });
+function checkEmailExists(email, arr) {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].email === email) {
+      return true; // email already exists in array
+    }
+  }
+  return false; // email does not exist in array
+}
