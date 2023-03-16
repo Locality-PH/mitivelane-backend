@@ -519,6 +519,16 @@ exports.payDocumentIntent = async (req, res) => {
       customer_id: 1,
       _id: 1,
     });
+    const account2 = await Account.findOne({
+      uuid: req.user.auth_id,
+    }).select({
+      full_name: 1,
+      profileUrl: 1,
+      profileLogo: 1,
+      uuid: 1,
+      customer_id: 1,
+      _id: 1,
+    });
     //  console.log("User ", account);
     if (!account?.customer_id) {
       return res.status(400).json("Organization billing user email not set");
@@ -557,7 +567,7 @@ exports.payDocumentIntent = async (req, res) => {
     NotificationMiddleware.notificationDocument({
       organization_id: req.body.organizationId,
       message: "has paid you of " + req.body.paymentData + " credit",
-      user_id: account?._id,
+      user_id: account2?._id,
       uuid: account?.uuid,
       is_read: false,
       type: "user",
@@ -568,18 +578,18 @@ exports.payDocumentIntent = async (req, res) => {
       replacements: {
         link: `#`,
         profile:
-          account?.profileUrl?.data ||
+          account2?.profileUrl?.data ||
           `https://ui-avatars.com/api/name=${
-            account?.full_name || "U"
+            account2?.full_name || "U"
           }&background=${
-            account?.profileLogo.replace("#", "") || "a0a0a0"
+            account2?.profileLogo.replace("#", "") || "a0a0a0"
           }&color=FFFFFF&bold=true`,
-        name: account?.full_name,
-        content: `has paid you of " + req.body.paymentData + " credit`,
+        name: account2?.full_name,
+        content: "has paid you of " + req.body.paymentData + " credit",
       },
       to: account?.email,
       from: "Mitivelane<testmitivelane@gmail.com>",
-      subject: `Someone has replied to your comment`,
+      subject: "has paid you of " + req.body.paymentData + " credit",
     });
     //  console.log("Transfer successfully created:", balanceTransaction);
 
