@@ -512,6 +512,7 @@ exports.payDocumentIntent = async (req, res) => {
     const account = await Account.findOne({
       email: organizationData.email,
     }).select({
+      email: 1,
       full_name: 1,
       profileUrl: 1,
       profileLogo: 1,
@@ -522,6 +523,7 @@ exports.payDocumentIntent = async (req, res) => {
     const account2 = await Account.findOne({
       uuid: req.user.auth_id,
     }).select({
+      email: 1,
       full_name: 1,
       profileUrl: 1,
       profileLogo: 1,
