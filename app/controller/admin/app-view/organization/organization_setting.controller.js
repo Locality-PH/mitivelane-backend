@@ -439,3 +439,49 @@ exports.editMemberRole = async (req, res) => {
 // 		return res.json("Error");
 // 	}
 // };
+
+
+exports.getOrganizationEmails = async (req, res) => {
+  const organizationId = req.params.organization_id;
+
+  try {
+    const organizationMember = await OrganizationMember.find({
+      organization_id: organizationId,
+    }).sort({ active_email: -1 })
+
+    return res.json(organizationMember);
+  } catch (error) {
+    return res.json([]);
+  }
+};
+
+exports.getActiveEmail = async (req, res) => {
+  const organizationId = req.params.organization_id;
+
+  try {
+    const organizationMember = await OrganizationMember.findOne({
+      organization_id: organizationId, active_email: true
+    })
+
+    return res.json(organizationMember);
+  } catch (error) {
+    return res.json([]);
+  }
+};
+
+exports.setActiveEmail = async (req, res) => {
+  const values = req.body;
+  const organizationId = values.organization_id
+
+  try {
+    if (values.old_active_email != null) {
+      await OrganizationMember.updateOne({ organization_id: organizationId, email: values.old_active_email }, { active_email: false })
+    }
+
+    await OrganizationMember.updateOne({ organization_id: organizationId, email: values.new_active_email }, { active_email: true })
+
+    return res.json("Success");
+  } catch (error) {
+    return res.json("Error");
+  }
+};

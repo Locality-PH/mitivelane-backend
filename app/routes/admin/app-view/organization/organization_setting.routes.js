@@ -69,6 +69,24 @@ module.exports = (app) => {
     organizationSetting.editMemberRole
   );
 
+  router.get(
+    "/get-organization-emails/:organization_id",
+    auth.authenticationToken,
+    organizationSetting.getOrganizationEmails
+  );
+
+  router.get(
+    "/get-active-email/:organization_id",
+    auth.authenticationToken,
+    organizationSetting.getActiveEmail
+  );
+
+  router.post(
+    "/set-active-email",
+    auth.authenticationToken,
+    organizationSetting.setActiveEmail
+  );
+
   // router.post(
   //   "/delete-organization-request",
   //   auth.authenticationToken,
