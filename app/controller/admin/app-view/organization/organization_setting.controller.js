@@ -120,6 +120,10 @@ exports.validateEmail = async (req, res) => {
   }
 };
 
+const generateCode = (length) => {
+  return Math.floor(Math.pow(10, length - 1) + Math.random() * (Math.pow(10, length) - Math.pow(10, length - 1)))
+}
+
 exports.addMember = async (req, res) => {
   const values = req.body;
   const _id = new mongoose.Types.ObjectId();
@@ -132,9 +136,13 @@ exports.addMember = async (req, res) => {
       var newMemberId = new mongoose.Types.ObjectId();
       newMember[i]._id = newMemberId;
 
+      let inviteCode = generateCode(6)
+      newMember[i].code = inviteCode;
+
       NodeMailer.sendMail({
         template: "templates/emails/email1/index.html",
         replacements: {
+          code: inviteCode,
           current_user_name: values.current_user_name,
           to: value.email,
           action_url: `http://${process.env.URL}/auth/organization-invite/${newMemberId}`,
@@ -165,7 +173,7 @@ exports.verifyRequest = async (req, res) => {
     const organizationRequest = await OrganizationRequest.findOne({ _id: _id });
     const account = await Account.findOne({ email: organizationRequest.email });
 
-    if (account.length == 0) {
+    if (account == null) {
       // No account exists for invited member.
       return res.json("Condition1");
     } else if (values.uuid != account.uuid) {
@@ -193,37 +201,74 @@ exports.acceptRequest = async (req, res) => {
       const organizationId = organizationRequest.organization_id;
 
       if (organizationRequest.status == "Pending") {
-        const accountId = account._id;
 
-        const organizationMember = new OrganizationMember({
-          _id: memberId,
-          email: organizationRequest.email,
-          role: organizationRequest.role,
-          organization_id: organizationId,
-          account: accountId,
-        });
+        if (organizationRequest.code == values.code) {
+          const accountId = account._id;
 
-        await organizationMember.save();
+          const organizationMember = new OrganizationMember({
+            _id: memberId,
+            email: organizationRequest.email,
+            role: organizationRequest.role,
+            organization_id: organizationId,
+            account: accountId,
+          });
 
-        await Account.updateOne(
-          { _id: accountId },
-          {
-            $push: {
-              organizations: [organizationId],
-              members: [organizationMember],
-            },
-          }
-        );
-        await Organization.updateOne(
-          { _id: organizationId },
-          { $push: { organization_member: [organizationMember] } }
-        );
-        await OrganizationRequest.updateOne(
-          { _id: _id },
-          { status: "Accepted" }
-        );
+          await organizationMember.save();
 
-        return res.json("Success");
+          await Account.updateOne(
+            { _id: accountId },
+            {
+              $push: {
+                organizations: [organizationId],
+                members: [organizationMember],
+              },
+            }
+          );
+          await Organization.updateOne(
+            { _id: organizationId },
+            { $push: { organization_member: [organizationMember] } }
+          );
+          await OrganizationRequest.updateOne(
+            { _id: _id },
+            { status: "Accepted" }
+          );
+
+          return res.json({
+            organization_member_id: memberId,
+            organization_id: organizationId,
+            message: "Success"
+          });
+
+        } else {
+          return res.json("Invalid");
+        }
+
+      } else if (organizationRequest.status == "Accepted") {
+        return res.json("Joined");
+      }
+    } else {
+      console.log("not match email and org request id");
+      return res.json("Error");
+    }
+  } catch (error) {
+    return res.json("Error");
+  }
+};
+
+exports.validateRequest = async (req, res) => {
+  const values = req.body;
+  const _id = values._id;
+
+  try {
+    const organizationRequest = await OrganizationRequest.findOne({ _id: _id });
+    const account = await Account.findOne({ uuid: values.uuid });
+
+    if (organizationRequest.email == account.email) {
+      const organizationId = organizationRequest.organization_id;
+
+      if (organizationRequest.status == "Pending") {
+        return res.json("Pending");
+
       } else if (organizationRequest.status == "Accepted") {
         return res.json("Joined");
       }

@@ -27,6 +27,12 @@ module.exports = (app) => {
     organizationSetting.acceptRequest
   );
 
+  router.post(
+    "/validate-request",
+    auth.authenticationToken,
+    organizationSetting.validateRequest
+  );
+
   router.get(
     "/get-organization-members/:organization_id",
     auth.authenticationToken,
