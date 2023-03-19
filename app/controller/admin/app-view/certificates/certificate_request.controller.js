@@ -12,9 +12,7 @@ const fs = require("fs");
 var mongoose = require("mongoose");
 const NodeMailer = require("../../../../nodemailer/index.js");
 const NotificationMiddleware = require("../../../../helper/notification");
-const stripe = require("stripe")(
-  "sk_test_51MlMs3HCtdNtuz3POOfVyMPNhZPnOmAmfZAsVORA6CPEACEBTmM9Q2IX6zjJ69XLztPKfOWPDTYIxEgB4FaNugQQ00ygZloaMq"
-);
+const stripe = require("stripe")(process.env.REACT_APP_STRIPE);
 
 const pageSizeOptions = [5, 10, 20, 50, 100];
 

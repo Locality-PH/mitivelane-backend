@@ -3,9 +3,7 @@ const Account = db.account;
 const Billing = db.billing;
 const OrganizationMember = db.organizationMember;
 
-const stripe = require("stripe")(
-  "sk_test_51MlMs3HCtdNtuz3POOfVyMPNhZPnOmAmfZAsVORA6CPEACEBTmM9Q2IX6zjJ69XLztPKfOWPDTYIxEgB4FaNugQQ00ygZloaMq"
-);
+const stripe = require("stripe")(process.env.REACT_APP_STRIPE);
 const NodeMailer = require("../../../../nodemailer/index.js");
 const NotificationMiddleware = require("../../../../helper/notification");
 var mongoose = require("mongoose");
@@ -405,7 +403,7 @@ exports.deleteBilling = async (req, res) => {
       }
     );
     console.log(billingDataNew);
-    Promise.all([accountData, billingDataNew]).then(() => {});
+    Promise.all([accountData, billingDataNew]).then(() => { });
     return res.status(200).json("Delete Successful");
   } catch (error) {
     console.log("Error deleting billing:", error);
@@ -581,10 +579,8 @@ exports.payDocumentIntent = async (req, res) => {
         link: `#`,
         profile:
           account2?.profileUrl?.data ||
-          `https://ui-avatars.com/api/name=${
-            account2?.full_name || "U"
-          }&background=${
-            account2?.profileLogo.replace("#", "") || "a0a0a0"
+          `https://ui-avatars.com/api/name=${account2?.full_name || "U"
+          }&background=${account2?.profileLogo.replace("#", "") || "a0a0a0"
           }&color=FFFFFF&bold=true`,
         name: account2?.full_name,
         content: "has paid you of " + req.body.paymentData + " credit",
