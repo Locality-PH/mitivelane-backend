@@ -446,3 +446,28 @@ Content-Type: application/json
 GET http://localhost:5000/api/organization_setting/get-active-email/63f5aa9f53dca62f01048dea
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoiUnoybXZyRmpzelM4MEFBbnVoanhoR3FWc2IwMiIsImF1dGhfb3JnYW5pemF0aW9uIjoiNjNmNTYwMGYyNWY3NDU5MzVjNGQ1M2UzIiwiaWF0IjoxNjc4ODc4NDU4LCJleHAiOjE2Nzg5Nzg0NTh9.WJy0Op0DlBMbniZ4eqtPscpzNWDPerbtc1_z6UK8RY0
 Content-Type: application/json
+
+
+###
+POST http://LOCALHOST:5000/api/app/user/billing/create
+Content-Type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoicHZTcFA3eFdOa1hTaTVvbXFZT0FIQ3I0QVRxMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzkxOTMxMzAsImV4cCI6MTY3OTI5MzEzMH0.7cgro6ky3Jr-WkrashOCJcB2on4Wzctw0-_c4mPxsco
+
+{"card_number":"4242 4242 4242 4242","card_holder":"4242 4242 4242 4242","issuer":"visa","valid_thru":"12/31","cvc":"123","active_card":false,"info":{"issuer":"visa"},"email":"steevaduy@gmail.com"}
+
+
+
+
+
+
+
+
+###
+POST http://LOCALHOST:5000/api/app/user/billing/document/intent
+Content-Type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX2lkIjoicHZTcFA3eFdOa1hTaTVvbXFZT0FIQ3I0QVRxMiIsImF1dGhfb3JnYW5pemF0aW9uIjpudWxsLCJpYXQiOjE2NzkxOTMxMzAsImV4cCI6MTY3OTI5MzEzMH0.7cgro6ky3Jr-WkrashOCJcB2on4Wzctw0-_c4mPxsco
+
+{"email":"steevaduy@gmail.com","name":"Steeva Panget","organizationId":"63f5600f25f745935c4d53e3","paymentData":50,"phoneNumber":"231","address":"1401 Nathaniel Crossroad","address2":"6606 Towne Valley","city":"Port Destinyville","country":"AD","postcode":"90434-5397","token_id":"tok_1MnBytHCtdNtuz3PR99Ozhuy","customer_id":"cus_NYIaf153u9uR8B","user_id":"pvSpP7xWNkXSi5omqYOAHCr4ATq2","issuer":"visa"}
+
+
+""

@@ -218,7 +218,8 @@ exports.createBilling = async (req, res) => {
         token_id = token.id;
         customer = customers.data[0].id;
       } else {
-        const token = await stripe.tokens.create({
+        const token = await stripe.paymentMethods.create({
+          type: "card",
           card: {
             number: req.body.card_number.replace(" ", ""),
             exp_month: splitCvc[0],
@@ -226,21 +227,53 @@ exports.createBilling = async (req, res) => {
             cvc: req.body.cvc,
           },
         });
-        customer = await stripe.customers.create({
-          name: req.body.card_holder,
-          email: req.body.email,
-          address: {
-            line1: info?.address,
-            line2: info?.address2,
-            country: info?.country,
-            postal_code: info?.postcode,
-            city: info?.city,
-          },
-          phone: info?.phoneNumber,
-          source: token.id,
-        });
-        token_id = token.id;
-        customer = customer.id;
+        // Attach the payment method to the source
+
+        const source = await stripe.sources
+          .create({
+            type: "card",
+            card: {
+              number: req.body.card_number.replace(" ", ""),
+              exp_month: splitCvc[0],
+              exp_year: splitCvc[1],
+              cvc: req.body.cvc,
+            },
+          })
+          .then(async (source) => {
+            customer = await stripe.customers
+              .create({
+                name: req.body.card_holder,
+                email: req.body.email,
+                address: {
+                  line1: info?.address,
+                  line2: info?.address2,
+                  country: info?.country,
+                  postal_code: info?.postcode,
+                  city: info?.city,
+                },
+                phone: info?.phoneNumber,
+                source: source.id,
+              })
+              .then(async (customer) => {
+                console.log(customer.id);
+                await stripe.paymentMethods.attach(token.id, {
+                  customer: customer.id,
+                });
+                return customer.id;
+              });
+            return [source.id, customer];
+          });
+        // const token = await stripe.tokens.create({
+        //   card: {
+        //     number: req.body.card_number.replace(" ", ""),
+        //     exp_month: splitCvc[0],
+        //     exp_year: splitCvc[1],
+        //     cvc: req.body.cvc,
+        //   },
+        // });
+
+        token_id = source[0];
+        customer = source[1];
       }
     }
 
