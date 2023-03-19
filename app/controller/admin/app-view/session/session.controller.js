@@ -31,7 +31,7 @@ exports.getAuditPage = async (req, res) => {
       .limit(pageSize)
       .collation({ locale: "en" })
       .sort({ createdAt: sortFilter })
-      .populate("account", ["first_name", "last_name", "profileLogo", "profileUrl"]);
+      .populate("account", ["full_name", "profileLogo", "profileUrl"]);
     var query2 = Session.countDocuments(filter)
 
     Promise.all([query1, query2])
