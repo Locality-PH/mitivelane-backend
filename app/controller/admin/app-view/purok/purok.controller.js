@@ -1,6 +1,8 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
 var moment = require('moment');
+const { RecordSession } = require("../../../../helper/session");
+
 
 const Purok = db.purok;
 
@@ -109,14 +111,30 @@ exports.addPurok = async (req, res) => {
   console.log("values", values)
   newPurokData = values.newArea;
   newPurokData._id = new mongoose.Types.ObjectId();
+
   newPurokData.organization_id = mongoose.Types.ObjectId(
     values.organization_id
   );
 
   try {
     const newPurok = new Purok(newPurokData);
-    await newPurok.save();
-    res.json(newPurok);
+
+
+    const session = await RecordSession({
+      organization_id: values.organization_id,
+      userAuthId: req.user.auth_id,
+      message: "Added a purok.",
+      action: "Create",
+      module: "Purok",
+    })
+
+    const query = await newPurok.save();
+
+    Promise.all([query, session])
+    .then((values) => {
+      res.json(values[0]);
+    });
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
@@ -129,7 +147,14 @@ exports.updatePurok = async (req, res) => {
 
   try {
     await Purok.updateOne({ _id: newAreaData.purok_id }, newAreaData)
-      .then(() => {
+      .then(async () => {
+        await RecordSession({
+          organization_id: values.organization_id,
+          userAuthId: req.user.auth_id,
+          message: "Updated a purok.",
+          action: "Update",
+          module: "Purok",
+        })
         res.json("updated");
       })
 
@@ -142,10 +167,20 @@ exports.updatePurok = async (req, res) => {
 exports.deletePurok = async (req, res) => {
   var values = req.body.values
   const selectedArray = values.selectedArray;
+  const total = selectedArray.length
 
   try {
     await Purok.deleteMany({ _id: selectedArray })
-      .then(() => {
+      .then(async () => {
+
+        await RecordSession({
+          organization_id: values.organization_id,
+          userAuthId: req.user.auth_id,
+          message: `Deleted ${total} number/s of purok.`,
+          action: "Delete",
+          module: "Purok",
+        })
+
         res.json("deleted");
       })
 

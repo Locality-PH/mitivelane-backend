@@ -22,6 +22,8 @@ exports.notificationDocument = async (props) => {
       is_read: false,
       link: link,
     };
+    console.log("saving notification")
+    console.log("props", props)
     const notificationData = await new OrganizationNotifications(data);
     notificationData.save();
   } catch (error) {

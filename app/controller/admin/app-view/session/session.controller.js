@@ -11,6 +11,7 @@ exports.getAuditPage = async (req, res) => {
     var today = moment().endOf('day')
     var dateFilter = data.dateFilter != undefined ? moment(data.dateFilter).endOf('day') : today
     var sortFilter = data.sortFilter != undefined ? data.sortFilter.toLowerCase() : "desc"
+    var fieldFilter = data.fieldFilter != undefined ? data.fieldFilter : ""
     var page = parseInt(data.currentPage) - 1;
     var pageSize = parseInt(data.pageSize);
     var organization_id = data.organization_id;
@@ -18,6 +19,7 @@ exports.getAuditPage = async (req, res) => {
 
     var filter = {
       organization_id,
+      module:  { $regex: fieldFilter, $options: "i" },
       createdAt: {
         $lte: dateFilter
       }

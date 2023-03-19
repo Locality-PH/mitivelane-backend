@@ -1,8 +1,12 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
 var moment = require("moment");
+const NotificationMiddleware = require("../../../../helper/notification");
+const NodeMailer = require("../../../../nodemailer/index");
+const { RecordSession } = require("../../../../helper/session");
 
 const Campaign = db.campaign;
+const Organization = db.organization;
 const Account = db.account;
 
 const populatePeople = [
@@ -122,7 +126,7 @@ exports.getSuggestedPage = async (req, res) => {
         $project: {
           "suggestor_docs.first_name": 1,
           "suggestor_docs.last_name": 1,
-          "suggestor_docs.full_name": { $concat: ["$suggestor_docs.first_name", " " ,"$suggestor_docs.last_name"] },
+          "suggestor_docs.full_name": { $concat: ["$suggestor_docs.first_name", " ", "$suggestor_docs.last_name"] },
           "suggestor_docs.full_name_no_space": {
             $replaceAll: {
               input: { $concat: ["$suggestor_docs.first_name", "$suggestor_docs.last_name"] },
@@ -311,7 +315,7 @@ exports.getPublishedPage = async (req, res) => {
         $project: {
           "publisher_docs.first_name": 1,
           "publisher_docs.last_name": 1,
-          "publisher_docs.full_name": { $concat: ["$publisher_docs.first_name", " " ,"$publisher_docs.last_name"] },
+          "publisher_docs.full_name": { $concat: ["$publisher_docs.first_name", " ", "$publisher_docs.last_name"] },
           "publisher_docs.full_name_no_space": {
             $replaceAll: {
               input: { $concat: ["$publisher_docs.first_name", "$publisher_docs.last_name"] },
@@ -447,7 +451,8 @@ exports.getLatestCampaigns = async (req, res) => {
       .skip(page * pageSize)
       .limit(pageSize)
       .collation({ locale: "en" })
-      .populate("suggestor",)
+      .populate("suggestor", populatePeople)
+      .populate("participants", populatePeople)
       .populate("publisher", populatePeople)
       .populate("organization", populateOrg)
       .sort(sorter)
@@ -456,7 +461,7 @@ exports.getLatestCampaigns = async (req, res) => {
           var temp = Object.assign({}, data);
           // temp._doc.starting_date = moment(new Date(data.starting_date))
           temp._doc.isLike = data.likes.includes(userId)
-          temp._doc.isParticipant = data.participants.includes(userId)
+          temp._doc.isParticipant = data.participants.some(user => user._id.toString() === userId.toString())
           return temp._doc;
         });
 
@@ -474,7 +479,7 @@ exports.getTrendingCampaigns = async (req, res) => {
   try {
     const campaign = await Campaign.find({
       status: "Approved",
-      starting_date: {$gte: moment().startOf("day").toDate()}
+      starting_date: { $gte: moment().startOf("day").toDate() }
     })
       .populate("publisher")
       .sort({ participantCounter: -1 })
@@ -551,11 +556,12 @@ exports.getCampaign = async (req, res) => {
     })
       .populate("suggestor", populatePeople)
       .populate("publisher", populatePeople)
+      .populate("participants", populatePeople)
       .populate("organization", populateOrg)
       .then((result) => {
         var temp = Object.assign({}, result);
         temp._doc.isLike = result.likes.includes(userId)
-        temp._doc.isParticipant = result.participants.includes(userId)
+        temp._doc.isParticipant = result.participants.some(user => user._id.toString() === userId.toString())
         var newResult = temp._doc
 
         res.json(newResult)
@@ -585,8 +591,22 @@ exports.addCampaign = async (req, res) => {
 
   try {
     const newCampaign = new Campaign(newCampaignData);
-    await newCampaign.save();
-    res.json(newCampaign);
+    const query = await newCampaign.save();
+
+    const session = await RecordSession({
+      organization_id: newCampaignData.organization,
+      userAuthId: req.user.auth_id,
+      message: "Created a campaign.",
+      action: "Create",
+      module: "Campaign",
+    })
+
+    Promise.all([query, session])
+      .then((values) => {
+        res.json(values[0]);
+      });
+
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });
@@ -614,23 +634,37 @@ exports.addCampaignSuggestion = async (req, res) => {
 };
 
 exports.updateCampaign = async (req, res) => {
+  var oldStatus = req.body.oldStatus;
   var values = req.body.values;
   const _id = values.campaign_id;
 
-  var hasPublisher = values.hasOwnProperty("publisher");
-  var hasSuggestor = values.hasOwnProperty("suggestor");
+  const publisherUuid = req.user.auth_id
+  const user = await Account.findOne({ uuid: publisherUuid }, "_id");
+  const id = user._id;
 
-  if (!hasPublisher || !hasSuggestor) {
-    const userAuthId = req.user.auth_id;
-    const user = await Account.findOne({ uuid: userAuthId }, "_id");
-    const id = user._id;
-
-    if (!hasPublisher) values.publisher = id;
-    if (!hasSuggestor) values.suggestor = id;
-  }
+  values.publisher = id;
 
   try {
-    await Campaign.updateOne({ _id }, values).then(() => {
+    await Campaign.updateOne({ _id }, values).then(async () => {
+      if (oldStatus != values.status) {
+
+        const suggestor = await Account.findOne({ _id: values.suggestor }, "uuid");
+        var userAuthId = suggestor.uuid
+
+        await sendNotif(values, userAuthId)
+
+        if (values.suggestor != values.publisher) {
+          sendEmail(values)
+        }
+      }
+
+      await RecordSession({
+        organization_id: values.organization,
+        userAuthId: req.user.auth_id,
+        message: "Edited a campaign.",
+        action: "Edit",
+        module: "Campaign",
+      })
       res.json("updated");
     });
   } catch (error) {
@@ -638,6 +672,51 @@ exports.updateCampaign = async (req, res) => {
     res.status(500).send({ error: "error" });
   }
 };
+
+const sendNotif = async (values, userAuthId) => {
+  try {
+    await NotificationMiddleware.notificationDocument({
+      organization_id: values.organization,
+      message: `Your suggested camapaign status has been change to "${values.status}"`,
+      user_id: values.suggestor,
+      uuid: userAuthId,
+      is_read: false, // default
+      type: "campaign",
+      link: `/home/posts/${values.organization}/${values.campaign_id}/single/data`,
+    });
+  } catch (error) {
+    throw error
+  }
+}
+
+const sendEmail = async (values) => {
+  try {
+    const getSender = await Account.findOne({ _id: values.publisher }, "_id first_name last_name email");
+    const getReceiver = await Account.findOne({ _id: values.suggestor }, "_id first_name last_name email");
+    const getOrg = await Organization.findOne({ _id: values.organization }, "_id organization_name");
+
+    Promise.all([getSender, getReceiver, getOrg])
+      .then(async ([sender, receiver, org]) => {
+
+        await NodeMailer.sendMail({
+          template: "templates/status/campaign/index.html",
+          replacements: {
+            receiver: `${receiver.first_name} ${receiver.last_name}`,
+            sender_email: sender.email,
+            sender: `${sender.first_name} ${sender.last_name}`,
+            status: values.status,
+            orgName: org.organization_name,
+            link: `https://mitivelane-test.online/home/posts/${values.organization}/${values.campaign_id}/single/data`
+          },
+          from: "Mitivelane Team<testmitivelane@gmail.com>",
+          to: "gcmediavillo@gmail.com",
+          subject: "Your Suggested Campaign status has been changed"
+        })
+      })
+  } catch (error) {
+    throw error
+  }
+}
 
 exports.updateCampaignStatus = async (req, res) => {
   var values = req.body.values;
@@ -687,11 +766,22 @@ exports.updateCampaignStatus = async (req, res) => {
 exports.deleteCampaign = async (req, res) => {
   var values = req.body.values;
   const deleteList = values.deleteList;
+  const total = deleteList.length
 
   try {
-    await Campaign.deleteMany({ _id: deleteList }).then(() => {
-      res.json("deleted");
-    });
+    await Campaign.deleteMany({ _id: deleteList })
+      .then(async () => {
+        await RecordSession({
+          organization_id: values.organization_id,
+          userAuthId: req.user.auth_id,
+          message: `Deleted ${total} campaign/s.`,
+          action: "Delete",
+          module: "Campaign"
+        })
+
+        res.json("deleted");
+      });
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "error" });

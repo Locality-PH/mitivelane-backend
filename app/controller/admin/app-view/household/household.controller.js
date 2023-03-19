@@ -1,6 +1,7 @@
 const db = require("../../../../models");
 var mongoose = require("mongoose");
 var moment = require('moment');
+const { RecordSession } = require("../../../../helper/session");
 
 const Resident = db.resident;
 const Household = db.household;
@@ -96,7 +97,7 @@ exports.getHouseholdPage = async (req, res) => {
       }
 
       if (dataFilter.type == "array_string") {
-        searchFilter = { ...searchFilter, [dataFilter.field]: { "$in" : dataFilter.value}}
+        searchFilter = { ...searchFilter, [dataFilter.field]: { "$in": dataFilter.value } }
       }
 
     }
@@ -135,7 +136,7 @@ exports.getHousehold = async (req, res) => {
   try {
     const organization_id = req.body.organization_id;
     const household_id = req.body.household_id;
-    
+
     const households = await Household.findOne({
       organization: organization_id,
       _id: household_id,
@@ -167,15 +168,23 @@ exports.addHousehold = async (req, res) => {
       newHouseholdData.household_members.push(member._id);
     });
 
-    // console.log(newHouseholdData);
-    // console.log("newHouseholdMembersData", newHouseholdMembersData);
-
     const newHousehold = new Household(newHouseholdData);
-    await newHousehold.save();
-    // const newHouseholdMembers = await HouseholdMember.insertMany(
-    //   newHouseholdMembersData
-    // );
-    res.json("success");
+
+    const session = await RecordSession({
+      organization_id: newHouseholdData.organization,
+      userAuthId: req.user.auth_id,
+      message: "Added a household.",
+      action: "Create",
+      module: "Household",
+    })
+
+    const query = await newHousehold.save();
+
+    Promise.all([query, session])
+      .then((values) => {
+        res.json("success");
+      });
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: error });
@@ -199,8 +208,22 @@ exports.updateHousehold = async (req, res) => {
 
     household.household_members = household_members_ids
 
-    await Household.updateOne({ _id: household_id }, household);
-    res.json("updated");
+    const query = await Household.updateOne({ _id: household_id }, household);
+
+    const session = await RecordSession({
+      organization_id: organization_id,
+      userAuthId: req.user.auth_id,
+      message: "Updated a household.",
+      action: "Update",
+      module: "Household",
+    })
+
+    Promise.all([query, session])
+      .then((values) => {
+        res.json("updated");
+      });
+
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: error });
@@ -215,9 +238,22 @@ exports.deleteHousehold = async (req, res) => {
     const currentHousehold = await Household.findById(household_id);
     const currentHouseholdMembers = currentHousehold.household_members;
 
-    await Household.findOneAndDelete({ _id: household_id });
+    const query = await Household.findOneAndDelete({ _id: household_id });
     // await HouseholdMember.deleteMany({ _id: currentHouseholdMembers });
-    res.json("Delete success");
+
+    const session = await RecordSession({
+      organization_id: organization_id,
+      userAuthId: req.user.auth_id,
+      message: `Deleted a household.`,
+      action: "Delete",
+      module: "Household",
+    })
+
+    Promise.all([query, session])
+    .then((values) => {
+      res.json("Delete success");
+    });
+
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: error });
