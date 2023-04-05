@@ -99,5 +99,11 @@ module.exports = (app) => {
   //   organizationSetting.deleteOrganizationRequest
   // );
 
+  router.get(
+    "/get-first-org/:uuid",
+    auth.authenticationToken,
+    organizationSetting.getFistOrg
+  );
+
   app.use("/api/organization_setting", router);
 };

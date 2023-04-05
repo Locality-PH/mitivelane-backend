@@ -179,9 +179,13 @@ exports.verifyRequest = async (req, res) => {
     } else if (values.uuid != account.uuid) {
       // Member who have been invited have an account but have not yet logged in.
       return res.json("Condition2");
-    } else if (values.uuid == account.uuid) {
-      // Members who have been invited to join already have an account and have logged in.
+    } else if (values.uuid == account.uuid && account.organizations.length != 0) {
+      // Members who have been invited to join already have an account and have logged in and have organization.
       return res.json("Condition3");
+    }
+    else if (values.uuid == account.uuid && account.organizations.length == 0) {
+      // Members who have been invited to join already have an account and have logged in but no organization.
+      return res.json("Condition4");
     }
   } catch (error) {
     return res.json("Error");
@@ -541,5 +545,34 @@ exports.setActiveEmail = async (req, res) => {
     return res.json("Success");
   } catch (error) {
     return res.json("Error");
+  }
+};
+
+// change current organization after leaving
+exports.getFistOrg = async (req, res) => {
+  const uuid = req.params.uuid;
+
+  try {
+    const account = await Account.findOne({
+      uuid: uuid,
+    })
+
+    if (account.members.length != 0) {
+      let organizationMemberId = account.members[0]
+
+      const organizationMember = await OrganizationMember.findOne({ _id: organizationMemberId })
+
+      return res.json({
+        organization_member_id: organizationMember._id,
+        organization_id: organizationMember.organization_id,
+        message: "Success"
+      });
+    } else if (account.members.length == 0) {
+      return res.json("NoOrg");
+    } else {
+      return res.json("error");
+    }
+  } catch (error) {
+    return res.json("error");
   }
 };
