@@ -36,7 +36,7 @@
     "node-fetch": "^2.6.7",
     "nodemailer": "^6.7.5",
     "request": "^2.88.2",
-    "socket.io": "^4.4.1",
+    "socket.io": "^4.7.1",
     "stripe": "^11.14.0",
     "uuidv4": "^6.2.13"
   },
