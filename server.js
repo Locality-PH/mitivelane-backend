@@ -59,11 +59,16 @@ require("./app/routes/")(app);
 // Socket
 // require("./app/socket/")(io);
 
+
 // test API
 require("./app/test/routes")(app);
 
 // Welcome page API
 app.get("/", (_, res) => {
+  res.json({ message: "Welcome to MITIVELANE application." });
+});
+
+app.get("/test", (_, res) => {
   res.json({ message: "Welcome to MITIVELANE application." });
 });
 
